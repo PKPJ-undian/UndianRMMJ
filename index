@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STU-RMMJ | Sistem Tapisan Undian</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{
+      --navy:#0b2a57; --blue:#1677ff; --bg:#f5f8fc; --card:#fff; --text:#10233f;
+      --muted:#6b7b91; --green:#17a673; --red:#ef476f; --orange:#ff9f1c; --line:#dde6f1;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+    aside{background:linear-gradient(180deg,#0b2a57,#123c73);color:#fff;padding:24px 16px;position:sticky;top:0;height:100vh}
+    .brand{font-size:24px;font-weight:800;margin-bottom:6px}.sub{font-size:12px;opacity:.8;margin-bottom:28px}
+    nav button{width:100%;text-align:left;background:transparent;border:0;color:#dbe8ff;padding:12px 14px;border-radius:10px;margin:4px 0;cursor:pointer;font-weight:600}
+    nav button.active,nav button:hover{background:#1677ff;color:#fff}
+    main{padding:26px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.top h1{margin:0}.pill{background:#eaf3ff;color:#0b5dcc;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 8px 28px rgba(15,45,90,.06)}
+    .metric .n{font-size:30px;font-weight:800;margin-top:6px}.metric small{color:var(--muted)}
+    .panel{margin-top:16px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.field{display:flex;flex-direction:column;gap:6px;min-width:160px}.field label{font-size:12px;font-weight:700;color:var(--muted)}
+    input,select{padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer;background:#1677ff;color:white}.btn.green{background:var(--green)}.btn.orange{background:var(--orange)}.btn.red{background:var(--red)}.btn.ghost{background:#eef4fb;color:#164b8b}
+    table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left}th{background:#f1f5fa;color:#4d5f78}.tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700}.tag.red{background:#ffe9ee;color:#c9214f}.tag.green{background:#e7f8f1;color:#0f8b61}.tag.orange{background:#fff0db;color:#b66400}.tag.blue{background:#eaf3ff;color:#0b5dcc}
+    .hidden{display:none!important}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.section-title h2{margin:0}.notice{padding:12px 14px;border-radius:10px;background:#eef7ff;border:1px solid #cae4ff;color:#24527f;margin-top:12px}.filebox{border:2px dashed #c9d7e8;padding:22px;border-radius:14px;text-align:center;background:#fbfdff}.progress{height:9px;background:#e5edf7;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;background:#1677ff;width:0%}.statusline{font-size:13px;color:var(--muted);margin-top:8px}.danger{color:#c9214f;font-weight:700}
+    @media(max-width:1000px){.app{grid-template-columns:1fr}aside{height:auto;position:static}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:650px){.grid{grid-template-columns:1fr}main{padding:14px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">PKPJ</div>
+    <div class="sub">Sistem Tapisan Undian RMMJ</div>
+    <nav>
+      <button class="active" data-view="dashboard">Dashboard</button>
+      <button data-view="overlap">Semakan Pemohon</button>
+      <button data-view="winners">Rekod Pemenang</button>
+      <button data-view="filter">Proses Tapisan</button>
+      <button data-view="result">Hasil Tapisan</button>
+      <button data-view="clean">Senarai Bersih</button>
+      <button data-view="audit">Audit Trail</button>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top"><div><h1>STU-RMMJ</h1><small>Sistem sokongan tapisan antara sesi undian</small></div><span id="apiStatus" class="pill">API belum diuji</span></div>
+
+    <section id="dashboard" class="view">
+      <div class="grid">
+        <div class="card metric"><small>Jumlah Projek</small><div id="mProjects" class="n">0</div></div>
+        <div class="card metric"><small>Jumlah Pemohon</small><div id="mApplicants" class="n">0</div></div>
+        <div class="card metric"><small>Pemohon Berbilang Jenis</small><div id="mOverlap" class="n">0</div></div>
+        <div class="card metric"><small>Jumlah Ditapis</small><div id="mFiltered" class="n">0</div></div>
+      </div>
+      <div class="card panel"><div class="section-title"><h2>Status Sistem</h2><button class="btn ghost" onclick="loadDashboard()">Muat Semula</button></div><div id="dashboardInfo" class="notice">Sambungkan API dan muat naik data pemohon untuk bermula.</div></div>
+    </section>
+
+    <section id="overlap" class="view hidden">
+      <div class="card">
+        <div class="section-title"><h2>Semakan Pemohon Berbilang Jenis</h2></div>
+        <div class="row" style="margin-top:14px">
+          <div class="field"><label>Projek</label><input id="ovProject" placeholder="Contoh: TAMAN MAWAR"></div>
+          <div class="field"><label>Carian Nama / No. KP</label><input id="ovSearch" placeholder="Cari..."></div>
+          <button class="btn" onclick="loadOverlaps()">Semak</button>
+        </div>
+        <div class="notice">Sistem hanya menanda pemohon yang mempunyai lebih daripada satu jenis rumah dalam projek yang sama.</div>
+        <div id="overlapTable"></div>
+      </div>
+      <div class="card panel">
+        <h2>Import Senarai Pemohon</h2>
+        <div class="filebox"><input type="file" id="applicantFile" accept=".csv,.xlsx,.xls"><p>Kolum wajib: NoKP, Nama, NoSiri, Projek, Jenis</p><button class="btn green" onclick="importApplicants()">Import Pemohon</button></div>
+      </div>
+    </section>
+
+    <section id="winners" class="view hidden">
+      <div class="card">
+        <h2>Rekod Pemenang Undian</h2>
+        <div class="row" style="margin-top:14px">
+          <div class="field"><label>Projek</label><input id="winProject" placeholder="TAMAN MAWAR"></div>
+          <div class="field"><label>Jenis Rumah</label><input id="winType" placeholder="A"></div>
+          <div class="field"><label>Sesi Undian</label><input id="winSession" placeholder="9.00 pagi"></div>
+        </div>
+        <div class="filebox" style="margin-top:14px"><input type="file" id="winnerFile" accept=".csv,.xlsx,.xls"><p>Kolum minimum: NoKP, Nama, NoSiri</p><button class="btn green" onclick="importWinners()">Import Pemenang</button></div>
+      </div>
+    </section>
+
+    <section id="filter" class="view hidden">
+      <div class="card">
+        <h2>Proses Tapisan Automatik</h2>
+        <p>Sistem akan memadankan pemenang sesi terdahulu dengan pemohon jenis lain dalam projek yang sama.</p>
+        <div class="row">
+          <div class="field"><label>Projek</label><input id="filterProject" placeholder="TAMAN MAWAR"></div>
+          <div class="field"><label>Jenis Pemenang</label><input id="filterWinnerType" placeholder="A"></div>
+          <button class="btn orange" onclick="runFilter()">Proses Tapisan</button>
+        </div>
+        <div class="progress" style="margin-top:18px"><span id="bar"></span></div>
+        <div id="filterMsg" class="statusline">Belum diproses.</div>
+      </div>
+    </section>
+
+    <section id="result" class="view hidden"><div class="card"><div class="section-title"><h2>Hasil Tapisan</h2><button class="btn ghost" onclick="loadFiltered()">Muat Semula</button></div><div id="filteredTable"></div></div></section>
+
+    <section id="clean" class="view hidden"><div class="card"><h2>Senarai Bersih untuk Undian</h2><div class="row" style="margin-top:14px"><div class="field"><label>Projek</label><input id="cleanProject" placeholder="TAMAN MAWAR"></div><div class="field"><label>Jenis</label><input id="cleanType" placeholder="B"></div><button class="btn" onclick="loadCleanList()">Jana Senarai</button><button class="btn green" onclick="downloadCleanCSV()">Muat Turun CSV</button></div><div id="cleanTable"></div></div></section>
+
+    <section id="audit" class="view hidden"><div class="card"><div class="section-title"><h2>Laporan & Audit Trail</h2><button class="btn ghost" onclick="loadAudit()">Muat Semula</button></div><div id="auditTable"></div></div></section>
+  </main>
+</div>
+
+<script>
+  // GANTI dengan URL Web App Google Apps Script anda.
+  const API_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+  let lastCleanRows = [];
+
+  document.querySelectorAll('nav button').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(btn.dataset.view).classList.remove('hidden');
+  }));
+
+  async function api(action, payload={}){
+    if(API_URL.includes('PASTE_')) throw new Error('Sila tetapkan API_URL dahulu.');
+    const body = new URLSearchParams();
+    body.set('payload', JSON.stringify({action, ...payload}));
+    const r = await fetch(API_URL,{method:'POST',body});
+    const text = await r.text();
+    let out; try{ out=JSON.parse(text);}catch{ throw new Error(text||'Respons API tidak sah'); }
+    if(!out.ok) throw new Error(out.message||'Ralat API');
+    return out;
+  }
+
+  async function testApi(){
+    try{await api('ping');document.getElementById('apiStatus').textContent='API tersambung';}catch(e){document.getElementById('apiStatus').textContent='API gagal';}
+  }
+
+  async function fileToRows(inputId){
+    const f=document.getElementById(inputId).files[0]; if(!f) throw new Error('Pilih fail dahulu.');
+    const data=await f.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]];
+    return XLSX.utils.sheet_to_json(ws,{defval:''}).map(normalizeRow);
+  }
+  function normalizeRow(r){
+    const pick=(names)=>{for(const n of names){const k=Object.keys(r).find(x=>x.toLowerCase().replace(/\s/g,'')===n.toLowerCase().replace(/\s/g,''));if(k) return String(r[k]).trim();}return ''};
+    return {NoKP:pick(['NoKP','No. KP','No KP','IC','NoIC']),Nama:pick(['Nama','Nama Pemohon']),NoSiri:pick(['NoSiri','No. Siri','No Siri']),Projek:pick(['Projek','Nama Projek']),Jenis:pick(['Jenis','Jenis Rumah'])};
+  }
+
+  async function importApplicants(){
+    try{const rows=await fileToRows('applicantFile'); const out=await api('importApplicants',{rows}); alert(`Import berjaya: ${out.count} rekod`); loadDashboard();}catch(e){alert(e.message)}
+  }
+  async function importWinners(){
+    try{const rows=await fileToRows('winnerFile'); const out=await api('importWinners',{project:v('winProject'),type:v('winType'),session:v('winSession'),rows}); alert(`Pemenang diimport: ${out.count}`);}catch(e){alert(e.message)}
+  }
+  async function runFilter(){
+    try{setBar(20,'Membaca rekod...');const out=await api('processFilter',{project:v('filterProject'),winnerType:v('filterWinnerType')});setBar(100,`Selesai. ${out.filtered} pemohon ditapis.`);loadDashboard();}catch(e){setBar(0,e.message)}
+  }
+  function setBar(p,msg){document.getElementById('bar').style.width=p+'%';document.getElementById('filterMsg').textContent=msg}
+  function v(id){return document.getElementById(id).value.trim()}
+
+  async function loadDashboard(){try{const d=(await api('dashboard')).data;mProjects.textContent=d.projects;mApplicants.textContent=d.applicants;mOverlap.textContent=d.overlap;mFiltered.textContent=d.filtered;dashboardInfo.textContent=`${d.projects} projek | ${d.applicants} pemohon | ${d.overlap} berbilang jenis | ${d.filtered} ditapis.`;}catch(e){dashboardInfo.textContent=e.message}}
+  async function loadOverlaps(){try{const rows=(await api('overlaps',{project:v('ovProject'),search:v('ovSearch')})).rows;overlapTable.innerHTML=table(rows,['NoKP','Nama','NoSiri','Projek','JenisDipohon','Status']);}catch(e){alert(e.message)}}
+  async function loadFiltered(){try{const rows=(await api('filtered')).rows;filteredTable.innerHTML=table(rows,['NoKP','Nama','NoSiri','Projek','Jenis','DitapisKerana','Masa']);}catch(e){alert(e.message)}}
+  async function loadCleanList(){try{lastCleanRows=(await api('cleanList',{project:v('cleanProject'),type:v('cleanType')})).rows;cleanTable.innerHTML=table(lastCleanRows,['NoKP','Nama','NoSiri','Projek','Jenis','Status']);}catch(e){alert(e.message)}}
+  async function loadAudit(){try{const rows=(await api('audit')).rows;auditTable.innerHTML=table(rows,['Masa','Tindakan','Projek','Jenis','Jumlah','Pengguna']);}catch(e){alert(e.message)}}
+
+  function table(rows,cols){if(!rows||!rows.length)return '<div class="notice">Tiada rekod.</div>';return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${escapeHtml(r[c]??'')}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+  function downloadCleanCSV(){if(!lastCleanRows.length)return alert('Jana senarai bersih dahulu.');const ws=XLSX.utils.json_to_sheet(lastCleanRows);const csv=XLSX.utils.sheet_to_csv(ws);const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='senarai_bersih.csv';a.click();URL.revokeObjectURL(a.href)}
+
+  testApi(); loadDashboard();
+</script>
+</body>
+</html>
