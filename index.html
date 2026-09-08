@@ -298,6 +298,8 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
+const MIN_API_VERSION = '2.2.0';
+
 const state = {
   apiUrl: DEFAULT_API_URL,
   apiKey: DEFAULT_API_KEY,
@@ -311,12 +313,11 @@ window.addEventListener('DOMContentLoaded', async function(){
   bindNav();
   bindTabs();
 
+  // Paksa deployment semasa supaya browser tidak menggunakan API lama dari localStorage.
   state.apiUrl = DEFAULT_API_URL;
   state.apiKey = DEFAULT_API_KEY;
-
-  // Pastikan browser tidak menggunakan API lama yang pernah disimpan.
-  localStorage.setItem('stu_api_url', DEFAULT_API_URL);
-  localStorage.setItem('stu_api_key', DEFAULT_API_KEY);
+  localStorage.setItem('stu_api_url', state.apiUrl);
+  localStorage.setItem('stu_api_key', state.apiKey);
 
   document.getElementById('apiUrl').value = state.apiUrl;
   document.getElementById('apiKey').value = state.apiKey;
@@ -405,15 +406,37 @@ async function api(payload){
 async function testApi(show=true){
   try{
     const data = await api({action:'health'});
-    setApiStatus(true,(data.app || 'STU-RMMJ')+' '+(data.version || ''));
+    const version = String(data.version || '0.0.0');
+
+    if(compareVersions(version, MIN_API_VERSION) < 0){
+      throw new Error(
+        'Backend Google Apps Script masih versi '+version+
+        '. Sistem GitHub ini perlukan sekurang-kurangnya versi '+MIN_API_VERSION+
+        '. Kemas kini Code.gs dan Deploy > Manage deployments > Edit > New version > Deploy.'
+      );
+    }
+
+    setApiStatus(true,(data.app || 'STU-RMMJ')+' '+version);
     if(show) toast('Sambungan Google Apps Script berjaya.','good');
     return true;
   }catch(err){
     console.error(err);
-    setApiStatus(false,'API gagal');
+    setApiStatus(false,'API / backend belum dikemas kini');
     if(show) toast(err.message,'bad');
     return false;
   }
+}
+
+function compareVersions(a,b){
+  const pa = String(a).split('.').map(x=>parseInt(x,10)||0);
+  const pb = String(b).split('.').map(x=>parseInt(x,10)||0);
+  for(let i=0;i<Math.max(pa.length,pb.length);i++){
+    const x = pa[i] || 0;
+    const y = pb[i] || 0;
+    if(x>y) return 1;
+    if(x<y) return -1;
+  }
+  return 0;
 }
 
 function setApiStatus(ok,text){
@@ -525,57 +548,77 @@ function removeDataset(id){
 async function importAllDatasets(){
   try{
     const cards = Array.from(document.querySelectorAll('.dataset-card'));
-    let allRows = [];
-    let fileCount = 0;
+    const activeCards = cards.filter(card => card.querySelector('.ds-file').files[0]);
 
-    for(const card of cards){
+    if(!activeCards.length){
+      throw new Error('Pilih sekurang-kurangnya satu fail projek.');
+    }
+
+    let totalRead = 0;
+    let totalImported = 0;
+    let totalDuplicate = 0;
+    let totalInvalid = 0;
+    let lastCross = 0;
+    let lastSame = 0;
+    let processedFiles = 0;
+
+    if(!confirm('Proses '+activeCards.length+' fail/dataset dan simpan semua rekod ke Google Sheet?')) return;
+
+    for(const card of activeCards){
       const project = card.querySelector('.ds-project').value.trim();
       const type = card.querySelector('.ds-type').value.trim();
       const file = card.querySelector('.ds-file').files[0];
 
-      if(!file) continue;
-      fileCount++;
-
-      let rows = await readFile(file);
-
-      rows = rows.map(function(r){
-        return {
-          ...r,
-          PROJEK: getFirst(r,['PROJEK','Projek','NAMA PROJEK','NAMA_PROJEK','PROJECT']) || project,
-          JENIS: getFirst(r,['JENIS','Jenis','JENIS RUMAH','JENIS_RUMAH','TYPE','KATEGORI']) || type
-        };
-      });
-
-      const invalid = rows.filter(function(r){
-        return !String(r.PROJEK || '').trim() || !String(r.JENIS || '').trim();
-      }).length;
-
-      if(invalid){
-        throw new Error('Dataset Projek '+card.dataset.id+' mempunyai '+invalid+' rekod tanpa Projek/Jenis. Isi Nama Projek dan Jenis Rumah pada kad tersebut.');
+      if(!project){
+        throw new Error('Nama Projek wajib diisi untuk Dataset Projek '+card.dataset.id+'.');
       }
 
-      allRows = allRows.concat(rows);
+      toast('Membaca Dataset Projek '+card.dataset.id+'...','info');
+
+      const parsed = await readApplicantFileSmart(file, project, type);
+      const rows = parsed.rows;
+
+      if(!rows.length){
+        throw new Error('Tiada rekod pemohon sah dijumpai dalam '+file.name+'.');
+      }
+
+      totalRead += rows.length;
+      totalInvalid += parsed.invalidRows || 0;
+
+      // Hantar secara batch kecil supaya fail besar / banyak projek lebih stabil.
+      const chunkSize = 400;
+      for(let i=0;i<rows.length;i+=chunkSize){
+        const chunk = rows.slice(i,i+chunkSize);
+        toast(
+          'Dataset '+card.dataset.id+': menyimpan '+
+          Math.min(i+chunk.length,rows.length)+' / '+rows.length+' rekod...',
+          'info'
+        );
+
+        const d = await api({
+          action:'importApplicants',
+          rows:chunk,
+          source:'FAIL_PELBAGAI_PROJEK'
+        });
+
+        totalImported += Number(d.imported || 0);
+        totalDuplicate += Number(d.duplicates || 0);
+        totalInvalid += Number(d.invalid || 0);
+        lastCross = Number(d.crossProjectCount || 0);
+        lastSame = Number(d.sameProjectCount || 0);
+      }
+
+      processedFiles++;
     }
 
-    if(!fileCount){
-      throw new Error('Pilih sekurang-kurangnya satu fail projek.');
-    }
-
-    if(!allRows.length){
-      throw new Error('Tiada rekod dijumpai dalam fail.');
-    }
-
-    if(!confirm('Import '+allRows.length+' rekod daripada '+fileCount+' fail/dataset?')) return;
-
-    toast('Sedang mengimport semua projek dan membuat semakan pertindihan...','info');
-
-    const d = await api({
-      action:'importApplicants',
-      rows:allRows,
-      source:'FAIL_PELBAGAI_PROJEK'
-    });
-
-    toast('Siap: '+d.imported+' rekod import, '+d.skipped+' skip. Pertindihan antara projek: '+d.crossProjectCount+'.','good');
+    toast(
+      'Siap: '+processedFiles+' fail diproses · '+
+      totalImported+' rekod disimpan · '+
+      totalDuplicate+' duplikasi · '+
+      totalInvalid+' tidak lengkap · '+
+      lastCross+' pertindihan antara projek.',
+      'good'
+    );
 
     await loadDashboard();
     await loadProjectFilters();
@@ -664,6 +707,123 @@ async function saveManualRows(){
 /* =========================================================
    FILE READER
 ========================================================= */
+
+
+async function readApplicantFileSmart(file, defaultProject, defaultType){
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf,{type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const matrix = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+
+  if(!matrix.length){
+    return {rows:[], invalidRows:0};
+  }
+
+  const maxScan = Math.min(matrix.length,40);
+  let headerIndex = -1;
+  let mapping = null;
+
+  for(let i=0;i<maxScan;i++){
+    const candidate = detectApplicantColumns(matrix[i] || []);
+    if(candidate.name >= 0 && candidate.ic >= 0){
+      headerIndex = i;
+      mapping = candidate;
+      break;
+    }
+  }
+
+  if(headerIndex < 0 || !mapping){
+    const preview = (matrix[0] || []).slice(0,10).map(x=>String(x)).join(' | ');
+    throw new Error(
+      'Header Nama dan No. KP tidak dapat dikenal pasti dalam fail "'+file.name+'". '+
+      'Antara header yang disokong: NAMA/NAMA PEMOHON/NAMA PENUH dan NO KP/NO KAD PENGENALAN/IC/MYKAD. '+
+      'Baris pertama dikesan: '+preview
+    );
+  }
+
+  const rows = [];
+  let invalidRows = 0;
+
+  for(let i=headerIndex+1;i<matrix.length;i++){
+    const r = matrix[i] || [];
+    const name = cellText(r[mapping.name]);
+    const ic = cellText(r[mapping.ic]);
+
+    // Abaikan baris kosong / tajuk kecil.
+    if(!name && !ic) continue;
+
+    const serial = mapping.serial >= 0 ? cellText(r[mapping.serial]) : '';
+    const fileProject = mapping.project >= 0 ? cellText(r[mapping.project]) : '';
+    const fileType = mapping.type >= 0 ? cellText(r[mapping.type]) : '';
+
+    const project = String(defaultProject || fileProject || '').trim();
+    const type = String(defaultType || fileType || 'TIDAK DINYATAKAN').trim();
+
+    if(!name || !ic || !project){
+      invalidRows++;
+      continue;
+    }
+
+    rows.push({
+      NAMA:name,
+      NO_KP:ic,
+      NO_SIRI:serial,
+      PROJEK:project,
+      JENIS:type || 'TIDAK DINYATAKAN'
+    });
+  }
+
+  return {rows, invalidRows, headerRow:headerIndex+1};
+}
+
+function detectApplicantColumns(headers){
+  const keys = headers.map(normalizeHeaderClient);
+  return {
+    name: findHeaderIndex(keys,[
+      'NAMA','NAMAPEMOHON','NAMAPENUH','NAMAPENUHPEMOHON','PEMOHON','NAME','APPLICANTNAME'
+    ],['NAMA']),
+    ic: findHeaderIndex(keys,[
+      'NOKP','NOKADPENGENALAN','KADPENGENALAN','NOIC','IC','MYKAD','NOMYKAD','NOKPPEMOHON','IDENTITYCARD'
+    ],['KADPENGENALAN','MYKAD']),
+    serial: findHeaderIndex(keys,[
+      'NOSIRI','SIRI','NOMBORSIRI','SERIAL','SERIALNO','NOFAIL','NOMBORFAIL'
+    ],['SIRI']),
+    project: findHeaderIndex(keys,[
+      'PROJEK','NAMAPROJEK','PROJECT','PROJECTNAME'
+    ],['PROJEK']),
+    type: findHeaderIndex(keys,[
+      'JENIS','JENISRUMAH','TYPE','KATEGORI','KATEGORIRUMAH'
+    ],['JENIS','KATEGORI'])
+  };
+}
+
+function findHeaderIndex(keys, exacts, contains){
+  for(const x of exacts){
+    const i = keys.indexOf(x);
+    if(i >= 0) return i;
+  }
+  for(let i=0;i<keys.length;i++){
+    for(const x of contains){
+      if(keys[i] && keys[i].includes(x)) return i;
+    }
+  }
+  return -1;
+}
+
+function normalizeHeaderClient(v){
+  return String(v == null ? '' : v)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g,'');
+}
+
+function cellText(v){
+  if(v == null) return '';
+  if(typeof v === 'number'){
+    // 12 digit No. KP selamat sebagai integer dalam Excel/JS.
+    return String(Math.trunc(v));
+  }
+  return String(v).trim();
+}
 
 async function readFile(file){
   const buf = await file.arrayBuffer();
