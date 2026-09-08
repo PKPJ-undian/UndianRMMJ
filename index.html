@@ -293,10 +293,10 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 ========================================================= */
 
 const DEFAULT_API_URL =
-'https://script.google.com/macros/s/AKfycbytPgDoAIc--5dDegpvHbvG9OtGZBYlm3WkWfjGJOEt5DqOhWmZdKjZKoBZNriDB0vRKg/exec';
+'https://script.google.com/macros/s/AKfycbyP0JBhL64Ymr_cjtrYY_A2yQ3weyx6AnWaOlJ017c/exec';
 
 const DEFAULT_API_KEY =
-'7e506f981a924adb9aca8016c23d9d8c5626525cfc224107';
+'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -311,8 +311,12 @@ window.addEventListener('DOMContentLoaded', async function(){
   bindNav();
   bindTabs();
 
-  state.apiUrl = localStorage.getItem('stu_api_url') || DEFAULT_API_URL;
-  state.apiKey = localStorage.getItem('stu_api_key') || DEFAULT_API_KEY;
+  state.apiUrl = DEFAULT_API_URL;
+  state.apiKey = DEFAULT_API_KEY;
+
+  // Pastikan browser tidak menggunakan API lama yang pernah disimpan.
+  localStorage.setItem('stu_api_url', DEFAULT_API_URL);
+  localStorage.setItem('stu_api_key', DEFAULT_API_KEY);
 
   document.getElementById('apiUrl').value = state.apiUrl;
   document.getElementById('apiKey').value = state.apiKey;
