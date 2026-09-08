@@ -9,263 +9,61 @@
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,Segoe UI,Arial,sans-serif;
-  background:#f4f7fb;
-  color:#13233f
-}
-.app{
-  display:grid;
-  grid-template-columns:250px 1fr;
-  min-height:100vh
-}
-.sidebar{
-  background:linear-gradient(180deg,#082451,#0c376f);
-  color:#fff;
-  padding:24px 18px;
-  position:sticky;
-  top:0;
-  height:100vh
-}
-.brand{
-  font-size:24px;
-  font-weight:800;
-  line-height:1.05;
-  margin-bottom:4px
-}
-.sub{
-  font-size:12px;
-  opacity:.75;
-  margin-bottom:28px
-}
-.nav button{
-  width:100%;
-  border:0;
-  background:transparent;
-  color:#dce8ff;
-  text-align:left;
-  padding:12px 14px;
-  border-radius:10px;
-  margin:4px 0;
-  cursor:pointer;
-  font-weight:650
-}
-.nav button:hover,
-.nav button.active{
-  background:#1478ff;
-  color:#fff
-}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#13233f}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#082451,#0c376f);color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh}
+.brand{font-size:24px;font-weight:800;line-height:1.05;margin-bottom:4px}
+.sub{font-size:12px;opacity:.78;margin-bottom:28px}
+.nav button{width:100%;border:0;background:transparent;color:#dce8ff;text-align:left;padding:12px 14px;border-radius:10px;margin:4px 0;cursor:pointer;font-weight:650}
+.nav button:hover,.nav button.active{background:#1478ff;color:#fff}
 .main{padding:26px}
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  align-items:center;
-  margin-bottom:20px
-}
-.title h1{margin:0;font-size:28px}
-.title p{margin:5px 0 0;color:#6d7b91}
-.status{
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
-  background:#fff3cd;
-  color:#6d5200;
-  border:1px solid #ffe69c
-}
-.status.ok{
-  background:#dff8e9;
-  color:#12633a;
-  border-color:#b7ebca
-}
-.page{display:none}
-.page.active{display:block}
-.cards{
-  display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:14px;
-  margin-bottom:18px
-}
-.card{
-  background:#fff;
-  border:1px solid #e4eaf2;
-  border-radius:16px;
-  padding:18px;
-  box-shadow:0 8px 26px rgba(20,48,88,.06)
-}
-.metric{font-size:30px;font-weight:800;margin-top:8px}
-.label{font-size:12px;color:#708096}
-.card.blue{background:#edf5ff}
-.card.green{background:#ebfbf2}
-.card.orange{background:#fff6e9}
-.card.purple{background:#f5efff}
-.card.red{background:#fff0f1}
-.panel{
-  background:#fff;
-  border:1px solid #e4eaf2;
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:16px;
-  box-shadow:0 8px 26px rgba(20,48,88,.06)
-}
-.panel h2{margin:0 0 4px;font-size:20px}
-.panel p{margin:0 0 16px;color:#6f7c90;font-size:13px}
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px
-}
-.grid3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px
-}
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:6px
-}
-.field label{
-  font-size:12px;
-  font-weight:700
-}
-.field input,
-.field select{
-  width:100%;
-  padding:11px 12px;
-  border:1px solid #d6deea;
-  border-radius:10px;
-  background:#fff;
-  color:#22324c
-}
-.btn{
-  border:0;
-  border-radius:10px;
-  padding:11px 15px;
-  font-weight:750;
-  cursor:pointer
-}
-.btn.primary{background:#1478ff;color:#fff}
-.btn.green{background:#13a564;color:#fff}
-.btn.orange{background:#f2a222;color:#fff}
-.btn.gray{background:#edf1f6;color:#23344e}
-.btn.danger{background:#e84f5f;color:#fff}
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:12px
-}
-.drop{
-  border:2px dashed #bdd0e8;
-  border-radius:14px;
-  padding:26px;
-  text-align:center;
-  background:#fafdff
-}
-.drop input{margin-top:12px}
-.notice{
-  padding:12px 14px;
-  border-radius:10px;
-  margin:12px 0;
-  font-size:13px
-}
-.notice.info{background:#eaf4ff;color:#144f8d}
-.notice.good{background:#e9f9f0;color:#17633f}
-.notice.bad{background:#fff0f1;color:#8c2630}
-.tablewrap{
-  overflow:auto;
-  border:1px solid #e6ebf2;
-  border-radius:12px
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:12px
-}
-th,td{
-  padding:10px 12px;
-  border-bottom:1px solid #edf1f5;
-  text-align:left;
-  white-space:nowrap
-}
-th{
-  background:#f4f7fb;
-  color:#394960;
-  position:sticky;
-  top:0
-}
-.badge{
-  display:inline-block;
-  padding:5px 8px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:750
-}
-.badge.red{background:#ffe4e7;color:#b22132}
-.badge.green{background:#dff8e9;color:#177044}
-.badge.orange{background:#fff0d6;color:#9b5d00}
-.badge.blue{background:#e3efff;color:#1859a8}
-.projectbox{
-  border:1px solid #e3e9f1;
-  border-radius:12px;
-  padding:14px;
-  margin-bottom:10px
-}
-.projectbox h3{margin:0 0 10px}
-.typechips{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap
-}
-.chip{
-  padding:7px 10px;
-  border-radius:999px;
-  background:#eef3f8;
-  font-size:12px
-}
-.footer{
-  font-size:11px;
-  color:#8b97a8;
-  margin-top:22px
-}
-.muted{color:#7d8898}
-.apiBox{max-width:760px}
-
-@media(max-width:1100px){
-  .cards{grid-template-columns:repeat(2,1fr)}
-  .grid2,.grid3{grid-template-columns:1fr}
-  .app{grid-template-columns:1fr}
-  .sidebar{position:relative;height:auto}
-  .nav{display:flex;overflow:auto;gap:6px}
-  .nav button{min-width:max-content}
-  .main{padding:16px}
-}
+.topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}
+.title h1{margin:0;font-size:28px}.title p{margin:5px 0 0;color:#6d7b91}
+.status{padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;background:#fff3cd;color:#6d5200;border:1px solid #ffe69c}
+.status.ok{background:#dff8e9;color:#12633a;border-color:#b7ebca}
+.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.card{background:#fff;border:1px solid #e4eaf2;border-radius:16px;padding:17px;box-shadow:0 8px 26px rgba(20,48,88,.06)}
+.metric{font-size:28px;font-weight:800;margin-top:8px}.label{font-size:12px;color:#708096}
+.card.blue{background:#edf5ff}.card.green{background:#ebfbf2}.card.orange{background:#fff6e9}.card.purple{background:#f5efff}.card.red{background:#fff0f1}.card.cyan{background:#ebfbff}
+.panel{background:#fff;border:1px solid #e4eaf2;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 8px 26px rgba(20,48,88,.06)}
+.panel h2{margin:0 0 4px;font-size:20px}.panel p{margin:0 0 16px;color:#6f7c90;font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid5{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;font-weight:700}
+.field input,.field select{width:100%;padding:11px 12px;border:1px solid #d6deea;border-radius:10px;background:#fff;color:#22324c}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer}.btn.primary{background:#1478ff;color:#fff}.btn.green{background:#13a564;color:#fff}.btn.orange{background:#f2a222;color:#fff}.btn.gray{background:#edf1f6;color:#23344e}.btn.danger{background:#e84f5f;color:#fff}.btn.small{padding:8px 11px;font-size:12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.notice{padding:12px 14px;border-radius:10px;margin:12px 0;font-size:13px}.notice.info{background:#eaf4ff;color:#144f8d}.notice.good{background:#e9f9f0;color:#17633f}.notice.warn{background:#fff7e7;color:#865d12}.notice.bad{background:#fff0f1;color:#8c2630}
+.tablewrap{overflow:auto;border:1px solid #e6ebf2;border-radius:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px 12px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}th{background:#f4f7fb;color:#394960;position:sticky;top:0}
+.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750}.badge.red{background:#ffe4e7;color:#b22132}.badge.green{background:#dff8e9;color:#177044}.badge.orange{background:#fff0d6;color:#9b5d00}.badge.blue{background:#e3efff;color:#1859a8}.badge.purple{background:#eee4ff;color:#6a3ab2}
+.projectbox{border:1px solid #e3e9f1;border-radius:12px;padding:14px;margin-bottom:10px}.projectbox h3{margin:0 0 10px}.typechips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef3f8;font-size:12px}
+.dataset-card{border:1px solid #dce6f2;border-radius:14px;padding:14px;margin:12px 0;background:#fbfdff}.dataset-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.dataset-title{font-weight:800}.fileline{border:2px dashed #bdd0e8;border-radius:12px;padding:16px;background:#fafdff;margin-top:12px}.fileline input{width:100%}
+.tabs{display:flex;gap:8px;margin-bottom:14px}.tabbtn{border:1px solid #dce5f1;background:#f7f9fc;padding:10px 14px;border-radius:10px;font-weight:750;cursor:pointer}.tabbtn.active{background:#1478ff;color:#fff;border-color:#1478ff}.tabcontent{display:none}.tabcontent.active{display:block}
+.checkgrid{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.checkchip{display:flex;align-items:center;gap:7px;border:1px solid #dce5ef;background:#f9fbfe;border-radius:999px;padding:8px 11px;font-size:12px}
+.summarybar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}.summarypill{background:#f1f5fa;border-radius:10px;padding:9px 11px;font-size:12px;font-weight:700}
+.footer{font-size:11px;color:#8b97a8;margin-top:22px}.muted{color:#7d8898}.apiBox{max-width:760px}
+@media(max-width:1250px){.cards{grid-template-columns:repeat(3,1fr)}.grid5{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid5{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
 <aside class="sidebar">
+  <div class="brand">STU-RMMJ</div>
+  <div class="sub">Sistem Tapisan Undian RMMJ</div>
 
-<div class="brand">STU-RMMJ</div>
-<div class="sub">Sistem Tapisan Undian RMMJ</div>
-
-<div class="nav">
-  <button class="active" data-page="dashboard">Dashboard</button>
-  <button data-page="pemohon">Pengurusan Data</button>
-  <button data-page="watchlist">Semakan Pemohon</button>
-  <button data-page="pemenang">Rekod Pemenang</button>
-  <button data-page="ditapis">Senarai Ditapis</button>
-  <button data-page="bersih">Senarai Bersih</button>
-  <button data-page="audit">Laporan & Audit</button>
-  <button data-page="tetapan">Tetapan API</button>
-</div>
-
+  <div class="nav">
+    <button class="active" data-page="dashboard">Dashboard</button>
+    <button data-page="pemohon">Pengurusan Data</button>
+    <button data-page="watchlist">Semakan Pemohon</button>
+    <button data-page="pemenang">Rekod Pemenang</button>
+    <button data-page="ditapis">Senarai Ditapis</button>
+    <button data-page="bersih">Senarai Bersih</button>
+    <button data-page="audit">Laporan & Audit</button>
+    <button data-page="tetapan">Tetapan API</button>
+  </div>
 </aside>
 
 <main class="main">
@@ -273,324 +71,225 @@ th{
 <div class="topbar">
   <div class="title">
     <h1 id="pageTitle">Dashboard</h1>
-    <p>Tapisan pantas pemohon berbilang jenis dalam projek yang sama.</p>
+    <p>Tapisan pantas pemohon berbilang jenis dan pertindihan pemohon antara projek.</p>
   </div>
-
   <div id="apiStatus" class="status">API belum disambung</div>
 </div>
 
 <section id="dashboard" class="page active">
-
-<div class="cards">
-  <div class="card blue">
-    <div class="label">Jumlah Projek</div>
-    <div class="metric" id="mProjects">0</div>
+  <div class="cards">
+    <div class="card blue"><div class="label">Jumlah Projek</div><div class="metric" id="mProjects">0</div></div>
+    <div class="card green"><div class="label">Jumlah Pemohon</div><div class="metric" id="mApplicants">0</div></div>
+    <div class="card orange"><div class="label">Jenis Berganda Projek Sama</div><div class="metric" id="mSameProject">0</div></div>
+    <div class="card cyan"><div class="label">Pemohon Antara Projek</div><div class="metric" id="mCrossProject">0</div></div>
+    <div class="card purple"><div class="label">Pemenang Direkod</div><div class="metric" id="mWinners">0</div></div>
+    <div class="card red"><div class="label">Jumlah Ditapis</div><div class="metric" id="mFiltered">0</div></div>
   </div>
 
-  <div class="card green">
-    <div class="label">Jumlah Rekod Pemohon</div>
-    <div class="metric" id="mApplicants">0</div>
+  <div class="panel">
+    <h2>Status Projek & Jenis Rumah</h2>
+    <p>Ringkasan semua data yang telah dimasukkan ke sistem.</p>
+    <div id="projectSummary"><div class="muted">Belum ada data.</div></div>
   </div>
-
-  <div class="card orange">
-    <div class="label">Pemohon Berbilang Jenis</div>
-    <div class="metric" id="mWatch">0</div>
-  </div>
-
-  <div class="card purple">
-    <div class="label">Pemenang Direkod</div>
-    <div class="metric" id="mWinners">0</div>
-  </div>
-
-  <div class="card red">
-    <div class="label">Jumlah Ditapis</div>
-    <div class="metric" id="mFiltered">0</div>
-  </div>
-</div>
-
-<div class="panel">
-  <h2>Status Projek & Jenis Rumah</h2>
-  <p>Ringkasan rekod pemohon mengikut projek dan jenis rumah.</p>
-
-  <div id="projectSummary">
-    <div class="muted">Belum ada data.</div>
-  </div>
-</div>
-
 </section>
 
 <section id="pemohon" class="page">
 
-<div class="panel">
+  <div class="panel">
+    <h2>Masukkan Data Pemohon</h2>
+    <p>Boleh guna beberapa fail projek serentak atau masukkan pemohon secara manual tanpa fail.</p>
 
-<h2>Import Senarai Pemohon</h2>
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="fileTab">Upload Fail / Banyak Projek</button>
+      <button class="tabbtn" data-tab="manualTab">Input Manual</button>
+    </div>
 
-<p>
-Upload Excel atau CSV daripada Sistem Perumahan PKPJ.
-Sistem akan mengenal pasti pemohon yang memohon lebih daripada satu jenis rumah bagi projek yang sama.
-</p>
+    <div id="fileTab" class="tabcontent active">
+      <div class="notice info">
+        Tambah satu dataset bagi setiap projek/jenis yang hendak dibandingkan. Sistem boleh menerima 2, 3 atau lebih projek dalam satu proses.
+      </div>
 
-<div class="notice info">
-Header minimum ialah <strong>NO KP / IC</strong> dan <strong>NAMA</strong>.
-Jika fail tidak mempunyai Projek atau Jenis, gunakan pilihan default di bawah.
-</div>
+      <div id="datasetList"></div>
 
-<div class="grid2">
+      <div class="actions">
+        <button class="btn gray" onclick="addDataset()">+ Tambah Projek Lagi</button>
+        <button class="btn primary" onclick="importAllDatasets()">Import Semua Data</button>
+      </div>
+    </div>
 
-<div class="field">
-  <label>Projek Default</label>
-  <input id="appProject" placeholder="Contoh: TAMAN MAWAR">
-</div>
+    <div id="manualTab" class="tabcontent">
+      <div class="notice info">
+        Sesuai jika data sedikit. Masukkan pemohon satu demi satu ke senarai sementara, kemudian simpan semua sekali.
+      </div>
 
-<div class="field">
-  <label>Jenis Default</label>
-  <input id="appType" placeholder="Contoh: JENIS A">
-</div>
+      <div class="grid5">
+        <div class="field"><label>Nama Pemohon</label><input id="manualName" placeholder="Contoh: AHMAD BIN ALI"></div>
+        <div class="field"><label>No. KP</label><input id="manualIc" placeholder="900101011234"></div>
+        <div class="field"><label>No. Siri</label><input id="manualSerial" placeholder="Contoh: 125"></div>
+        <div class="field"><label>Projek</label><input id="manualProject" placeholder="Contoh: TAMAN MAWAR"></div>
+        <div class="field"><label>Jenis</label><input id="manualType" placeholder="Contoh: JENIS A"></div>
+      </div>
 
-</div>
+      <div class="actions">
+        <button class="btn primary" onclick="addManualRow()">+ Tambah ke Senarai</button>
+        <button class="btn green" onclick="saveManualRows()">Simpan Semua ke Sistem</button>
+        <button class="btn danger" onclick="clearManualRows()">Kosongkan</button>
+      </div>
 
-<br>
+      <div class="summarybar">
+        <div class="summarypill">Rekod sementara: <span id="manualCount">0</span></div>
+      </div>
 
-<div class="drop">
-  <strong>Pilih fail Excel atau CSV pemohon</strong>
-  <br>
-  <input id="applicantFile" type="file" accept=".xlsx,.xls,.csv">
-</div>
+      <div id="manualPreview" class="tablewrap"></div>
+    </div>
+  </div>
 
-<div class="actions">
-  <button class="btn primary" onclick="importApplicants()">Import Pemohon</button>
-  <button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button>
-</div>
-
-</div>
-
-<div class="panel">
-  <h2>Rekod Pemohon</h2>
-  <div id="applicantTable" class="tablewrap"></div>
-</div>
-
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
+      <div>
+        <h2>Rekod Pemohon</h2>
+        <p>Semua pemohon yang telah disimpan melalui fail atau input manual.</p>
+      </div>
+      <button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button>
+    </div>
+    <div id="applicantTable" class="tablewrap"></div>
+  </div>
 </section>
 
 <section id="watchlist" class="page">
+  <div class="panel">
+    <h2>Semakan Pertindihan Pemohon</h2>
+    <p>Pilih sama ada hendak semak jenis berlainan dalam projek yang sama atau pemohon yang sama merentas beberapa projek.</p>
 
-<div class="panel">
+    <div class="grid2">
+      <div class="field">
+        <label>Jenis Semakan</label>
+        <select id="overlapMode" onchange="updateOverlapHelp()">
+          <option value="crossProject">Antara projek berbeza - Nama + No. KP sama</option>
+          <option value="sameProject">Projek sama - Jenis rumah berlainan</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Cari Nama / No. KP</label>
+        <input id="overlapSearch" placeholder="Taip nama atau No. KP">
+      </div>
+    </div>
 
-<h2>Semakan Pemohon Berbilang Jenis</h2>
+    <div id="overlapHelp" class="notice info">
+      Sistem akan mencari pemohon dengan Nama + No. KP yang sama yang muncul dalam 2 atau lebih projek.
+    </div>
 
-<p>
-Sistem mengenal pasti No. KP yang sama dalam projek yang sama tetapi mempunyai lebih daripada satu jenis rumah.
-</p>
+    <label style="font-size:12px;font-weight:800">Pilih projek untuk dibandingkan (boleh pilih lebih daripada satu)</label>
+    <div id="projectFilters" class="checkgrid">
+      <span class="muted">Belum ada projek.</span>
+    </div>
 
-<div class="actions">
-  <button class="btn primary" onclick="rebuildWatchlist()">Proses Semakan Semula</button>
-  <button class="btn gray" onclick="loadData('watchlist','watchTable')">Muat Semula</button>
-</div>
+    <div class="actions">
+      <button class="btn orange" onclick="refreshWatchlist()">Semak Semula Semua Data</button>
+      <button class="btn primary" onclick="runOverlapSearch()">Cari Pertindihan</button>
+      <button class="btn green" onclick="downloadTableCsv('overlapTable','semakan_pertindihan.csv')">Muat Turun CSV</button>
+    </div>
+  </div>
 
-</div>
-
-<div class="panel">
-  <div id="watchTable" class="tablewrap"></div>
-</div>
-
+  <div class="panel">
+    <div id="overlapSummary" class="notice good">Belum dibuat semakan.</div>
+    <div id="overlapTable" class="tablewrap"></div>
+  </div>
 </section>
 
 <section id="pemenang" class="page">
+  <div class="panel">
+    <h2>Import Pemenang Sesi Undian</h2>
+    <p>Selepas sesuatu sesi undian selesai, upload senarai pemenang. Auto-tapisan sedia ada kekal untuk jenis lain dalam projek yang sama.</p>
 
-<div class="panel">
+    <div class="notice warn">
+      Semakan antara projek pada versi ini ialah untuk mengenal pasti pertindihan. Sistem tidak akan auto-batalkan projek lain sehingga peraturan kelayakan antara projek disahkan.
+    </div>
 
-<h2>Import Pemenang Sesi Undian</h2>
+    <div class="grid3">
+      <div class="field"><label>Projek</label><input id="winnerProject" placeholder="Contoh: TAMAN MAWAR"></div>
+      <div class="field"><label>Jenis Rumah</label><input id="winnerType" placeholder="Contoh: JENIS A"></div>
+      <div class="field"><label>Sesi Undian</label><input id="winnerSession" placeholder="Contoh: 9.00 PAGI"></div>
+    </div>
 
-<p>
-Selepas sesuatu sesi undian selesai, upload senarai pemenang.
-Sistem akan terus menapis permohonan jenis lain dalam projek yang sama.
-</p>
+    <div class="fileline">
+      <strong>Pilih fail Excel atau CSV pemenang</strong><br><br>
+      <input id="winnerFile" type="file" accept=".xlsx,.xls,.csv">
+    </div>
 
-<div class="notice good">
-<strong>Auto Filter aktif.</strong>
-Contoh: pemenang Jenis A akan terus ditapis daripada Jenis B, C atau D bagi projek yang sama.
-</div>
+    <div class="actions">
+      <button class="btn green" onclick="importWinners()">Import Pemenang & Tapis Automatik</button>
+      <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula Pemenang</button>
+    </div>
+  </div>
 
-<div class="grid3">
-
-<div class="field">
-  <label>Projek</label>
-  <input id="winnerProject" placeholder="Contoh: TAMAN MAWAR">
-</div>
-
-<div class="field">
-  <label>Jenis Rumah</label>
-  <input id="winnerType" placeholder="Contoh: JENIS A">
-</div>
-
-<div class="field">
-  <label>Sesi Undian</label>
-  <input id="winnerSession" placeholder="Contoh: 9.00 PAGI">
-</div>
-
-</div>
-
-<br>
-
-<div class="drop">
-  <strong>Pilih fail Excel atau CSV pemenang</strong>
-  <br>
-  <input id="winnerFile" type="file" accept=".xlsx,.xls,.csv">
-</div>
-
-<div class="actions">
-  <button class="btn green" onclick="importWinners()">Import Pemenang & Tapis Automatik</button>
-  <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula Pemenang</button>
-</div>
-
-</div>
-
-<div class="panel">
-  <h2>Rekod Pemenang</h2>
-  <div id="winnerTable" class="tablewrap"></div>
-</div>
-
+  <div class="panel"><h2>Rekod Pemenang</h2><div id="winnerTable" class="tablewrap"></div></div>
 </section>
 
 <section id="ditapis" class="page">
-
-<div class="panel">
-
-<h2>Hasil Tapisan</h2>
-
-<p>
-Pemohon yang tidak lagi layak kerana telah berjaya dalam jenis rumah lain bagi projek yang sama.
-</p>
-
-<div class="actions">
-  <button class="btn primary" onclick="loadData('filtered','filteredTable')">Muat Semula</button>
-  <button class="btn green" onclick="downloadTableCsv('filteredTable','senarai_ditapis.csv')">Muat Turun CSV</button>
-</div>
-
-</div>
-
-<div class="panel">
-  <div id="filteredTable" class="tablewrap"></div>
-</div>
-
+  <div class="panel">
+    <h2>Hasil Tapisan</h2>
+    <p>Pemohon yang tidak lagi layak bagi jenis lain dalam projek yang sama kerana telah berjaya dalam sesi terdahulu.</p>
+    <div class="actions">
+      <button class="btn primary" onclick="loadData('filtered','filteredTable')">Muat Semula</button>
+      <button class="btn green" onclick="downloadTableCsv('filteredTable','senarai_ditapis.csv')">Muat Turun CSV</button>
+    </div>
+  </div>
+  <div class="panel"><div id="filteredTable" class="tablewrap"></div></div>
 </section>
 
 <section id="bersih" class="page">
-
-<div class="panel">
-
-<h2>Jana Senarai Bersih untuk Undian Seterusnya</h2>
-
-<p>
-Masukkan projek dan jenis rumah.
-Sistem akan mengeluarkan hanya pemohon yang masih layak.
-</p>
-
-<div class="grid2">
-
-<div class="field">
-  <label>Projek</label>
-  <input id="cleanProject" placeholder="Contoh: TAMAN MAWAR">
-</div>
-
-<div class="field">
-  <label>Jenis Rumah</label>
-  <input id="cleanType" placeholder="Contoh: JENIS B">
-</div>
-
-</div>
-
-<div class="actions">
-  <button class="btn primary" onclick="generateCleanList()">Jana Senarai Bersih</button>
-  <button class="btn green" onclick="downloadTableCsv('cleanTable','senarai_bersih.csv')">Muat Turun CSV</button>
-</div>
-
-</div>
-
-<div class="panel">
-
-<div id="cleanSummary" class="notice info">
-Belum dijana.
-</div>
-
-<div id="cleanTable" class="tablewrap"></div>
-
-</div>
-
+  <div class="panel">
+    <h2>Jana Senarai Bersih untuk Undian Seterusnya</h2>
+    <p>Masukkan projek dan jenis rumah. Sistem mengeluarkan hanya pemohon yang masih berstatus layak.</p>
+    <div class="grid2">
+      <div class="field"><label>Projek</label><input id="cleanProject" placeholder="Contoh: TAMAN MAWAR"></div>
+      <div class="field"><label>Jenis Rumah</label><input id="cleanType" placeholder="Contoh: JENIS B"></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="generateCleanList()">Jana Senarai Bersih</button>
+      <button class="btn green" onclick="downloadTableCsv('cleanTable','senarai_bersih.csv')">Muat Turun CSV</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div id="cleanSummary" class="notice info">Belum dijana.</div>
+    <div id="cleanTable" class="tablewrap"></div>
+  </div>
 </section>
 
 <section id="audit" class="page">
-
-<div class="panel">
-
-<h2>Laporan & Audit Trail</h2>
-
-<p>
-Rekod import, semakan dan proses tapisan.
-</p>
-
-<div class="actions">
-  <button class="btn primary" onclick="loadData('audit','auditTable')">Muat Semula Audit</button>
-</div>
-
-</div>
-
-<div class="panel">
-  <div id="auditTable" class="tablewrap"></div>
-</div>
-
+  <div class="panel">
+    <h2>Laporan & Audit Trail</h2>
+    <p>Rekod import fail, input manual, semakan pertindihan dan proses tapisan.</p>
+    <button class="btn primary" onclick="loadData('audit','auditTable')">Muat Semula Audit</button>
+  </div>
+  <div class="panel"><div id="auditTable" class="tablewrap"></div></div>
 </section>
 
 <section id="tetapan" class="page">
-
-<div class="panel apiBox">
-
-<h2>Tetapan API</h2>
-
-<p>
-API Google Apps Script telah dimasukkan secara terus.
-Tuan masih boleh mengubahnya dari halaman ini sekiranya perlu.
-</p>
-
-<div class="field">
-  <label>Google Apps Script Web App URL</label>
-  <input id="apiUrl">
-</div>
-
-<br>
-
-<div class="field">
-  <label>API Key</label>
-  <input id="apiKey" type="password">
-</div>
-
-<div class="actions">
-  <button class="btn primary" onclick="saveApiSettings()">Simpan & Uji Sambungan</button>
-  <button class="btn danger" onclick="resetToDefaultApi()">Kembali ke API Default</button>
-</div>
-
-<div class="notice info">
-API Key dimasukkan dalam frontend untuk memudahkan prototaip.
-Untuk penggunaan rasmi yang melibatkan data sebenar No. KP, elok gunakan authentication yang lebih selamat.
-</div>
-
-</div>
-
+  <div class="panel apiBox">
+    <h2>Tetapan API</h2>
+    <p>API Google Apps Script telah dimasukkan secara terus. Boleh diubah jika deployment bertukar.</p>
+    <div class="field"><label>Google Apps Script Web App URL</label><input id="apiUrl"></div><br>
+    <div class="field"><label>API Key</label><input id="apiKey" type="password"></div>
+    <div class="actions">
+      <button class="btn primary" onclick="saveApiSettings()">Simpan & Uji Sambungan</button>
+      <button class="btn danger" onclick="resetToDefaultApi()">Kembali ke API Default</button>
+    </div>
+    <div class="notice warn">Untuk penggunaan rasmi dengan No. KP sebenar, API key dalam GitHub Pages boleh dilihat melalui source code. Gunakan authentication lebih selamat sebelum produksi.</div>
+  </div>
 </section>
 
 <div id="toast"></div>
-
-<div class="footer">
-STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.
-</div>
+<div class="footer">STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
 
 </main>
-
 </div>
 
 <script>
 
 /* =========================================================
-   API DEFAULT - SUDAH DIMASUKKAN
+   API CONFIG
 ========================================================= */
 
 const DEFAULT_API_URL =
@@ -599,360 +298,144 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 '7e506f981a924adb9aca8016c23d9d8c5626525cfc224107';
 
-
 const state = {
   apiUrl: DEFAULT_API_URL,
   apiKey: DEFAULT_API_KEY,
-  lastTables: {}
+  lastTables: {},
+  manualRows: [],
+  datasetCounter: 0
 };
 
 
-/* =========================================================
-   LOAD SISTEM
-========================================================= */
-
-window.addEventListener(
-'DOMContentLoaded',
-async function(){
-
+window.addEventListener('DOMContentLoaded', async function(){
   bindNav();
+  bindTabs();
 
-  state.apiUrl =
-    localStorage.getItem('stu_api_url')
-    || DEFAULT_API_URL;
+  state.apiUrl = localStorage.getItem('stu_api_url') || DEFAULT_API_URL;
+  state.apiKey = localStorage.getItem('stu_api_key') || DEFAULT_API_KEY;
 
-  state.apiKey =
-    localStorage.getItem('stu_api_key')
-    || DEFAULT_API_KEY;
+  document.getElementById('apiUrl').value = state.apiUrl;
+  document.getElementById('apiKey').value = state.apiKey;
 
-  const urlInput =
-    document.getElementById('apiUrl');
+  addDataset();
+  addDataset();
+  renderManualPreview();
 
-  const keyInput =
-    document.getElementById('apiKey');
-
-  if(urlInput){
-    urlInput.value = state.apiUrl;
-  }
-
-  if(keyInput){
-    keyInput.value = state.apiKey;
-  }
-
-  if(
-    state.apiUrl &&
-    state.apiKey
-  ){
+  if(state.apiUrl && state.apiKey){
     await testApi(false);
     await loadDashboard();
+    await loadProjectFilters();
   }
-
-}
-);
+});
 
 
 /* =========================================================
-   NAVIGATION
+   NAV / TABS
 ========================================================= */
 
 function bindNav(){
-
-  document
-  .querySelectorAll('.nav button')
-  .forEach(function(btn){
-
-    btn.addEventListener(
-    'click',
-    function(){
-
-      document
-      .querySelectorAll('.nav button')
-      .forEach(function(b){
-        b.classList.remove('active');
-      });
-
-      document
-      .querySelectorAll('.page')
-      .forEach(function(p){
-        p.classList.remove('active');
-      });
+  document.querySelectorAll('.nav button').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('active')});
+      document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
 
       btn.classList.add('active');
+      document.getElementById(btn.dataset.page).classList.add('active');
+      document.getElementById('pageTitle').textContent = btn.textContent;
 
-      document
-      .getElementById(btn.dataset.page)
-      .classList.add('active');
-
-      document
-      .getElementById('pageTitle')
-      .textContent =
-      btn.textContent;
-
-      const page =
-        btn.dataset.page;
-
-      if(page === 'dashboard'){
-        loadDashboard();
-      }
-
-      if(page === 'pemohon'){
-        loadData(
-          'applicants',
-          'applicantTable'
-        );
-      }
-
-      if(page === 'watchlist'){
-        loadData(
-          'watchlist',
-          'watchTable'
-        );
-      }
-
-      if(page === 'pemenang'){
-        loadData(
-          'winners',
-          'winnerTable'
-        );
-      }
-
-      if(page === 'ditapis'){
-        loadData(
-          'filtered',
-          'filteredTable'
-        );
-      }
-
-      if(page === 'audit'){
-        loadData(
-          'audit',
-          'auditTable'
-        );
-      }
-
-    }
-    );
-
+      const page = btn.dataset.page;
+      if(page === 'dashboard') await loadDashboard();
+      if(page === 'pemohon') await loadData('applicants','applicantTable');
+      if(page === 'watchlist') { await loadProjectFilters(); await runOverlapSearch(); }
+      if(page === 'pemenang') await loadData('winners','winnerTable');
+      if(page === 'ditapis') await loadData('filtered','filteredTable');
+      if(page === 'audit') await loadData('audit','auditTable');
+    });
   });
+}
 
+function bindTabs(){
+  document.querySelectorAll('.tabbtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tabbtn').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.tabcontent').forEach(function(x){x.classList.remove('active')});
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
 }
 
 
 /* =========================================================
-   API CALL
+   API
 ========================================================= */
 
 async function api(payload){
-
-  if(
-    !state.apiUrl ||
-    !state.apiKey
-  ){
-    throw new Error(
-      'API belum dikonfigurasi.'
-    );
+  if(!state.apiUrl || !state.apiKey){
+    throw new Error('API belum dikonfigurasi.');
   }
 
-  const res =
-    await fetch(
-      state.apiUrl,
-      {
-        method:'POST',
-        redirect:'follow',
-        headers:{
-          'Content-Type':
-            'text/plain;charset=utf-8'
-        },
-        body:
-          JSON.stringify({
-            ...payload,
-            key:state.apiKey
-          })
-      }
-    );
+  const res = await fetch(state.apiUrl,{
+    method:'POST',
+    redirect:'follow',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({...payload,key:state.apiKey})
+  });
 
-  const text =
-    await res.text();
-
+  const text = await res.text();
   let data;
 
-  try{
-    data = JSON.parse(text);
-  }
+  try{ data = JSON.parse(text); }
   catch(e){
-
-    console.error(
-      'RAW API RESPONSE:',
-      text
-    );
-
-    throw new Error(
-      'Respons API tidak sah. Pastikan Google Apps Script telah Deploy sebagai Web App.'
-    );
+    console.error('RAW API RESPONSE:',text);
+    throw new Error('Respons API tidak sah. Pastikan Google Apps Script telah dideploy semula.');
   }
 
   if(!data.ok){
-    throw new Error(
-      data.error ||
-      data.message ||
-      'Operasi API gagal.'
-    );
+    throw new Error(data.error || data.message || 'Operasi API gagal.');
   }
 
   return data;
 }
 
-
-/* =========================================================
-   TEST API
-========================================================= */
-
 async function testApi(show=true){
-
   try{
-
-    const data =
-      await api({
-        action:'health'
-      });
-
-    setApiStatus(
-      true,
-      (data.app || 'STU-RMMJ') +
-      ' ' +
-      (data.version || '')
-    );
-
-    if(show){
-      toast(
-        'Sambungan Google Apps Script berjaya.',
-        'good'
-      );
-    }
-
+    const data = await api({action:'health'});
+    setApiStatus(true,(data.app || 'STU-RMMJ')+' '+(data.version || ''));
+    if(show) toast('Sambungan Google Apps Script berjaya.','good');
     return true;
-
-  }
-  catch(err){
-
+  }catch(err){
     console.error(err);
-
-    setApiStatus(
-      false,
-      'API gagal'
-    );
-
-    if(show){
-      toast(
-        err.message,
-        'bad'
-      );
-    }
-
+    setApiStatus(false,'API gagal');
+    if(show) toast(err.message,'bad');
     return false;
   }
-
 }
-
-
-/* =========================================================
-   STATUS API
-========================================================= */
 
 function setApiStatus(ok,text){
-
-  const el =
-    document.getElementById(
-      'apiStatus'
-    );
-
-  el.className =
-    'status' +
-    (ok ? ' ok' : '');
-
-  el.textContent =
-    ok
-    ? 'API aktif · ' + text
-    : text;
+  const el = document.getElementById('apiStatus');
+  el.className = 'status'+(ok?' ok':'');
+  el.textContent = ok ? 'API aktif · '+text : text;
 }
-
-
-/* =========================================================
-   SIMPAN API
-========================================================= */
 
 async function saveApiSettings(){
-
-  state.apiUrl =
-    document
-    .getElementById('apiUrl')
-    .value
-    .trim();
-
-  state.apiKey =
-    document
-    .getElementById('apiKey')
-    .value
-    .trim();
-
-  localStorage.setItem(
-    'stu_api_url',
-    state.apiUrl
-  );
-
-  localStorage.setItem(
-    'stu_api_key',
-    state.apiKey
-  );
-
+  state.apiUrl = document.getElementById('apiUrl').value.trim();
+  state.apiKey = document.getElementById('apiKey').value.trim();
+  localStorage.setItem('stu_api_url',state.apiUrl);
+  localStorage.setItem('stu_api_key',state.apiKey);
   await testApi(true);
-
-  if(
-    state.apiUrl &&
-    state.apiKey
-  ){
-    await loadDashboard();
-  }
+  await loadDashboard();
+  await loadProjectFilters();
 }
 
-
-/* =========================================================
-   RESET API
-========================================================= */
-
 async function resetToDefaultApi(){
-
-  state.apiUrl =
-    DEFAULT_API_URL;
-
-  state.apiKey =
-    DEFAULT_API_KEY;
-
-  localStorage.setItem(
-    'stu_api_url',
-    state.apiUrl
-  );
-
-  localStorage.setItem(
-    'stu_api_key',
-    state.apiKey
-  );
-
-  document
-  .getElementById('apiUrl')
-  .value =
-    state.apiUrl;
-
-  document
-  .getElementById('apiKey')
-  .value =
-    state.apiKey;
-
-  toast(
-    'API default telah dipulihkan.',
-    'info'
-  );
-
+  state.apiUrl = DEFAULT_API_URL;
+  state.apiKey = DEFAULT_API_KEY;
+  localStorage.setItem('stu_api_url',state.apiUrl);
+  localStorage.setItem('stu_api_key',state.apiKey);
+  document.getElementById('apiUrl').value = state.apiUrl;
+  document.getElementById('apiKey').value = state.apiKey;
+  toast('API default telah dipulihkan.','info');
   await testApi(true);
   await loadDashboard();
 }
@@ -963,878 +446,487 @@ async function resetToDefaultApi(){
 ========================================================= */
 
 async function loadDashboard(){
-
-  if(
-    !state.apiUrl ||
-    !state.apiKey
-  ){
-    return;
-  }
+  if(!state.apiUrl || !state.apiKey) return;
 
   try{
+    const d = await api({action:'dashboard'});
+    const s = d.summary || {};
 
-    const d =
-      await api({
-        action:'dashboard'
-      });
+    document.getElementById('mProjects').textContent = s.projects || 0;
+    document.getElementById('mApplicants').textContent = s.applicants || 0;
+    document.getElementById('mSameProject').textContent = s.sameProject || 0;
+    document.getElementById('mCrossProject').textContent = s.crossProject || 0;
+    document.getElementById('mWinners').textContent = s.winners || 0;
+    document.getElementById('mFiltered').textContent = s.filtered || 0;
 
-    document
-    .getElementById('mProjects')
-    .textContent =
-      d.summary.projects || 0;
-
-    document
-    .getElementById('mApplicants')
-    .textContent =
-      d.summary.applicants || 0;
-
-    document
-    .getElementById('mWatch')
-    .textContent =
-      d.summary.watchlist || 0;
-
-    document
-    .getElementById('mWinners')
-    .textContent =
-      d.summary.winners || 0;
-
-    document
-    .getElementById('mFiltered')
-    .textContent =
-      d.summary.filtered || 0;
-
-    renderProjects(
-      d.projects || {}
-    );
-
+    renderProjects(d.projects || {});
+  }catch(err){
+    toast(err.message,'bad');
   }
-  catch(err){
-
-    toast(
-      err.message,
-      'bad'
-    );
-
-  }
-
 }
-
-
-/* =========================================================
-   PROJECT SUMMARY
-========================================================= */
 
 function renderProjects(projects){
-
-  const root =
-    document
-    .getElementById(
-      'projectSummary'
-    );
-
-  const names =
-    Object.keys(projects);
+  const root = document.getElementById('projectSummary');
+  const names = Object.keys(projects);
 
   if(!names.length){
-
-    root.innerHTML =
-      '<div class="muted">Belum ada data.</div>';
-
+    root.innerHTML = '<div class="muted">Belum ada data.</div>';
     return;
   }
 
-  root.innerHTML =
-    names
-    .map(function(p){
+  root.innerHTML = names.map(function(p){
+    const types = projects[p];
+    const chips = Object.keys(types).map(function(t){
+      const x = types[t];
+      return '<span class="chip"><b>'+esc(t)+'</b> · '+x.total+' rekod · '+x.layak+' layak · '+x.tidakLayak+' ditapis · '+x.berjaya+' berjaya</span>';
+    }).join('');
 
-      const types =
-        projects[p];
-
-      const chips =
-        Object.keys(types)
-        .map(function(t){
-
-          const x =
-            types[t];
-
-          return (
-            '<span class="chip">' +
-            '<b>' +
-            esc(t) +
-            '</b>' +
-            ' · ' +
-            x.total +
-            ' rekod' +
-            ' · ' +
-            x.layak +
-            ' layak' +
-            ' · ' +
-            x.tidakLayak +
-            ' ditapis' +
-            ' · ' +
-            x.berjaya +
-            ' berjaya' +
-            '</span>'
-          );
-
-        })
-        .join('');
-
-      return (
-        '<div class="projectbox">' +
-        '<h3>' +
-        esc(p) +
-        '</h3>' +
-        '<div class="typechips">' +
-        chips +
-        '</div>' +
-        '</div>'
-      );
-
-    })
-    .join('');
+    return '<div class="projectbox"><h3>'+esc(p)+'</h3><div class="typechips">'+chips+'</div></div>';
+  }).join('');
 }
 
 
 /* =========================================================
-   READ EXCEL / CSV
+   DATASET MULTI-PROJEK
 ========================================================= */
 
-async function readSheet(fileInputId){
+function addDataset(){
+  state.datasetCounter++;
+  const id = state.datasetCounter;
+  const root = document.getElementById('datasetList');
 
-  const input =
-    document
-    .getElementById(
-      fileInputId
-    );
+  const div = document.createElement('div');
+  div.className = 'dataset-card';
+  div.dataset.id = id;
 
-  const file =
-    input.files[0];
+  div.innerHTML =
+    '<div class="dataset-head">'+
+      '<div class="dataset-title">Dataset Projek '+id+'</div>'+
+      '<button class="btn danger small" onclick="removeDataset('+id+')">Buang</button>'+
+    '</div>'+
+    '<div class="grid2">'+
+      '<div class="field"><label>Nama Projek</label><input class="ds-project" placeholder="Contoh: TAMAN MAWAR"></div>'+
+      '<div class="field"><label>Jenis Rumah</label><input class="ds-type" placeholder="Contoh: JENIS A"></div>'+
+    '</div>'+
+    '<div class="fileline"><strong>Pilih Excel / CSV bagi dataset ini</strong><br><br><input class="ds-file" type="file" accept=".xlsx,.xls,.csv"></div>';
 
-  if(!file){
-    throw new Error(
-      'Sila pilih fail dahulu.'
-    );
-  }
-
-  const buf =
-    await file.arrayBuffer();
-
-  const wb =
-    XLSX.read(
-      buf,
-      {
-        type:'array'
-      }
-    );
-
-  const ws =
-    wb.Sheets[
-      wb.SheetNames[0]
-    ];
-
-  return XLSX
-    .utils
-    .sheet_to_json(
-      ws,
-      {
-        defval:''
-      }
-    );
+  root.appendChild(div);
 }
 
+function removeDataset(id){
+  const card = document.querySelector('.dataset-card[data-id="'+id+'"]');
+  if(card) card.remove();
+}
 
-/* =========================================================
-   IMPORT PEMOHON
-========================================================= */
-
-async function importApplicants(){
-
+async function importAllDatasets(){
   try{
+    const cards = Array.from(document.querySelectorAll('.dataset-card'));
+    let allRows = [];
+    let fileCount = 0;
 
-    let rows =
-      await readSheet(
-        'applicantFile'
-      );
+    for(const card of cards){
+      const project = card.querySelector('.ds-project').value.trim();
+      const type = card.querySelector('.ds-type').value.trim();
+      const file = card.querySelector('.ds-file').files[0];
 
-    if(!rows.length){
-      throw new Error(
-        'Fail tiada rekod.'
-      );
-    }
+      if(!file) continue;
+      fileCount++;
 
-    const project =
-      document
-      .getElementById('appProject')
-      .value
-      .trim();
+      let rows = await readFile(file);
 
-    const type =
-      document
-      .getElementById('appType')
-      .value
-      .trim();
-
-    rows =
-      rows.map(function(r){
-
+      rows = rows.map(function(r){
         return {
           ...r,
-          PROJEK:
-            r.PROJEK ||
-            r.Projek ||
-            project,
-          JENIS:
-            r.JENIS ||
-            r.Jenis ||
-            type
+          PROJEK: getFirst(r,['PROJEK','Projek','NAMA PROJEK','NAMA_PROJEK','PROJECT']) || project,
+          JENIS: getFirst(r,['JENIS','Jenis','JENIS RUMAH','JENIS_RUMAH','TYPE','KATEGORI']) || type
         };
-
       });
 
-    if(
-      !confirm(
-        'Import ' +
-        rows.length +
-        ' baris pemohon?'
-      )
-    ){
+      const invalid = rows.filter(function(r){
+        return !String(r.PROJEK || '').trim() || !String(r.JENIS || '').trim();
+      }).length;
+
+      if(invalid){
+        throw new Error('Dataset Projek '+card.dataset.id+' mempunyai '+invalid+' rekod tanpa Projek/Jenis. Isi Nama Projek dan Jenis Rumah pada kad tersebut.');
+      }
+
+      allRows = allRows.concat(rows);
+    }
+
+    if(!fileCount){
+      throw new Error('Pilih sekurang-kurangnya satu fail projek.');
+    }
+
+    if(!allRows.length){
+      throw new Error('Tiada rekod dijumpai dalam fail.');
+    }
+
+    if(!confirm('Import '+allRows.length+' rekod daripada '+fileCount+' fail/dataset?')) return;
+
+    toast('Sedang mengimport semua projek dan membuat semakan pertindihan...','info');
+
+    const d = await api({
+      action:'importApplicants',
+      rows:allRows,
+      source:'FAIL_PELBAGAI_PROJEK'
+    });
+
+    toast('Siap: '+d.imported+' rekod import, '+d.skipped+' skip. Pertindihan antara projek: '+d.crossProjectCount+'.','good');
+
+    await loadDashboard();
+    await loadProjectFilters();
+    await loadData('applicants','applicantTable');
+  }catch(err){
+    toast(err.message,'bad');
+  }
+}
+
+
+/* =========================================================
+   INPUT MANUAL
+========================================================= */
+
+function addManualRow(){
+  const row = {
+    NAMA: document.getElementById('manualName').value.trim(),
+    NO_KP: document.getElementById('manualIc').value.trim(),
+    NO_SIRI: document.getElementById('manualSerial').value.trim(),
+    PROJEK: document.getElementById('manualProject').value.trim(),
+    JENIS: document.getElementById('manualType').value.trim()
+  };
+
+  if(!row.NAMA || !row.NO_KP || !row.PROJEK || !row.JENIS){
+    toast('Nama, No. KP, Projek dan Jenis wajib diisi.','bad');
+    return;
+  }
+
+  state.manualRows.push(row);
+  renderManualPreview();
+
+  document.getElementById('manualName').value = '';
+  document.getElementById('manualIc').value = '';
+  document.getElementById('manualSerial').value = '';
+
+  toast('Pemohon ditambah ke senarai sementara.','good');
+}
+
+function removeManualRow(index){
+  state.manualRows.splice(index,1);
+  renderManualPreview();
+}
+
+function clearManualRows(){
+  state.manualRows = [];
+  renderManualPreview();
+}
+
+function renderManualPreview(){
+  document.getElementById('manualCount').textContent = state.manualRows.length;
+
+  const rows = state.manualRows.map(function(r,i){
+    return {...r,TINDAKAN:'<button class="btn danger small" onclick="removeManualRow('+i+')">Buang</button>'};
+  });
+
+  renderTable('manualPreview',rows,true);
+}
+
+async function saveManualRows(){
+  try{
+    if(!state.manualRows.length){
+      throw new Error('Tiada rekod manual untuk disimpan.');
+    }
+
+    if(!confirm('Simpan '+state.manualRows.length+' rekod manual ke sistem?')) return;
+
+    const d = await api({
+      action:'importApplicants',
+      rows:state.manualRows,
+      source:'MANUAL'
+    });
+
+    toast('Input manual siap: '+d.imported+' disimpan, '+d.skipped+' skip.','good');
+    state.manualRows = [];
+    renderManualPreview();
+
+    await loadDashboard();
+    await loadProjectFilters();
+    await loadData('applicants','applicantTable');
+  }catch(err){
+    toast(err.message,'bad');
+  }
+}
+
+
+/* =========================================================
+   FILE READER
+========================================================= */
+
+async function readFile(file){
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf,{type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(ws,{defval:''});
+}
+
+async function readSheet(fileInputId){
+  const input = document.getElementById(fileInputId);
+  const file = input.files[0];
+  if(!file) throw new Error('Sila pilih fail dahulu.');
+  return readFile(file);
+}
+
+function getFirst(obj,aliases){
+  const norm = {};
+  Object.keys(obj || {}).forEach(function(k){
+    norm[String(k).toUpperCase().replace(/[^A-Z0-9]/g,'')] = obj[k];
+  });
+
+  for(const a of aliases){
+    const key = String(a).toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(Object.prototype.hasOwnProperty.call(norm,key) && String(norm[key] ?? '').trim() !== ''){
+      return norm[key];
+    }
+  }
+  return '';
+}
+
+
+/* =========================================================
+   SEMAKAN PERTINDIHAN
+========================================================= */
+
+async function loadProjectFilters(){
+  try{
+    const d = await api({action:'getProjects'});
+    const root = document.getElementById('projectFilters');
+
+    if(!d.projects || !d.projects.length){
+      root.innerHTML = '<span class="muted">Belum ada projek.</span>';
       return;
     }
 
-    toast(
-      'Sedang mengimport pemohon...',
-      'info'
-    );
+    root.innerHTML = d.projects.map(function(x){
+      return '<label class="checkchip"><input type="checkbox" class="project-check" value="'+escAttr(x.project)+'"> '+esc(x.project)+'</label>';
+    }).join('');
+  }catch(err){
+    console.error(err);
+  }
+}
 
-    const d =
-      await api({
-        action:'importApplicants',
-        rows:rows
-      });
+function selectedProjects(){
+  return Array.from(document.querySelectorAll('.project-check:checked')).map(function(x){return x.value});
+}
 
-    toast(
-      'Siap: ' +
-      d.imported +
-      ' import, ' +
-      d.skipped +
-      ' skip, ' +
-      d.watchlistCount +
-      ' perlu dijejak.',
-      'good'
-    );
+function updateOverlapHelp(){
+  const mode = document.getElementById('overlapMode').value;
+  const el = document.getElementById('overlapHelp');
 
+  if(mode === 'crossProject'){
+    el.innerHTML = 'Sistem akan mencari <strong>Nama + No. KP yang sama</strong> yang muncul dalam 2 atau lebih projek. Jika No. KP sama tetapi ejaan nama berbeza, sistem akan tandakan <strong>SEMAK NAMA</strong>.';
+  }else{
+    el.innerHTML = 'Sistem akan mencari <strong>No. KP yang sama</strong> dalam projek yang sama tetapi memohon lebih daripada satu jenis rumah.';
+  }
+}
+
+async function refreshWatchlist(){
+  try{
+    const d = await api({action:'rebuildWatchlist'});
+    toast('Semakan semula siap. Projek sama: '+d.sameProjectCount+' · Antara projek: '+d.crossProjectCount+'.','good');
     await loadDashboard();
-
-    await loadData(
-      'applicants',
-      'applicantTable'
-    );
-
+    await loadProjectFilters();
+    await runOverlapSearch();
+  }catch(err){
+    toast(err.message,'bad');
   }
-  catch(err){
+}
 
-    toast(
-      err.message,
-      'bad'
-    );
+async function runOverlapSearch(){
+  try{
+    const mode = document.getElementById('overlapMode').value;
+    const projects = selectedProjects();
+    const search = document.getElementById('overlapSearch').value.trim();
 
+    const d = await api({
+      action:'getOverlaps',
+      mode:mode,
+      projects:projects,
+      search:search
+    });
+
+    const modeText = mode === 'crossProject' ? 'pertindihan antara projek' : 'jenis berganda dalam projek sama';
+    document.getElementById('overlapSummary').textContent = d.total+' rekod '+modeText+' ditemui.';
+    renderTable('overlapTable',d.rows || []);
+  }catch(err){
+    toast(err.message,'bad');
   }
-
 }
 
 
 /* =========================================================
-   IMPORT PEMENANG + AUTO FILTER
+   PEMENANG
 ========================================================= */
 
 async function importWinners(){
-
   try{
+    let rows = await readSheet('winnerFile');
+    if(!rows.length) throw new Error('Fail tiada rekod.');
 
-    let rows =
-      await readSheet(
-        'winnerFile'
-      );
+    const project = document.getElementById('winnerProject').value.trim();
+    const type = document.getElementById('winnerType').value.trim();
+    const session = document.getElementById('winnerSession').value.trim();
 
-    if(!rows.length){
-      throw new Error(
-        'Fail tiada rekod.'
-      );
+    if(!project || !type){
+      throw new Error('Masukkan projek dan jenis rumah bagi sesi pemenang.');
     }
 
-    const project =
-      document
-      .getElementById('winnerProject')
-      .value
-      .trim();
+    rows = rows.map(function(r){
+      return {
+        ...r,
+        PROJEK:getFirst(r,['PROJEK','Projek','NAMA PROJEK']) || project,
+        JENIS:getFirst(r,['JENIS','Jenis','JENIS RUMAH']) || type,
+        SESI:getFirst(r,['SESI','Sesi','MASA']) || session
+      };
+    });
 
-    const type =
-      document
-      .getElementById('winnerType')
-      .value
-      .trim();
+    if(!confirm('Import '+rows.length+' pemenang dan jalankan tapisan projek/jenis sedia ada?')) return;
 
-    const session =
-      document
-      .getElementById('winnerSession')
-      .value
-      .trim();
+    toast('Sedang mengimport pemenang dan menapis...','info');
 
-    if(
-      !project ||
-      !type
-    ){
-      throw new Error(
-        'Masukkan projek dan jenis rumah bagi sesi pemenang.'
-      );
-    }
-
-    rows =
-      rows.map(function(r){
-
-        return {
-          ...r,
-          PROJEK:
-            r.PROJEK ||
-            r.Projek ||
-            project,
-          JENIS:
-            r.JENIS ||
-            r.Jenis ||
-            type,
-          SESI:
-            r.SESI ||
-            r.Sesi ||
-            session
-        };
-
-      });
-
-    if(
-      !confirm(
-        'Import ' +
-        rows.length +
-        ' pemenang dan terus jalankan tapisan automatik?'
-      )
-    ){
-      return;
-    }
-
-    toast(
-      'Sedang mengimport pemenang dan menapis...',
-      'info'
-    );
-
-    const d =
-      await api({
-        action:'importWinners',
-        rows:rows,
-        autoFilter:true
-      });
-
-    toast(
-      'Siap: ' +
-      d.imported +
-      ' pemenang import, ' +
-      d.filtered +
-      ' rekod jenis lain ditapis.',
-      'good'
-    );
+    const d = await api({action:'importWinners',rows:rows,autoFilter:true});
+    toast('Siap: '+d.imported+' pemenang import, '+d.filtered+' rekod jenis lain ditapis.','good');
 
     await loadDashboard();
-
-    await loadData(
-      'winners',
-      'winnerTable'
-    );
-
+    await loadData('winners','winnerTable');
+    await refreshWatchlist();
+  }catch(err){
+    toast(err.message,'bad');
   }
-  catch(err){
-
-    toast(
-      err.message,
-      'bad'
-    );
-
-  }
-
 }
 
 
 /* =========================================================
-   WATCHLIST
+   LOAD DATA / CLEAN LIST
 ========================================================= */
 
-async function rebuildWatchlist(){
+async function loadData(dataType,target){
+  if(!state.apiUrl || !state.apiKey) return;
 
   try{
-
-    const d =
-      await api({
-        action:'rebuildWatchlist'
-      });
-
-    toast(
-      'Semakan siap. ' +
-      d.count +
-      ' pemohon perlu dijejak.',
-      'good'
-    );
-
-    await loadData(
-      'watchlist',
-      'watchTable'
-    );
-
-    await loadDashboard();
-
+    const d = await api({action:'getData',dataType:dataType,limit:3000});
+    renderTable(target,d.rows || []);
+  }catch(err){
+    toast(err.message,'bad');
   }
-  catch(err){
-
-    toast(
-      err.message,
-      'bad'
-    );
-
-  }
-
 }
-
-
-/* =========================================================
-   LOAD DATA
-========================================================= */
-
-async function loadData(
-  dataType,
-  target
-){
-
-  if(
-    !state.apiUrl ||
-    !state.apiKey
-  ){
-    return;
-  }
-
-  try{
-
-    const d =
-      await api({
-        action:'getData',
-        dataType:dataType,
-        limit:3000
-      });
-
-    renderTable(
-      target,
-      d.rows || []
-    );
-
-  }
-  catch(err){
-
-    toast(
-      err.message,
-      'bad'
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SENARAI BERSIH
-========================================================= */
 
 async function generateCleanList(){
-
   try{
+    const project = document.getElementById('cleanProject').value.trim();
+    const type = document.getElementById('cleanType').value.trim();
 
-    const project =
-      document
-      .getElementById('cleanProject')
-      .value
-      .trim();
+    if(!project || !type) throw new Error('Masukkan projek dan jenis rumah.');
 
-    const type =
-      document
-      .getElementById('cleanType')
-      .value
-      .trim();
-
-    if(
-      !project ||
-      !type
-    ){
-      throw new Error(
-        'Masukkan projek dan jenis rumah.'
-      );
-    }
-
-    const d =
-      await api({
-        action:'cleanList',
-        project:project,
-        type:type
-      });
-
-    document
-    .getElementById('cleanSummary')
-    .textContent =
-      d.total +
-      ' pemohon masih layak untuk ' +
-      d.project +
-      ' · ' +
-      d.type +
-      '.';
-
-    renderTable(
-      'cleanTable',
-      d.rows || []
-    );
-
-    toast(
-      'Senarai bersih berjaya dijana.',
-      'good'
-    );
-
+    const d = await api({action:'cleanList',project:project,type:type});
+    document.getElementById('cleanSummary').textContent = d.total+' pemohon masih layak untuk '+d.project+' · '+d.type+'.';
+    renderTable('cleanTable',d.rows || []);
+    toast('Senarai bersih berjaya dijana.','good');
+  }catch(err){
+    toast(err.message,'bad');
   }
-  catch(err){
-
-    toast(
-      err.message,
-      'bad'
-    );
-
-  }
-
 }
 
 
 /* =========================================================
-   RENDER TABLE
+   TABLE / CSV
 ========================================================= */
 
-function renderTable(
-  targetId,
-  rows
-){
+function renderTable(targetId,rows,allowHtml=false){
+  state.lastTables[targetId] = rows;
+  const root = document.getElementById(targetId);
 
-  state.lastTables[
-    targetId
-  ] =
-    rows;
-
-  const root =
-    document
-    .getElementById(
-      targetId
-    );
-
-  if(
-    !rows ||
-    !rows.length
-  ){
-
-    root.innerHTML =
-      '<div style="padding:18px" class="muted">Tiada rekod.</div>';
-
+  if(!rows || !rows.length){
+    root.innerHTML = '<div style="padding:18px" class="muted">Tiada rekod.</div>';
     return;
   }
 
-  const headers =
-    Object.keys(
-      rows[0]
-    );
+  const headers = Object.keys(rows[0]);
+  const head = headers.map(function(h){return '<th>'+esc(h.replaceAll('_',' '))+'</th>'}).join('');
 
-  const head =
-    headers
-    .map(function(h){
+  const body = rows.map(function(r){
+    return '<tr>'+headers.map(function(h){
+      if(allowHtml && h === 'TINDAKAN') return '<td>'+r[h]+'</td>';
+      return '<td>'+formatCell(h,r[h])+'</td>';
+    }).join('')+'</tr>';
+  }).join('');
 
-      return (
-        '<th>' +
-        esc(
-          h.replaceAll(
-            '_',
-            ' '
-          )
-        ) +
-        '</th>'
-      );
-
-    })
-    .join('');
-
-  const body =
-    rows
-    .map(function(r){
-
-      return (
-        '<tr>' +
-        headers
-        .map(function(h){
-
-          return (
-            '<td>' +
-            formatCell(
-              h,
-              r[h]
-            ) +
-            '</td>'
-          );
-
-        })
-        .join('') +
-        '</tr>'
-      );
-
-    })
-    .join('');
-
-  root.innerHTML =
-    '<table>' +
-    '<thead>' +
-    '<tr>' +
-    head +
-    '</tr>' +
-    '</thead>' +
-    '<tbody>' +
-    body +
-    '</tbody>' +
-    '</table>';
+  root.innerHTML = '<table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table>';
 }
 
+function formatCell(key,val){
+  let text = val == null ? '' : String(val);
 
-/* =========================================================
-   FORMAT CELL
-========================================================= */
+  if(key.includes('AT') || key === 'TIMESTAMP') text = formatDate(text);
 
-function formatCell(
-  key,
-  val
-){
-
-  let text =
-    val == null
-    ? ''
-    : String(val);
-
-  if(
-    key.includes('AT') ||
-    key === 'TIMESTAMP'
-  ){
-    text =
-      formatDate(text);
-  }
-
-  const u =
-    text.toUpperCase();
-
-  if(
-    u === 'TIDAK LAYAK'
-  ){
-    return (
-      '<span class="badge red">TIDAK LAYAK</span>'
-    );
-  }
-
-  if(
-    u === 'BERJAYA'
-  ){
-    return (
-      '<span class="badge green">BERJAYA</span>'
-    );
-  }
-
-  if(
-    u === 'PERLU JEJAK'
-  ){
-    return (
-      '<span class="badge orange">PERLU JEJAK</span>'
-    );
-  }
-
-  if(
-    u === 'LAYAK'
-  ){
-    return (
-      '<span class="badge blue">LAYAK</span>'
-    );
-  }
+  const u = text.toUpperCase();
+  if(u === 'TIDAK LAYAK') return '<span class="badge red">TIDAK LAYAK</span>';
+  if(u === 'BERJAYA') return '<span class="badge green">BERJAYA</span>';
+  if(u === 'PERLU JEJAK') return '<span class="badge orange">PERLU JEJAK</span>';
+  if(u === 'LAYAK') return '<span class="badge blue">LAYAK</span>';
+  if(u === 'PADANAN NAMA + IC') return '<span class="badge green">PADANAN NAMA + IC</span>';
+  if(u === 'SEMAK NAMA') return '<span class="badge orange">SEMAK NAMA</span>';
+  if(u === 'ANTARA_PROJEK') return '<span class="badge purple">ANTARA PROJEK</span>';
+  if(u === 'DALAM_PROJEK') return '<span class="badge blue">DALAM PROJEK</span>';
 
   return esc(text);
 }
 
-
-/* =========================================================
-   FORMAT TARIKH
-========================================================= */
-
 function formatDate(v){
-
-  const d =
-    new Date(v);
-
-  if(
-    isNaN(d)
-  ){
-    return v;
-  }
-
-  return d.toLocaleString(
-    'ms-MY'
-  );
+  const d = new Date(v);
+  if(isNaN(d)) return v;
+  return d.toLocaleString('ms-MY');
 }
 
+function downloadTableCsv(targetId,filename){
+  let rows = state.lastTables[targetId] || [];
+  if(!rows.length){toast('Tiada data untuk dimuat turun.','bad');return}
 
-/* =========================================================
-   DOWNLOAD CSV
-========================================================= */
+  rows = rows.map(function(r){
+    const copy = {...r};
+    delete copy.TINDAKAN;
+    return copy;
+  });
 
-function downloadTableCsv(
-  targetId,
-  filename
-){
-
-  const rows =
-    state.lastTables[
-      targetId
-    ] || [];
-
-  if(
-    !rows.length
-  ){
-
-    toast(
-      'Tiada data untuk dimuat turun.',
-      'bad'
-    );
-
-    return;
-  }
-
-  const ws =
-    XLSX
-    .utils
-    .json_to_sheet(
-      rows
-    );
-
-  const csv =
-    XLSX
-    .utils
-    .sheet_to_csv(
-      ws
-    );
-
-  const blob =
-    new Blob(
-      [
-        '\uFEFF' +
-        csv
-      ],
-      {
-        type:
-          'text/csv;charset=utf-8'
-      }
-    );
-
-  const a =
-    document
-    .createElement('a');
-
-  a.href =
-    URL.createObjectURL(
-      blob
-    );
-
-  a.download =
-    filename;
-
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const csv = XLSX.utils.sheet_to_csv(ws);
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
   a.click();
-
-  setTimeout(
-    function(){
-
-      URL.revokeObjectURL(
-        a.href
-      );
-
-    },
-    1000
-  );
+  setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
 }
 
 
 /* =========================================================
-   TOAST
+   UI HELPERS
 ========================================================= */
 
-function toast(
-  msg,
-  type='info'
-){
-
-  const root =
-    document
-    .getElementById(
-      'toast'
-    );
-
-  root.innerHTML =
-    '<div class="notice ' +
-    type +
-    '" style="' +
-    'position:fixed;' +
-    'right:20px;' +
-    'bottom:20px;' +
-    'max-width:420px;' +
-    'z-index:9999;' +
-    'box-shadow:0 12px 30px rgba(0,0,0,.15)' +
-    '">' +
-    esc(msg) +
-    '</div>';
-
-  setTimeout(
-    function(){
-      root.innerHTML = '';
-    },
-    5000
-  );
+function toast(msg,type='info'){
+  const root = document.getElementById('toast');
+  root.innerHTML = '<div class="notice '+type+'" style="position:fixed;right:20px;bottom:20px;max-width:440px;z-index:9999;box-shadow:0 12px 30px rgba(0,0,0,.15)">'+esc(msg)+'</div>';
+  setTimeout(function(){root.innerHTML=''},5000);
 }
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
 
 function esc(v){
+  return String(v == null ? '' : v).replace(/[&<>'"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+  });
+}
 
-  return String(
-    v == null
-    ? ''
-    : v
-  )
-  .replace(
-    /[&<>'"]/g,
-    function(c){
-
-      return {
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        "'":'&#39;',
-        '"':'&quot;'
-      }[c];
-
-    }
-  );
+function escAttr(v){
+  return esc(v).replace(/`/g,'&#96;');
 }
 
 </script>
-
 </body>
 </html>
