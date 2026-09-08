@@ -72,7 +72,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
     <h1 id="pageTitle">Dashboard</h1>
     <p>Tapisan pantas pemohon berbilang jenis dan pertindihan pemohon antara projek.</p>
   </div>
-  <div id="apiStatus" class="status">API belum disambung</div>
+  <div id="apiStatus" class="status">Menyambung API...</div>
 </div>
 
 <section id="dashboard" class="page active">
@@ -299,23 +299,22 @@ window.addEventListener('DOMContentLoaded', async function(){
   bindNav();
   bindTabs();
 
-  // Paksa deployment semasa supaya browser tidak menggunakan API lama dari localStorage.
+  // API dan API Key ditanam terus dalam source. Tiada input manual diperlukan.
   state.apiUrl = DEFAULT_API_URL;
   state.apiKey = DEFAULT_API_KEY;
-  localStorage.setItem('stu_api_url', state.apiUrl);
-  localStorage.setItem('stu_api_key', state.apiKey);
-
-  document.getElementById('apiUrl').value = state.apiUrl;
-  document.getElementById('apiKey').value = state.apiKey;
 
   addDataset();
   addDataset();
   renderManualPreview();
 
   if(state.apiUrl && state.apiKey){
-    await testApi(false);
-    await loadDashboard();
-    await loadProjectFilters();
+    const apiOk = await testApi(false);
+    if(apiOk){
+      await loadDashboard();
+      await loadProjectFilters();
+    }else{
+      toast('API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.', 'bad');
+    }
   }
 });
 
@@ -430,29 +429,6 @@ function setApiStatus(ok,text){
   el.className = 'status'+(ok?' ok':'');
   el.textContent = ok ? 'API aktif · '+text : text;
 }
-
-async function saveApiSettings(){
-  state.apiUrl = document.getElementById('apiUrl').value.trim();
-  state.apiKey = document.getElementById('apiKey').value.trim();
-  localStorage.setItem('stu_api_url',state.apiUrl);
-  localStorage.setItem('stu_api_key',state.apiKey);
-  await testApi(true);
-  await loadDashboard();
-  await loadProjectFilters();
-}
-
-async function resetToDefaultApi(){
-  state.apiUrl = DEFAULT_API_URL;
-  state.apiKey = DEFAULT_API_KEY;
-  localStorage.setItem('stu_api_url',state.apiUrl);
-  localStorage.setItem('stu_api_key',state.apiKey);
-  document.getElementById('apiUrl').value = state.apiUrl;
-  document.getElementById('apiKey').value = state.apiKey;
-  toast('API default telah dipulihkan.','info');
-  await testApi(true);
-  await loadDashboard();
-}
-
 
 /* =========================================================
    DASHBOARD
