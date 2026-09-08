@@ -33,7 +33,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 .field input,.field select{width:100%;padding:11px 12px;border:1px solid #d6deea;border-radius:10px;background:#fff;color:#22324c}
 .btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer}.btn.primary{background:#1478ff;color:#fff}.btn.green{background:#13a564;color:#fff}.btn.orange{background:#f2a222;color:#fff}.btn.gray{background:#edf1f6;color:#23344e}.btn.danger{background:#e84f5f;color:#fff}.btn.small{padding:8px 11px;font-size:12px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.notice{padding:12px 14px;border-radius:10px;margin:12px 0;font-size:13px}.notice.info{background:#eaf4ff;color:#144f8d}.notice.good{background:#e9f9f0;color:#17633f}.notice.warn{background:#fff7e7;color:#865d12}.notice.bad{background:#fff0f1;color:#8c2630}
+.notice{padding:12px 14px;border-radius:10px;margin:12px 0;font-size:13px}.notice.info{position:relative;padding:14px 16px 14px 52px;background:#eaf4ff;color:#144f8d;border:1px solid #cfe5ff}.notice.info::before{content:'i';position:absolute;left:15px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1478ff;color:#fff;font-weight:900;font-family:Georgia,serif;font-size:17px;box-shadow:0 3px 10px rgba(20,120,255,.2)}.notice.good{background:#e9f9f0;color:#17633f}.notice.warn{background:#fff7e7;color:#865d12}.notice.bad{background:#fff0f1;color:#8c2630}
 .tablewrap{overflow:auto;border:1px solid #e6ebf2;border-radius:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px 12px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}th{background:#f4f7fb;color:#394960;position:sticky;top:0}
 .badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750}.badge.red{background:#ffe4e7;color:#b22132}.badge.green{background:#dff8e9;color:#177044}.badge.orange{background:#fff0d6;color:#9b5d00}.badge.blue{background:#e3efff;color:#1859a8}.badge.purple{background:#eee4ff;color:#6a3ab2}
 .projectbox{border:1px solid #e3e9f1;border-radius:12px;padding:14px;margin-bottom:10px}.projectbox h3{margin:0 0 10px}.typechips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef3f8;font-size:12px}
@@ -62,7 +62,6 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
     <button data-page="ditapis">Senarai Ditapis</button>
     <button data-page="bersih">Senarai Bersih</button>
     <button data-page="audit">Laporan & Audit</button>
-    <button data-page="tetapan">Tetapan API</button>
   </div>
 </aside>
 
@@ -106,7 +105,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 
     <div id="fileTab" class="tabcontent active">
       <div class="notice info">
-        Tambah satu dataset bagi setiap projek/jenis yang hendak dibandingkan. Sistem boleh menerima 2, 3 atau lebih projek dalam satu proses.
+        <strong>INFO FORMAT DATA</strong><br>Tambah satu dataset bagi setiap projek/jenis yang hendak dibandingkan. Maklumat utama yang digunakan oleh sistem ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>. Sistem boleh menerima 2, 3 atau lebih projek dalam satu proses dan akan mencari pemohon yang sama berdasarkan data tersebut.
       </div>
 
       <div id="datasetList"></div>
@@ -119,7 +118,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 
     <div id="manualTab" class="tabcontent">
       <div class="notice info">
-        Sesuai jika data sedikit. Masukkan pemohon satu demi satu ke senarai sementara, kemudian simpan semua sekali.
+        <strong>INFO INPUT MANUAL</strong><br>Jika tidak menggunakan fail, masukkan terus <strong>Nama Pemohon, No. KP, No. Siri, Projek dan Jenis</strong>. Tambah rekod ke senarai sementara dan simpan semua sekali.
       </div>
 
       <div class="grid5">
@@ -266,19 +265,6 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
   <div class="panel"><div id="auditTable" class="tablewrap"></div></div>
 </section>
 
-<section id="tetapan" class="page">
-  <div class="panel apiBox">
-    <h2>Tetapan API</h2>
-    <p>API Google Apps Script telah dimasukkan secara terus. Boleh diubah jika deployment bertukar.</p>
-    <div class="field"><label>Google Apps Script Web App URL</label><input id="apiUrl"></div><br>
-    <div class="field"><label>API Key</label><input id="apiKey" type="password"></div>
-    <div class="actions">
-      <button class="btn primary" onclick="saveApiSettings()">Simpan & Uji Sambungan</button>
-      <button class="btn danger" onclick="resetToDefaultApi()">Kembali ke API Default</button>
-    </div>
-    <div class="notice warn">Untuk penggunaan rasmi dengan No. KP sebenar, API key dalam GitHub Pages boleh dilihat melalui source code. Gunakan authentication lebih selamat sebelum produksi.</div>
-  </div>
-</section>
 
 <div id="toast"></div>
 <div class="footer">STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
@@ -298,7 +284,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.2.0';
+const MIN_API_VERSION = '2.3.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -716,27 +702,43 @@ async function readApplicantFileSmart(file, defaultProject, defaultType){
   const matrix = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
 
   if(!matrix.length){
-    return {rows:[], invalidRows:0};
+    return {rows:[], invalidRows:0, detectedMode:'EMPTY'};
   }
 
-  const maxScan = Math.min(matrix.length,40);
+  const maxScan = Math.min(matrix.length,50);
   let headerIndex = -1;
   let mapping = null;
+  let dataStart = 0;
+  let detectedMode = 'HEADER';
 
+  // 1) Cuba cari header sebenar: NO SIRI + NAMA + NO KP.
   for(let i=0;i<maxScan;i++){
     const candidate = detectApplicantColumns(matrix[i] || []);
-    if(candidate.name >= 0 && candidate.ic >= 0){
+    if(candidate.serial >= 0 && candidate.name >= 0 && candidate.ic >= 0){
       headerIndex = i;
       mapping = candidate;
+      dataStart = i + 1;
       break;
     }
   }
 
-  if(headerIndex < 0 || !mapping){
+  // 2) Jika fail memang tiada header, infer terus berdasarkan bentuk data.
+  // Contoh yang disokong: 1704 | ABDUL AZIZ BIN ... | 910920015815
+  if(!mapping){
+    const inferred = inferApplicantColumns(matrix);
+    if(inferred){
+      mapping = inferred.mapping;
+      dataStart = inferred.firstDataRow;
+      detectedMode = 'INFERRED_NO_HEADER';
+    }
+  }
+
+  if(!mapping || mapping.serial < 0 || mapping.name < 0 || mapping.ic < 0){
     const preview = (matrix[0] || []).slice(0,10).map(x=>String(x)).join(' | ');
     throw new Error(
-      'Header Nama dan No. KP tidak dapat dikenal pasti dalam fail "'+file.name+'". '+
-      'Antara header yang disokong: NAMA/NAMA PEMOHON/NAMA PENUH dan NO KP/NO KAD PENGENALAN/IC/MYKAD. '+
+      'Kolum NO SIRI, NAMA dan NO. KP tidak dapat dikenal pasti dalam fail "'+file.name+'". '+
+      'Sistem menyokong fail berheader atau fail tanpa header. Contoh susunan tanpa header: '+
+      '1704 | ABDUL AZIZ BIN MOHD SAPARUDDIN | 910920015815. '+
       'Baris pertama dikesan: '+preview
     );
   }
@@ -744,50 +746,57 @@ async function readApplicantFileSmart(file, defaultProject, defaultType){
   const rows = [];
   let invalidRows = 0;
 
-  for(let i=headerIndex+1;i<matrix.length;i++){
+  for(let i=dataStart;i<matrix.length;i++){
     const r = matrix[i] || [];
+    const serial = cellText(r[mapping.serial]);
     const name = cellText(r[mapping.name]);
     const ic = cellText(r[mapping.ic]);
 
-    // Abaikan baris kosong / tajuk kecil.
-    if(!name && !ic) continue;
+    if(!serial && !name && !ic) continue;
 
-    const serial = mapping.serial >= 0 ? cellText(r[mapping.serial]) : '';
     const fileProject = mapping.project >= 0 ? cellText(r[mapping.project]) : '';
     const fileType = mapping.type >= 0 ? cellText(r[mapping.type]) : '';
 
     const project = String(defaultProject || fileProject || '').trim();
     const type = String(defaultType || fileType || 'TIDAK DINYATAKAN').trim();
 
-    if(!name || !ic || !project){
+    // NO SIRI, NAMA dan NO KP ialah data wajib.
+    if(!serial || !name || !ic || !project){
       invalidRows++;
       continue;
     }
 
     rows.push({
+      NO_SIRI:serial,
       NAMA:name,
       NO_KP:ic,
-      NO_SIRI:serial,
       PROJEK:project,
       JENIS:type || 'TIDAK DINYATAKAN'
     });
   }
 
-  return {rows, invalidRows, headerRow:headerIndex+1};
+  return {
+    rows,
+    invalidRows,
+    headerRow: headerIndex >= 0 ? headerIndex + 1 : null,
+    detectedMode
+  };
 }
 
 function detectApplicantColumns(headers){
   const keys = headers.map(normalizeHeaderClient);
   return {
+    serial: findHeaderIndex(keys,[
+      'NOSIRI','SIRI','NOMBORSIRI','NOMBORSIRIPERMOHON','NOSIRIPERMOHON',
+      'SERIAL','SERIALNO','NOFAIL','NOMBORFAIL','BIL','BILANGAN'
+    ],['SIRI','SERIAL']),
     name: findHeaderIndex(keys,[
       'NAMA','NAMAPEMOHON','NAMAPENUH','NAMAPENUHPEMOHON','PEMOHON','NAME','APPLICANTNAME'
     ],['NAMA']),
     ic: findHeaderIndex(keys,[
-      'NOKP','NOKADPENGENALAN','KADPENGENALAN','NOIC','IC','MYKAD','NOMYKAD','NOKPPEMOHON','IDENTITYCARD'
+      'NOKP','NOKADPENGENALAN','KADPENGENALAN','NOIC','IC','MYKAD','NOMYKAD',
+      'NOKPPEMOHON','IDENTITYCARD','NOKPATAUIC','NOKPICE'
     ],['KADPENGENALAN','MYKAD']),
-    serial: findHeaderIndex(keys,[
-      'NOSIRI','SIRI','NOMBORSIRI','SERIAL','SERIALNO','NOFAIL','NOMBORFAIL'
-    ],['SIRI']),
     project: findHeaderIndex(keys,[
       'PROJEK','NAMAPROJEK','PROJECT','PROJECTNAME'
     ],['PROJEK']),
@@ -795,6 +804,86 @@ function detectApplicantColumns(headers){
       'JENIS','JENISRUMAH','TYPE','KATEGORI','KATEGORIRUMAH'
     ],['JENIS','KATEGORI'])
   };
+}
+
+function inferApplicantColumns(matrix){
+  const sampleRows = matrix.slice(0,Math.min(matrix.length,80));
+  let colCount = 0;
+  sampleRows.forEach(r=>{ colCount = Math.max(colCount,(r || []).length); });
+  if(colCount < 3) return null;
+
+  const scores = Array.from({length:colCount},()=>({serial:0,name:0,ic:0,seen:0}));
+
+  for(const row of sampleRows){
+    for(let c=0;c<colCount;c++){
+      const text = cellText((row || [])[c]).trim();
+      if(!text) continue;
+      scores[c].seen++;
+
+      const digits = text.replace(/\D/g,'');
+      const letters = (text.match(/[A-Za-z]/g) || []).length;
+      const words = text.split(/\s+/).filter(Boolean).length;
+
+      // No. KP Malaysia: biasanya 12 digit, dengan atau tanpa '-'.
+      if(digits.length === 12) scores[c].ic += 8;
+      else if(digits.length >= 10 && digits.length <= 13) scores[c].ic += 2;
+
+      // Nama: dominan huruf, biasanya lebih satu perkataan.
+      if(letters >= 4 && words >= 2 && digits.length < 6) scores[c].name += 5;
+      else if(letters >= 3 && digits.length < 4) scores[c].name += 2;
+
+      // No siri: lazimnya nombor pendek; elakkan 12 digit IC.
+      if(/^\d{1,8}$/.test(digits) && digits.length !== 12 && text.replace(/\D/g,'') === digits){
+        scores[c].serial += 5;
+      }
+    }
+  }
+
+  function best(kind, excluded){
+    let idx = -1, bestScore = 0;
+    for(let c=0;c<scores.length;c++){
+      if(excluded.has(c)) continue;
+      if(scores[c][kind] > bestScore){
+        bestScore = scores[c][kind];
+        idx = c;
+      }
+    }
+    return {idx,score:bestScore};
+  }
+
+  const used = new Set();
+  const icBest = best('ic',used);
+  if(icBest.idx < 0 || icBest.score < 6) return null;
+  used.add(icBest.idx);
+
+  const nameBest = best('name',used);
+  if(nameBest.idx < 0 || nameBest.score < 4) return null;
+  used.add(nameBest.idx);
+
+  const serialBest = best('serial',used);
+  if(serialBest.idx < 0 || serialBest.score < 4) return null;
+
+  const mapping = {
+    serial:serialBest.idx,
+    name:nameBest.idx,
+    ic:icBest.idx,
+    project:-1,
+    type:-1
+  };
+
+  let firstDataRow = 0;
+  for(let i=0;i<matrix.length;i++){
+    const r = matrix[i] || [];
+    const serial = cellText(r[mapping.serial]).trim();
+    const name = cellText(r[mapping.name]).trim();
+    const ic = cellText(r[mapping.ic]).replace(/\D/g,'');
+    if(serial && name && ic.length >= 10){
+      firstDataRow = i;
+      break;
+    }
+  }
+
+  return {mapping,firstDataRow};
 }
 
 function findHeaderIndex(keys, exacts, contains){
@@ -818,10 +907,7 @@ function normalizeHeaderClient(v){
 
 function cellText(v){
   if(v == null) return '';
-  if(typeof v === 'number'){
-    // 12 digit No. KP selamat sebagai integer dalam Excel/JS.
-    return String(Math.trunc(v));
-  }
+  if(typeof v === 'number') return String(Math.trunc(v));
   return String(v).trim();
 }
 
