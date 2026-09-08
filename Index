@@ -1,3013 +1,1840 @@
 <!doctype html>
 <html lang="ms">
-
 <head>
-
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STU-RMMJ | Sistem Tapisan Undian RMMJ</title>
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
-<title>
-STU-RMMJ | Sistem Tapisan Undian RMMJ
-</title>
-
-
-<script
-src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
-
-*{
-box-sizing:border-box
-}
-
+*{box-sizing:border-box}
 body{
-margin:0;
-font-family:
-Inter,
-Segoe UI,
-Arial,
-sans-serif;
-background:#f4f7fb;
-color:#13233f
+  margin:0;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  background:#f4f7fb;
+  color:#13233f
 }
-
 .app{
-display:grid;
-grid-template-columns:250px 1fr;
-min-height:100vh
+  display:grid;
+  grid-template-columns:250px 1fr;
+  min-height:100vh
 }
-
 .sidebar{
-background:
-linear-gradient(
-180deg,
-#082451,
-#0c376f
-);
-color:#fff;
-padding:24px 18px;
-position:sticky;
-top:0;
-height:100vh
+  background:linear-gradient(180deg,#082451,#0c376f);
+  color:#fff;
+  padding:24px 18px;
+  position:sticky;
+  top:0;
+  height:100vh
 }
-
 .brand{
-font-size:24px;
-font-weight:800;
-line-height:1.05;
-margin-bottom:4px
+  font-size:24px;
+  font-weight:800;
+  line-height:1.05;
+  margin-bottom:4px
 }
-
 .sub{
-font-size:12px;
-opacity:.75;
-margin-bottom:28px
+  font-size:12px;
+  opacity:.75;
+  margin-bottom:28px
 }
-
 .nav button{
-width:100%;
-border:0;
-background:transparent;
-color:#dce8ff;
-text-align:left;
-padding:12px 14px;
-border-radius:10px;
-margin:4px 0;
-cursor:pointer;
-font-weight:650
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#dce8ff;
+  text-align:left;
+  padding:12px 14px;
+  border-radius:10px;
+  margin:4px 0;
+  cursor:pointer;
+  font-weight:650
 }
-
 .nav button:hover,
 .nav button.active{
-background:#1478ff;
-color:#fff
+  background:#1478ff;
+  color:#fff
 }
-
-.main{
-padding:26px
-}
-
+.main{padding:26px}
 .topbar{
-display:flex;
-justify-content:space-between;
-gap:16px;
-align-items:center;
-margin-bottom:20px
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:center;
+  margin-bottom:20px
 }
-
-.title h1{
-margin:0;
-font-size:28px
-}
-
-.title p{
-margin:5px 0 0;
-color:#6d7b91
-}
-
+.title h1{margin:0;font-size:28px}
+.title p{margin:5px 0 0;color:#6d7b91}
 .status{
-padding:8px 12px;
-border-radius:999px;
-font-size:12px;
-font-weight:700;
-background:#fff3cd;
-color:#6d5200;
-border:1px solid #ffe69c
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#fff3cd;
+  color:#6d5200;
+  border:1px solid #ffe69c
 }
-
 .status.ok{
-background:#dff8e9;
-color:#12633a;
-border-color:#b7ebca
+  background:#dff8e9;
+  color:#12633a;
+  border-color:#b7ebca
 }
-
-.page{
-display:none
-}
-
-.page.active{
-display:block
-}
-
+.page{display:none}
+.page.active{display:block}
 .cards{
-display:grid;
-grid-template-columns:
-repeat(
-5,
-minmax(0,1fr)
-);
-gap:14px;
-margin-bottom:18px
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:18px
 }
-
 .card{
-background:#fff;
-border:1px solid #e4eaf2;
-border-radius:16px;
-padding:18px;
-box-shadow:
-0 8px 26px
-rgba(20,48,88,.06)
+  background:#fff;
+  border:1px solid #e4eaf2;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 8px 26px rgba(20,48,88,.06)
 }
-
-.metric{
-font-size:30px;
-font-weight:800;
-margin-top:8px
-}
-
-.label{
-font-size:12px;
-color:#708096
-}
-
-.card.blue{
-background:#edf5ff
-}
-
-.card.green{
-background:#ebfbf2
-}
-
-.card.orange{
-background:#fff6e9
-}
-
-.card.purple{
-background:#f5efff
-}
-
-.card.red{
-background:#fff0f1
-}
-
+.metric{font-size:30px;font-weight:800;margin-top:8px}
+.label{font-size:12px;color:#708096}
+.card.blue{background:#edf5ff}
+.card.green{background:#ebfbf2}
+.card.orange{background:#fff6e9}
+.card.purple{background:#f5efff}
+.card.red{background:#fff0f1}
 .panel{
-background:#fff;
-border:1px solid #e4eaf2;
-border-radius:16px;
-padding:18px;
-margin-bottom:16px;
-box-shadow:
-0 8px 26px
-rgba(20,48,88,.06)
+  background:#fff;
+  border:1px solid #e4eaf2;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 8px 26px rgba(20,48,88,.06)
 }
-
-.panel h2{
-margin:0 0 4px;
-font-size:20px
-}
-
-.panel p{
-margin:0 0 16px;
-color:#6f7c90;
-font-size:13px
-}
-
+.panel h2{margin:0 0 4px;font-size:20px}
+.panel p{margin:0 0 16px;color:#6f7c90;font-size:13px}
 .grid2{
-display:grid;
-grid-template-columns:
-1fr 1fr;
-gap:16px
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px
 }
-
 .grid3{
-display:grid;
-grid-template-columns:
-repeat(3,1fr);
-gap:12px
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px
 }
-
 .field{
-display:flex;
-flex-direction:column;
-gap:6px
+  display:flex;
+  flex-direction:column;
+  gap:6px
 }
-
 .field label{
-font-size:12px;
-font-weight:700
+  font-size:12px;
+  font-weight:700
 }
-
 .field input,
 .field select{
-width:100%;
-padding:11px 12px;
-border:1px solid #d6deea;
-border-radius:10px;
-background:#fff;
-color:#22324c
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d6deea;
+  border-radius:10px;
+  background:#fff;
+  color:#22324c
 }
-
 .btn{
-border:0;
-border-radius:10px;
-padding:11px 15px;
-font-weight:750;
-cursor:pointer
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  font-weight:750;
+  cursor:pointer
 }
-
-.btn.primary{
-background:#1478ff;
-color:#fff
-}
-
-.btn.green{
-background:#13a564;
-color:#fff
-}
-
-.btn.orange{
-background:#f2a222;
-color:#fff
-}
-
-.btn.gray{
-background:#edf1f6;
-color:#23344e
-}
-
-.btn.danger{
-background:#e84f5f;
-color:#fff
-}
-
+.btn.primary{background:#1478ff;color:#fff}
+.btn.green{background:#13a564;color:#fff}
+.btn.orange{background:#f2a222;color:#fff}
+.btn.gray{background:#edf1f6;color:#23344e}
+.btn.danger{background:#e84f5f;color:#fff}
 .actions{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:12px
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px
 }
-
 .drop{
-border:
-2px dashed
-#bdd0e8;
-border-radius:14px;
-padding:26px;
-text-align:center;
-background:#fafdff
+  border:2px dashed #bdd0e8;
+  border-radius:14px;
+  padding:26px;
+  text-align:center;
+  background:#fafdff
 }
-
-.drop input{
-margin-top:12px
-}
-
+.drop input{margin-top:12px}
 .notice{
-padding:12px 14px;
-border-radius:10px;
-margin:12px 0;
-font-size:13px
+  padding:12px 14px;
+  border-radius:10px;
+  margin:12px 0;
+  font-size:13px
 }
-
-.notice.info{
-background:#eaf4ff;
-color:#144f8d
-}
-
-.notice.good{
-background:#e9f9f0;
-color:#17633f
-}
-
-.notice.bad{
-background:#fff0f1;
-color:#8c2630
-}
-
+.notice.info{background:#eaf4ff;color:#144f8d}
+.notice.good{background:#e9f9f0;color:#17633f}
+.notice.bad{background:#fff0f1;color:#8c2630}
 .tablewrap{
-overflow:auto;
-border:1px solid #e6ebf2;
-border-radius:12px
+  overflow:auto;
+  border:1px solid #e6ebf2;
+  border-radius:12px
 }
-
 table{
-width:100%;
-border-collapse:collapse;
-font-size:12px
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px
 }
-
-th,
-td{
-padding:10px 12px;
-border-bottom:
-1px solid #edf1f5;
-text-align:left;
-white-space:nowrap
+th,td{
+  padding:10px 12px;
+  border-bottom:1px solid #edf1f5;
+  text-align:left;
+  white-space:nowrap
 }
-
 th{
-background:#f4f7fb;
-color:#394960;
-position:sticky;
-top:0
+  background:#f4f7fb;
+  color:#394960;
+  position:sticky;
+  top:0
 }
-
 .badge{
-display:inline-block;
-padding:5px 8px;
-border-radius:999px;
-font-size:11px;
-font-weight:750
+  display:inline-block;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:750
 }
-
-.badge.red{
-background:#ffe4e7;
-color:#b22132
-}
-
-.badge.green{
-background:#dff8e9;
-color:#177044
-}
-
-.badge.orange{
-background:#fff0d6;
-color:#9b5d00
-}
-
-.badge.blue{
-background:#e3efff;
-color:#1859a8
-}
-
+.badge.red{background:#ffe4e7;color:#b22132}
+.badge.green{background:#dff8e9;color:#177044}
+.badge.orange{background:#fff0d6;color:#9b5d00}
+.badge.blue{background:#e3efff;color:#1859a8}
 .projectbox{
-border:
-1px solid #e3e9f1;
-border-radius:12px;
-padding:14px;
-margin-bottom:10px
+  border:1px solid #e3e9f1;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:10px
 }
-
-.projectbox h3{
-margin:0 0 10px
-}
-
+.projectbox h3{margin:0 0 10px}
 .typechips{
-display:flex;
-gap:8px;
-flex-wrap:wrap
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
 }
-
 .chip{
-padding:7px 10px;
-border-radius:999px;
-background:#eef3f8;
-font-size:12px
+  padding:7px 10px;
+  border-radius:999px;
+  background:#eef3f8;
+  font-size:12px
 }
-
 .footer{
-font-size:11px;
-color:#8b97a8;
-margin-top:22px
+  font-size:11px;
+  color:#8b97a8;
+  margin-top:22px
 }
+.muted{color:#7d8898}
+.apiBox{max-width:760px}
 
-.muted{
-color:#7d8898
+@media(max-width:1100px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .app{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto}
+  .nav{display:flex;overflow:auto;gap:6px}
+  .nav button{min-width:max-content}
+  .main{padding:16px}
 }
-
-.apiBox{
-max-width:760px
-}
-
-
-@media(
-max-width:1100px
-){
-
-.cards{
-grid-template-columns:
-repeat(2,1fr)
-}
-
-.grid2,
-.grid3{
-grid-template-columns:1fr
-}
-
-.app{
-grid-template-columns:1fr
-}
-
-.sidebar{
-position:relative;
-height:auto
-}
-
-.nav{
-display:flex;
-overflow:auto;
-gap:6px
-}
-
-.nav button{
-min-width:max-content
-}
-
-.main{
-padding:16px
-}
-
-}
-
 </style>
-
 </head>
-
 
 <body>
 
-
 <div class="app">
-
 
 <aside class="sidebar">
 
-<div class="brand">
-STU-RMMJ
-</div>
-
-<div class="sub">
-Sistem Tapisan Undian RMMJ
-</div>
-
+<div class="brand">STU-RMMJ</div>
+<div class="sub">Sistem Tapisan Undian RMMJ</div>
 
 <div class="nav">
-
-<button
-class="active"
-data-page="dashboard">
-Dashboard
-</button>
-
-<button
-data-page="pemohon">
-Pengurusan Data
-</button>
-
-<button
-data-page="watchlist">
-Semakan Pemohon
-</button>
-
-<button
-data-page="pemenang">
-Rekod Pemenang
-</button>
-
-<button
-data-page="ditapis">
-Senarai Ditapis
-</button>
-
-<button
-data-page="bersih">
-Senarai Bersih
-</button>
-
-<button
-data-page="audit">
-Laporan & Audit
-</button>
-
-<button
-data-page="tetapan">
-Tetapan API
-</button>
-
+  <button class="active" data-page="dashboard">Dashboard</button>
+  <button data-page="pemohon">Pengurusan Data</button>
+  <button data-page="watchlist">Semakan Pemohon</button>
+  <button data-page="pemenang">Rekod Pemenang</button>
+  <button data-page="ditapis">Senarai Ditapis</button>
+  <button data-page="bersih">Senarai Bersih</button>
+  <button data-page="audit">Laporan & Audit</button>
+  <button data-page="tetapan">Tetapan API</button>
 </div>
 
 </aside>
 
-
-
 <main class="main">
 
-
 <div class="topbar">
+  <div class="title">
+    <h1 id="pageTitle">Dashboard</h1>
+    <p>Tapisan pantas pemohon berbilang jenis dalam projek yang sama.</p>
+  </div>
 
-<div class="title">
-
-<h1 id="pageTitle">
-Dashboard
-</h1>
-
-<p>
-Tapisan pantas pemohon berbilang jenis dalam projek yang sama.
-</p>
-
+  <div id="apiStatus" class="status">API belum disambung</div>
 </div>
 
-
-<div
-id="apiStatus"
-class="status">
-
-API belum disambung
-
-</div>
-
-</div>
-
-
-
-<section
-id="dashboard"
-class="page active">
-
+<section id="dashboard" class="page active">
 
 <div class="cards">
+  <div class="card blue">
+    <div class="label">Jumlah Projek</div>
+    <div class="metric" id="mProjects">0</div>
+  </div>
 
+  <div class="card green">
+    <div class="label">Jumlah Rekod Pemohon</div>
+    <div class="metric" id="mApplicants">0</div>
+  </div>
 
-<div class="card blue">
+  <div class="card orange">
+    <div class="label">Pemohon Berbilang Jenis</div>
+    <div class="metric" id="mWatch">0</div>
+  </div>
 
-<div class="label">
-Jumlah Projek
+  <div class="card purple">
+    <div class="label">Pemenang Direkod</div>
+    <div class="metric" id="mWinners">0</div>
+  </div>
+
+  <div class="card red">
+    <div class="label">Jumlah Ditapis</div>
+    <div class="metric" id="mFiltered">0</div>
+  </div>
 </div>
-
-<div
-class="metric"
-id="mProjects">
-0
-</div>
-
-</div>
-
-
-
-<div class="card green">
-
-<div class="label">
-Jumlah Rekod Pemohon
-</div>
-
-<div
-class="metric"
-id="mApplicants">
-0
-</div>
-
-</div>
-
-
-
-<div class="card orange">
-
-<div class="label">
-Pemohon Berbilang Jenis
-</div>
-
-<div
-class="metric"
-id="mWatch">
-0
-</div>
-
-</div>
-
-
-
-<div class="card purple">
-
-<div class="label">
-Pemenang Direkod
-</div>
-
-<div
-class="metric"
-id="mWinners">
-0
-</div>
-
-</div>
-
-
-
-<div class="card red">
-
-<div class="label">
-Jumlah Ditapis
-</div>
-
-<div
-class="metric"
-id="mFiltered">
-0
-</div>
-
-</div>
-
-
-</div>
-
-
 
 <div class="panel">
+  <h2>Status Projek & Jenis Rumah</h2>
+  <p>Ringkasan rekod pemohon mengikut projek dan jenis rumah.</p>
 
-<h2>
-Status Projek & Jenis Rumah
-</h2>
-
-<p>
-Ringkasan rekod pemohon mengikut projek dan jenis rumah.
-</p>
-
-<div id="projectSummary">
-
-<div class="muted">
-Belum ada data.
+  <div id="projectSummary">
+    <div class="muted">Belum ada data.</div>
+  </div>
 </div>
-
-</div>
-
-</div>
-
 
 </section>
 
-
-
-<section
-id="pemohon"
-class="page">
-
+<section id="pemohon" class="page">
 
 <div class="panel">
 
-<h2>
-Import Senarai Pemohon
-</h2>
+<h2>Import Senarai Pemohon</h2>
 
 <p>
 Upload Excel atau CSV daripada Sistem Perumahan PKPJ.
 Sistem akan mengenal pasti pemohon yang memohon lebih daripada satu jenis rumah bagi projek yang sama.
 </p>
 
-
 <div class="notice info">
-
-Header minimum ialah
-<strong>NO KP / IC</strong>
-dan
-<strong>NAMA</strong>.
-
-Jika fail tidak mempunyai Projek atau Jenis,
-gunakan pilihan default di bawah.
-
+Header minimum ialah <strong>NO KP / IC</strong> dan <strong>NAMA</strong>.
+Jika fail tidak mempunyai Projek atau Jenis, gunakan pilihan default di bawah.
 </div>
-
-
 
 <div class="grid2">
 
+<div class="field">
+  <label>Projek Default</label>
+  <input id="appProject" placeholder="Contoh: TAMAN MAWAR">
+</div>
 
 <div class="field">
-
-<label>
-Projek Default
-</label>
-
-<input
-id="appProject"
-placeholder="Contoh: TAMAN MAWAR"
->
-
+  <label>Jenis Default</label>
+  <input id="appType" placeholder="Contoh: JENIS A">
 </div>
 
-
-
-<div class="field">
-
-<label>
-Jenis Default
-</label>
-
-<input
-id="appType"
-placeholder="Contoh: JENIS A"
->
-
 </div>
-
-
-</div>
-
 
 <br>
-
 
 <div class="drop">
-
-<strong>
-Pilih fail Excel atau CSV pemohon
-</strong>
-
-<br>
-
-<input
-id="applicantFile"
-type="file"
-accept=".xlsx,.xls,.csv"
->
-
+  <strong>Pilih fail Excel atau CSV pemohon</strong>
+  <br>
+  <input id="applicantFile" type="file" accept=".xlsx,.xls,.csv">
 </div>
-
 
 <div class="actions">
-
-<button
-class="btn primary"
-onclick="importApplicants()">
-
-Import Pemohon
-
-</button>
-
-
-<button
-class="btn gray"
-onclick="loadData('applicants','applicantTable')">
-
-Muat Semula Rekod
-
-</button>
-
+  <button class="btn primary" onclick="importApplicants()">Import Pemohon</button>
+  <button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button>
 </div>
 
 </div>
-
-
 
 <div class="panel">
-
-<h2>
-Rekod Pemohon
-</h2>
-
-<div
-id="applicantTable"
-class="tablewrap">
+  <h2>Rekod Pemohon</h2>
+  <div id="applicantTable" class="tablewrap"></div>
 </div>
-
-</div>
-
 
 </section>
 
-
-
-<section
-id="watchlist"
-class="page">
-
+<section id="watchlist" class="page">
 
 <div class="panel">
 
-<h2>
-Semakan Pemohon Berbilang Jenis
-</h2>
+<h2>Semakan Pemohon Berbilang Jenis</h2>
 
 <p>
-Sistem mengenal pasti No. KP yang sama
-dalam projek yang sama tetapi mempunyai lebih daripada satu jenis rumah.
+Sistem mengenal pasti No. KP yang sama dalam projek yang sama tetapi mempunyai lebih daripada satu jenis rumah.
 </p>
 
-
 <div class="actions">
-
-<button
-class="btn primary"
-onclick="rebuildWatchlist()">
-
-Proses Semakan Semula
-
-</button>
-
-
-<button
-class="btn gray"
-onclick="loadData('watchlist','watchTable')">
-
-Muat Semula
-
-</button>
-
+  <button class="btn primary" onclick="rebuildWatchlist()">Proses Semakan Semula</button>
+  <button class="btn gray" onclick="loadData('watchlist','watchTable')">Muat Semula</button>
 </div>
 
 </div>
-
-
 
 <div class="panel">
-
-<div
-id="watchTable"
-class="tablewrap">
+  <div id="watchTable" class="tablewrap"></div>
 </div>
-
-</div>
-
 
 </section>
 
-
-
-<section
-id="pemenang"
-class="page">
-
+<section id="pemenang" class="page">
 
 <div class="panel">
 
-
-<h2>
-Import Pemenang Sesi Undian
-</h2>
-
+<h2>Import Pemenang Sesi Undian</h2>
 
 <p>
-Selepas sesuatu sesi undian selesai,
-upload senarai pemenang.
+Selepas sesuatu sesi undian selesai, upload senarai pemenang.
 Sistem akan terus menapis permohonan jenis lain dalam projek yang sama.
 </p>
 
-
 <div class="notice good">
-
-<strong>
-Auto Filter aktif.
-</strong>
-
+<strong>Auto Filter aktif.</strong>
 Contoh: pemenang Jenis A akan terus ditapis daripada Jenis B, C atau D bagi projek yang sama.
-
 </div>
-
-
 
 <div class="grid3">
 
+<div class="field">
+  <label>Projek</label>
+  <input id="winnerProject" placeholder="Contoh: TAMAN MAWAR">
+</div>
 
 <div class="field">
-
-<label>
-Projek
-</label>
-
-<input
-id="winnerProject"
-placeholder="Contoh: TAMAN MAWAR"
->
-
+  <label>Jenis Rumah</label>
+  <input id="winnerType" placeholder="Contoh: JENIS A">
 </div>
-
-
 
 <div class="field">
-
-<label>
-Jenis Rumah
-</label>
-
-<input
-id="winnerType"
-placeholder="Contoh: JENIS A"
->
-
+  <label>Sesi Undian</label>
+  <input id="winnerSession" placeholder="Contoh: 9.00 PAGI">
 </div>
 
-
-
-<div class="field">
-
-<label>
-Sesi Undian
-</label>
-
-<input
-id="winnerSession"
-placeholder="Contoh: 9.00 PAGI"
->
-
 </div>
-
-
-</div>
-
 
 <br>
-
 
 <div class="drop">
-
-<strong>
-Pilih fail Excel atau CSV pemenang
-</strong>
-
-<br>
-
-<input
-id="winnerFile"
-type="file"
-accept=".xlsx,.xls,.csv"
->
-
+  <strong>Pilih fail Excel atau CSV pemenang</strong>
+  <br>
+  <input id="winnerFile" type="file" accept=".xlsx,.xls,.csv">
 </div>
-
 
 <div class="actions">
-
-<button
-class="btn green"
-onclick="importWinners()">
-
-Import Pemenang & Tapis Automatik
-
-</button>
-
-
-<button
-class="btn gray"
-onclick="loadData('winners','winnerTable')">
-
-Muat Semula Pemenang
-
-</button>
-
+  <button class="btn green" onclick="importWinners()">Import Pemenang & Tapis Automatik</button>
+  <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula Pemenang</button>
 </div>
 
 </div>
-
-
 
 <div class="panel">
-
-<h2>
-Rekod Pemenang
-</h2>
-
-<div
-id="winnerTable"
-class="tablewrap">
+  <h2>Rekod Pemenang</h2>
+  <div id="winnerTable" class="tablewrap"></div>
 </div>
-
-</div>
-
 
 </section>
 
-
-
-<section
-id="ditapis"
-class="page">
-
+<section id="ditapis" class="page">
 
 <div class="panel">
 
-<h2>
-Hasil Tapisan
-</h2>
+<h2>Hasil Tapisan</h2>
 
 <p>
 Pemohon yang tidak lagi layak kerana telah berjaya dalam jenis rumah lain bagi projek yang sama.
 </p>
 
-
 <div class="actions">
-
-<button
-class="btn primary"
-onclick="loadData('filtered','filteredTable')">
-
-Muat Semula
-
-</button>
-
-
-<button
-class="btn green"
-onclick="downloadTableCsv('filteredTable','senarai_ditapis.csv')">
-
-Muat Turun CSV
-
-</button>
-
+  <button class="btn primary" onclick="loadData('filtered','filteredTable')">Muat Semula</button>
+  <button class="btn green" onclick="downloadTableCsv('filteredTable','senarai_ditapis.csv')">Muat Turun CSV</button>
 </div>
 
 </div>
-
-
 
 <div class="panel">
-
-<div
-id="filteredTable"
-class="tablewrap">
+  <div id="filteredTable" class="tablewrap"></div>
 </div>
-
-</div>
-
 
 </section>
 
-
-
-<section
-id="bersih"
-class="page">
-
+<section id="bersih" class="page">
 
 <div class="panel">
 
-
-<h2>
-Jana Senarai Bersih untuk Undian Seterusnya
-</h2>
-
+<h2>Jana Senarai Bersih untuk Undian Seterusnya</h2>
 
 <p>
 Masukkan projek dan jenis rumah.
 Sistem akan mengeluarkan hanya pemohon yang masih layak.
 </p>
 
-
-
 <div class="grid2">
 
+<div class="field">
+  <label>Projek</label>
+  <input id="cleanProject" placeholder="Contoh: TAMAN MAWAR">
+</div>
 
 <div class="field">
-
-<label>
-Projek
-</label>
-
-<input
-id="cleanProject"
-placeholder="Contoh: TAMAN MAWAR"
->
-
+  <label>Jenis Rumah</label>
+  <input id="cleanType" placeholder="Contoh: JENIS B">
 </div>
 
-
-
-<div class="field">
-
-<label>
-Jenis Rumah
-</label>
-
-<input
-id="cleanType"
-placeholder="Contoh: JENIS B"
->
-
 </div>
-
-
-</div>
-
-
 
 <div class="actions">
-
-
-<button
-class="btn primary"
-onclick="generateCleanList()">
-
-Jana Senarai Bersih
-
-</button>
-
-
-<button
-class="btn green"
-onclick="downloadTableCsv('cleanTable','senarai_bersih.csv')">
-
-Muat Turun CSV
-
-</button>
-
-
+  <button class="btn primary" onclick="generateCleanList()">Jana Senarai Bersih</button>
+  <button class="btn green" onclick="downloadTableCsv('cleanTable','senarai_bersih.csv')">Muat Turun CSV</button>
 </div>
 
-
 </div>
-
-
 
 <div class="panel">
 
-
-<div
-id="cleanSummary"
-class="notice info">
-
+<div id="cleanSummary" class="notice info">
 Belum dijana.
-
 </div>
 
-
-<div
-id="cleanTable"
-class="tablewrap">
-</div>
-
+<div id="cleanTable" class="tablewrap"></div>
 
 </div>
-
 
 </section>
 
-
-
-<section
-id="audit"
-class="page">
-
+<section id="audit" class="page">
 
 <div class="panel">
 
-<h2>
-Laporan & Audit Trail
-</h2>
+<h2>Laporan & Audit Trail</h2>
 
 <p>
 Rekod import, semakan dan proses tapisan.
 </p>
 
-
 <div class="actions">
-
-<button
-class="btn primary"
-onclick="loadData('audit','auditTable')">
-
-Muat Semula Audit
-
-</button>
-
+  <button class="btn primary" onclick="loadData('audit','auditTable')">Muat Semula Audit</button>
 </div>
 
 </div>
-
-
 
 <div class="panel">
-
-<div
-id="auditTable"
-class="tablewrap">
+  <div id="auditTable" class="tablewrap"></div>
 </div>
-
-</div>
-
 
 </section>
 
-
-
-<section
-id="tetapan"
-class="page">
-
+<section id="tetapan" class="page">
 
 <div class="panel apiBox">
 
-
-<h2>
-Tetapan API
-</h2>
-
+<h2>Tetapan API</h2>
 
 <p>
-Masukkan URL Google Apps Script Web App dan API Key.
-Tetapan hanya disimpan dalam browser ini.
+API Google Apps Script telah dimasukkan secara terus.
+Tuan masih boleh mengubahnya dari halaman ini sekiranya perlu.
 </p>
 
-
-
 <div class="field">
-
-<label>
-Google Apps Script Web App URL
-</label>
-
-<input
-id="apiUrl"
-placeholder="https://script.google.com/macros/s/xxxxxxxx/exec"
->
-
+  <label>Google Apps Script Web App URL</label>
+  <input id="apiUrl">
 </div>
-
 
 <br>
 
-
 <div class="field">
-
-<label>
-API Key
-</label>
-
-<input
-id="apiKey"
-type="password"
-placeholder="API Key daripada RUN_SETUP"
->
-
+  <label>API Key</label>
+  <input id="apiKey" type="password">
 </div>
-
-
 
 <div class="actions">
-
-
-<button
-class="btn primary"
-onclick="saveApiSettings()">
-
-Simpan & Uji Sambungan
-
-</button>
-
-
-<button
-class="btn danger"
-onclick="clearApiSettings()">
-
-Padam Tetapan Browser
-
-</button>
-
-
+  <button class="btn primary" onclick="saveApiSettings()">Simpan & Uji Sambungan</button>
+  <button class="btn danger" onclick="resetToDefaultApi()">Kembali ke API Default</button>
 </div>
-
-
 
 <div class="notice info">
-
-API Key tidak disimpan dalam source code GitHub.
-Ia hanya disimpan dalam browser pengguna.
-
+API Key dimasukkan dalam frontend untuk memudahkan prototaip.
+Untuk penggunaan rasmi yang melibatkan data sebenar No. KP, elok gunakan authentication yang lebih selamat.
 </div>
 
-
 </div>
-
 
 </section>
 
-
-
-<div id="toast">
-</div>
-
-
+<div id="toast"></div>
 
 <div class="footer">
-
 STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.
-
 </div>
-
 
 </main>
 
-
 </div>
-
-
 
 <script>
 
+/* =========================================================
+   API DEFAULT - SUDAH DIMASUKKAN
+========================================================= */
+
+const DEFAULT_API_URL =
+'https://script.google.com/macros/s/AKfycbytPgDoAIc--5dDegpvHbvG9OtGZBYlm3WkWfjGJOEt5DqOhWmZdKjZKoBZNriDB0vRKg/exec';
+
+const DEFAULT_API_KEY =
+'7e506f981a924adb9aca8016c23d9d8c5626525cfc224107';
+
 
 const state = {
-
-apiUrl:'',
-
-apiKey:'',
-
-lastTables:{}
-
+  apiUrl: DEFAULT_API_URL,
+  apiKey: DEFAULT_API_KEY,
+  lastTables: {}
 };
 
 
+/* =========================================================
+   LOAD SISTEM
+========================================================= */
 
 window.addEventListener(
 'DOMContentLoaded',
 async function(){
 
+  bindNav();
 
-bindNav();
+  state.apiUrl =
+    localStorage.getItem('stu_api_url')
+    || DEFAULT_API_URL;
 
+  state.apiKey =
+    localStorage.getItem('stu_api_key')
+    || DEFAULT_API_KEY;
 
-state.apiUrl =
-localStorage.getItem(
-'stu_api_url'
-) || '';
+  const urlInput =
+    document.getElementById('apiUrl');
 
+  const keyInput =
+    document.getElementById('apiKey');
 
-state.apiKey =
-localStorage.getItem(
-'stu_api_key'
-) || '';
+  if(urlInput){
+    urlInput.value = state.apiUrl;
+  }
 
+  if(keyInput){
+    keyInput.value = state.apiKey;
+  }
 
-document
-.getElementById('apiUrl')
-.value =
-state.apiUrl;
-
-
-document
-.getElementById('apiKey')
-.value =
-state.apiKey;
-
-
-if(
-state.apiUrl &&
-state.apiKey
-){
-
-await testApi(false);
-
-await loadDashboard();
-
-}
+  if(
+    state.apiUrl &&
+    state.apiKey
+  ){
+    await testApi(false);
+    await loadDashboard();
+  }
 
 }
 );
 
 
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function bindNav(){
 
+  document
+  .querySelectorAll('.nav button')
+  .forEach(function(btn){
 
-document
-.querySelectorAll(
-'.nav button'
-)
-.forEach(
+    btn.addEventListener(
+    'click',
+    function(){
 
-function(btn){
+      document
+      .querySelectorAll('.nav button')
+      .forEach(function(b){
+        b.classList.remove('active');
+      });
 
+      document
+      .querySelectorAll('.page')
+      .forEach(function(p){
+        p.classList.remove('active');
+      });
 
-btn.addEventListener(
-'click',
-function(){
+      btn.classList.add('active');
 
+      document
+      .getElementById(btn.dataset.page)
+      .classList.add('active');
 
-document
-.querySelectorAll(
-'.nav button'
-)
-.forEach(
-function(b){
+      document
+      .getElementById('pageTitle')
+      .textContent =
+      btn.textContent;
 
-b.classList.remove(
-'active'
-);
+      const page =
+        btn.dataset.page;
 
-}
-);
+      if(page === 'dashboard'){
+        loadDashboard();
+      }
 
+      if(page === 'pemohon'){
+        loadData(
+          'applicants',
+          'applicantTable'
+        );
+      }
 
-document
-.querySelectorAll(
-'.page'
-)
-.forEach(
-function(p){
+      if(page === 'watchlist'){
+        loadData(
+          'watchlist',
+          'watchTable'
+        );
+      }
 
-p.classList.remove(
-'active'
-);
+      if(page === 'pemenang'){
+        loadData(
+          'winners',
+          'winnerTable'
+        );
+      }
 
-}
-);
+      if(page === 'ditapis'){
+        loadData(
+          'filtered',
+          'filteredTable'
+        );
+      }
 
+      if(page === 'audit'){
+        loadData(
+          'audit',
+          'auditTable'
+        );
+      }
 
-btn.classList.add(
-'active'
-);
+    }
+    );
 
-
-document
-.getElementById(
-btn.dataset.page
-)
-.classList.add(
-'active'
-);
-
-
-document
-.getElementById(
-'pageTitle'
-)
-.textContent =
-btn.textContent;
-
-
-const page =
-btn.dataset.page;
-
-
-if(
-page === 'dashboard'
-){
-
-loadDashboard();
-
-}
-
-
-if(
-page === 'watchlist'
-){
-
-loadData(
-'watchlist',
-'watchTable'
-);
+  });
 
 }
 
 
-if(
-page === 'ditapis'
-){
-
-loadData(
-'filtered',
-'filteredTable'
-);
-
-}
-
-
-if(
-page === 'audit'
-){
-
-loadData(
-'audit',
-'auditTable'
-);
-
-}
-
-
-}
-);
-
-}
-);
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    API CALL
-========================================== */
+========================================================= */
 
 async function api(payload){
 
+  if(
+    !state.apiUrl ||
+    !state.apiKey
+  ){
+    throw new Error(
+      'API belum dikonfigurasi.'
+    );
+  }
 
-if(
-!state.apiUrl ||
-!state.apiKey
-){
+  const res =
+    await fetch(
+      state.apiUrl,
+      {
+        method:'POST',
+        redirect:'follow',
+        headers:{
+          'Content-Type':
+            'text/plain;charset=utf-8'
+        },
+        body:
+          JSON.stringify({
+            ...payload,
+            key:state.apiKey
+          })
+      }
+    );
 
-throw new Error(
-'Sila isi Tetapan API dahulu.'
-);
+  const text =
+    await res.text();
 
+  let data;
+
+  try{
+    data = JSON.parse(text);
+  }
+  catch(e){
+
+    console.error(
+      'RAW API RESPONSE:',
+      text
+    );
+
+    throw new Error(
+      'Respons API tidak sah. Pastikan Google Apps Script telah Deploy sebagai Web App.'
+    );
+  }
+
+  if(!data.ok){
+    throw new Error(
+      data.error ||
+      data.message ||
+      'Operasi API gagal.'
+    );
+  }
+
+  return data;
 }
 
 
-const res =
-await fetch(
-
-state.apiUrl,
-
-{
-
-method:'POST',
-
-redirect:'follow',
-
-headers:{
-'Content-Type':
-'text/plain;charset=utf-8'
-},
-
-body:
-JSON.stringify({
-
-...payload,
-
-key:
-state.apiKey
-
-})
-
-}
-
-);
-
-
-const text =
-await res.text();
-
-
-let data;
-
-
-try{
-
-data =
-JSON.parse(text);
-
-}
-
-catch(e){
-
-throw new Error(
-'Respons API tidak sah. Pastikan URL Web App berakhir dengan /exec.'
-);
-
-}
-
-
-if(!data.ok){
-
-throw new Error(
-data.error ||
-'Operasi gagal.'
-);
-
-}
-
-
-return data;
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    TEST API
-========================================== */
+========================================================= */
 
-async function testApi(
-show=true
-){
+async function testApi(show=true){
 
-try{
+  try{
 
+    const data =
+      await api({
+        action:'health'
+      });
 
-const data =
-await api({
-action:'health'
-});
+    setApiStatus(
+      true,
+      (data.app || 'STU-RMMJ') +
+      ' ' +
+      (data.version || '')
+    );
 
+    if(show){
+      toast(
+        'Sambungan Google Apps Script berjaya.',
+        'good'
+      );
+    }
 
-setApiStatus(
-true,
-data.app +
-' ' +
-data.version
-);
+    return true;
 
+  }
+  catch(err){
 
-if(show){
+    console.error(err);
 
-toast(
-'Sambungan API berjaya.',
-'good'
-);
+    setApiStatus(
+      false,
+      'API gagal'
+    );
 
-}
+    if(show){
+      toast(
+        err.message,
+        'bad'
+      );
+    }
 
-
-return true;
-
-
-}
-
-catch(err){
-
-
-setApiStatus(
-false,
-'API gagal'
-);
-
-
-if(show){
-
-toast(
-err.message,
-'bad'
-);
+    return false;
+  }
 
 }
 
 
-return false;
-
-}
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    STATUS API
-========================================== */
+========================================================= */
 
-function setApiStatus(
-ok,
-text
-){
+function setApiStatus(ok,text){
 
-const el =
-document
-.getElementById(
-'apiStatus'
-);
+  const el =
+    document.getElementById(
+      'apiStatus'
+    );
 
+  el.className =
+    'status' +
+    (ok ? ' ok' : '');
 
-el.className =
-'status' +
-(ok ? ' ok' : '');
-
-
-el.textContent =
-ok
-?
-'API aktif · ' + text
-:
-text;
-
+  el.textContent =
+    ok
+    ? 'API aktif · ' + text
+    : text;
 }
 
 
-
-/* ==========================================
+/* =========================================================
    SIMPAN API
-========================================== */
+========================================================= */
 
 async function saveApiSettings(){
 
+  state.apiUrl =
+    document
+    .getElementById('apiUrl')
+    .value
+    .trim();
 
-state.apiUrl =
-document
-.getElementById(
-'apiUrl'
-)
-.value
-.trim();
+  state.apiKey =
+    document
+    .getElementById('apiKey')
+    .value
+    .trim();
 
+  localStorage.setItem(
+    'stu_api_url',
+    state.apiUrl
+  );
 
-state.apiKey =
-document
-.getElementById(
-'apiKey'
-)
-.value
-.trim();
+  localStorage.setItem(
+    'stu_api_key',
+    state.apiKey
+  );
 
+  await testApi(true);
 
-localStorage.setItem(
-'stu_api_url',
-state.apiUrl
-);
-
-
-localStorage.setItem(
-'stu_api_key',
-state.apiKey
-);
-
-
-await testApi(true);
-
+  if(
+    state.apiUrl &&
+    state.apiKey
+  ){
+    await loadDashboard();
+  }
 }
 
 
+/* =========================================================
+   RESET API
+========================================================= */
 
-/* ==========================================
-   PADAM API
-========================================== */
+async function resetToDefaultApi(){
 
-function clearApiSettings(){
+  state.apiUrl =
+    DEFAULT_API_URL;
 
+  state.apiKey =
+    DEFAULT_API_KEY;
 
-localStorage.removeItem(
-'stu_api_url'
-);
+  localStorage.setItem(
+    'stu_api_url',
+    state.apiUrl
+  );
 
+  localStorage.setItem(
+    'stu_api_key',
+    state.apiKey
+  );
 
-localStorage.removeItem(
-'stu_api_key'
-);
+  document
+  .getElementById('apiUrl')
+  .value =
+    state.apiUrl;
 
+  document
+  .getElementById('apiKey')
+  .value =
+    state.apiKey;
 
-state.apiUrl = '';
+  toast(
+    'API default telah dipulihkan.',
+    'info'
+  );
 
-state.apiKey = '';
-
-
-document
-.getElementById(
-'apiUrl'
-)
-.value = '';
-
-
-document
-.getElementById(
-'apiKey'
-)
-.value = '';
-
-
-setApiStatus(
-false,
-'API belum disambung'
-);
-
-
-toast(
-'Tetapan API dipadam daripada browser.',
-'info'
-);
-
+  await testApi(true);
+  await loadDashboard();
 }
 
 
-
-/* ==========================================
+/* =========================================================
    DASHBOARD
-========================================== */
+========================================================= */
 
 async function loadDashboard(){
 
+  if(
+    !state.apiUrl ||
+    !state.apiKey
+  ){
+    return;
+  }
 
-if(
-!state.apiUrl ||
-!state.apiKey
-){
+  try{
 
-return;
+    const d =
+      await api({
+        action:'dashboard'
+      });
 
-}
+    document
+    .getElementById('mProjects')
+    .textContent =
+      d.summary.projects || 0;
 
+    document
+    .getElementById('mApplicants')
+    .textContent =
+      d.summary.applicants || 0;
 
-try{
+    document
+    .getElementById('mWatch')
+    .textContent =
+      d.summary.watchlist || 0;
 
+    document
+    .getElementById('mWinners')
+    .textContent =
+      d.summary.winners || 0;
 
-const d =
-await api({
-action:'dashboard'
-});
+    document
+    .getElementById('mFiltered')
+    .textContent =
+      d.summary.filtered || 0;
 
+    renderProjects(
+      d.projects || {}
+    );
 
-document
-.getElementById(
-'mProjects'
-)
-.textContent =
-d.summary.projects || 0;
+  }
+  catch(err){
 
+    toast(
+      err.message,
+      'bad'
+    );
 
-document
-.getElementById(
-'mApplicants'
-)
-.textContent =
-d.summary.applicants || 0;
-
-
-document
-.getElementById(
-'mWatch'
-)
-.textContent =
-d.summary.watchlist || 0;
-
-
-document
-.getElementById(
-'mWinners'
-)
-.textContent =
-d.summary.winners || 0;
-
-
-document
-.getElementById(
-'mFiltered'
-)
-.textContent =
-d.summary.filtered || 0;
-
-
-renderProjects(
-d.projects || {}
-);
-
-
-}
-
-catch(err){
-
-toast(
-err.message,
-'bad'
-);
-
-}
+  }
 
 }
 
 
-
-/* ==========================================
+/* =========================================================
    PROJECT SUMMARY
-========================================== */
+========================================================= */
 
-function renderProjects(
-projects
-){
+function renderProjects(projects){
 
-const root =
-document
-.getElementById(
-'projectSummary'
-);
+  const root =
+    document
+    .getElementById(
+      'projectSummary'
+    );
 
+  const names =
+    Object.keys(projects);
 
-const names =
-Object.keys(
-projects
-);
+  if(!names.length){
 
+    root.innerHTML =
+      '<div class="muted">Belum ada data.</div>';
 
-if(
-!names.length
-){
+    return;
+  }
 
-root.innerHTML =
-'<div class="muted">Belum ada data.</div>';
+  root.innerHTML =
+    names
+    .map(function(p){
 
-return;
+      const types =
+        projects[p];
 
+      const chips =
+        Object.keys(types)
+        .map(function(t){
+
+          const x =
+            types[t];
+
+          return (
+            '<span class="chip">' +
+            '<b>' +
+            esc(t) +
+            '</b>' +
+            ' · ' +
+            x.total +
+            ' rekod' +
+            ' · ' +
+            x.layak +
+            ' layak' +
+            ' · ' +
+            x.tidakLayak +
+            ' ditapis' +
+            ' · ' +
+            x.berjaya +
+            ' berjaya' +
+            '</span>'
+          );
+
+        })
+        .join('');
+
+      return (
+        '<div class="projectbox">' +
+        '<h3>' +
+        esc(p) +
+        '</h3>' +
+        '<div class="typechips">' +
+        chips +
+        '</div>' +
+        '</div>'
+      );
+
+    })
+    .join('');
 }
 
 
-root.innerHTML =
-names.map(
-
-function(p){
-
-
-const types =
-projects[p];
-
-
-const chips =
-Object.keys(types)
-.map(
-
-function(t){
-
-
-const x =
-types[t];
-
-
-return (
-
-'<span class="chip">' +
-
-'<b>' +
-esc(t) +
-'</b>' +
-
-' · ' +
-x.total +
-' rekod' +
-
-' · ' +
-x.layak +
-' layak' +
-
-' · ' +
-x.tidakLayak +
-' ditapis' +
-
-' · ' +
-x.berjaya +
-' berjaya' +
-
-'</span>'
-
-);
-
-}
-
-)
-.join('');
-
-
-return (
-
-'<div class="projectbox">' +
-
-'<h3>' +
-esc(p) +
-'</h3>' +
-
-'<div class="typechips">' +
-chips +
-'</div>' +
-
-'</div>'
-
-);
-
-}
-
-)
-.join('');
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    READ EXCEL / CSV
-========================================== */
+========================================================= */
 
-async function readSheet(
-fileInputId
-){
+async function readSheet(fileInputId){
 
+  const input =
+    document
+    .getElementById(
+      fileInputId
+    );
 
-const input =
-document
-.getElementById(
-fileInputId
-);
+  const file =
+    input.files[0];
 
+  if(!file){
+    throw new Error(
+      'Sila pilih fail dahulu.'
+    );
+  }
 
-const file =
-input.files[0];
+  const buf =
+    await file.arrayBuffer();
 
+  const wb =
+    XLSX.read(
+      buf,
+      {
+        type:'array'
+      }
+    );
 
-if(!file){
+  const ws =
+    wb.Sheets[
+      wb.SheetNames[0]
+    ];
 
-throw new Error(
-'Sila pilih fail dahulu.'
-);
-
+  return XLSX
+    .utils
+    .sheet_to_json(
+      ws,
+      {
+        defval:''
+      }
+    );
 }
 
 
-const buf =
-await file.arrayBuffer();
-
-
-const wb =
-XLSX.read(
-buf,
-{
-type:'array'
-}
-);
-
-
-const ws =
-wb.Sheets[
-wb.SheetNames[0]
-];
-
-
-return XLSX
-.utils
-.sheet_to_json(
-ws,
-{
-defval:''
-}
-);
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    IMPORT PEMOHON
-========================================== */
+========================================================= */
 
 async function importApplicants(){
 
+  try{
 
-try{
+    let rows =
+      await readSheet(
+        'applicantFile'
+      );
 
+    if(!rows.length){
+      throw new Error(
+        'Fail tiada rekod.'
+      );
+    }
 
-let rows =
-await readSheet(
-'applicantFile'
-);
+    const project =
+      document
+      .getElementById('appProject')
+      .value
+      .trim();
 
+    const type =
+      document
+      .getElementById('appType')
+      .value
+      .trim();
 
-if(!rows.length){
+    rows =
+      rows.map(function(r){
 
-throw new Error(
-'Fail tiada rekod.'
-);
+        return {
+          ...r,
+          PROJEK:
+            r.PROJEK ||
+            r.Projek ||
+            project,
+          JENIS:
+            r.JENIS ||
+            r.Jenis ||
+            type
+        };
 
-}
+      });
 
+    if(
+      !confirm(
+        'Import ' +
+        rows.length +
+        ' baris pemohon?'
+      )
+    ){
+      return;
+    }
 
-const project =
-document
-.getElementById(
-'appProject'
-)
-.value
-.trim();
+    toast(
+      'Sedang mengimport pemohon...',
+      'info'
+    );
 
+    const d =
+      await api({
+        action:'importApplicants',
+        rows:rows
+      });
 
-const type =
-document
-.getElementById(
-'appType'
-)
-.value
-.trim();
+    toast(
+      'Siap: ' +
+      d.imported +
+      ' import, ' +
+      d.skipped +
+      ' skip, ' +
+      d.watchlistCount +
+      ' perlu dijejak.',
+      'good'
+    );
 
+    await loadDashboard();
 
-rows =
-rows.map(
+    await loadData(
+      'applicants',
+      'applicantTable'
+    );
 
-function(r){
+  }
+  catch(err){
 
-return {
+    toast(
+      err.message,
+      'bad'
+    );
 
-...r,
-
-PROJEK:
-r.PROJEK ||
-r.Projek ||
-project,
-
-JENIS:
-r.JENIS ||
-r.Jenis ||
-type
-
-};
-
-}
-
-);
-
-
-if(
-!confirm(
-'Import ' +
-rows.length +
-' baris pemohon?'
-)
-){
-
-return;
-
-}
-
-
-toast(
-'Sedang mengimport pemohon...',
-'info'
-);
-
-
-const d =
-await api({
-
-action:
-'importApplicants',
-
-rows:
-rows
-
-});
-
-
-toast(
-
-'Siap: ' +
-d.imported +
-' import, ' +
-d.skipped +
-' skip, ' +
-d.watchlistCount +
-' perlu dijejak.',
-
-'good'
-
-);
-
-
-await loadDashboard();
-
-
-await loadData(
-'applicants',
-'applicantTable'
-);
-
-
-}
-
-catch(err){
-
-toast(
-err.message,
-'bad'
-);
-
-}
+  }
 
 }
 
 
-
-/* ==========================================
+/* =========================================================
    IMPORT PEMENANG + AUTO FILTER
-========================================== */
+========================================================= */
 
 async function importWinners(){
 
+  try{
 
-try{
+    let rows =
+      await readSheet(
+        'winnerFile'
+      );
 
+    if(!rows.length){
+      throw new Error(
+        'Fail tiada rekod.'
+      );
+    }
 
-let rows =
-await readSheet(
-'winnerFile'
-);
+    const project =
+      document
+      .getElementById('winnerProject')
+      .value
+      .trim();
 
+    const type =
+      document
+      .getElementById('winnerType')
+      .value
+      .trim();
 
-if(!rows.length){
+    const session =
+      document
+      .getElementById('winnerSession')
+      .value
+      .trim();
 
-throw new Error(
-'Fail tiada rekod.'
-);
+    if(
+      !project ||
+      !type
+    ){
+      throw new Error(
+        'Masukkan projek dan jenis rumah bagi sesi pemenang.'
+      );
+    }
 
-}
+    rows =
+      rows.map(function(r){
 
+        return {
+          ...r,
+          PROJEK:
+            r.PROJEK ||
+            r.Projek ||
+            project,
+          JENIS:
+            r.JENIS ||
+            r.Jenis ||
+            type,
+          SESI:
+            r.SESI ||
+            r.Sesi ||
+            session
+        };
 
-const project =
-document
-.getElementById(
-'winnerProject'
-)
-.value
-.trim();
+      });
 
+    if(
+      !confirm(
+        'Import ' +
+        rows.length +
+        ' pemenang dan terus jalankan tapisan automatik?'
+      )
+    ){
+      return;
+    }
 
-const type =
-document
-.getElementById(
-'winnerType'
-)
-.value
-.trim();
+    toast(
+      'Sedang mengimport pemenang dan menapis...',
+      'info'
+    );
 
+    const d =
+      await api({
+        action:'importWinners',
+        rows:rows,
+        autoFilter:true
+      });
 
-const session =
-document
-.getElementById(
-'winnerSession'
-)
-.value
-.trim();
+    toast(
+      'Siap: ' +
+      d.imported +
+      ' pemenang import, ' +
+      d.filtered +
+      ' rekod jenis lain ditapis.',
+      'good'
+    );
 
+    await loadDashboard();
 
-if(
-!project ||
-!type
-){
+    await loadData(
+      'winners',
+      'winnerTable'
+    );
 
-throw new Error(
-'Masukkan projek dan jenis rumah bagi sesi pemenang.'
-);
+  }
+  catch(err){
 
-}
+    toast(
+      err.message,
+      'bad'
+    );
 
-
-rows =
-rows.map(
-
-function(r){
-
-return {
-
-...r,
-
-PROJEK:
-r.PROJEK ||
-r.Projek ||
-project,
-
-JENIS:
-r.JENIS ||
-r.Jenis ||
-type,
-
-SESI:
-r.SESI ||
-r.Sesi ||
-session
-
-};
-
-}
-
-);
-
-
-if(
-!confirm(
-
-'Import ' +
-rows.length +
-' pemenang dan terus jalankan tapisan automatik?'
-
-)
-){
-
-return;
-
-}
-
-
-toast(
-'Sedang mengimport pemenang dan menapis...',
-'info'
-);
-
-
-const d =
-await api({
-
-action:
-'importWinners',
-
-rows:
-rows,
-
-autoFilter:
-true
-
-});
-
-
-toast(
-
-'Siap: ' +
-d.imported +
-' pemenang import, ' +
-d.filtered +
-' rekod jenis lain ditapis.',
-
-'good'
-
-);
-
-
-await loadDashboard();
-
-
-await loadData(
-'winners',
-'winnerTable'
-);
-
-
-}
-
-catch(err){
-
-toast(
-err.message,
-'bad'
-);
-
-}
+  }
 
 }
 
 
-
-/* ==========================================
+/* =========================================================
    WATCHLIST
-========================================== */
+========================================================= */
 
 async function rebuildWatchlist(){
 
+  try{
 
-try{
+    const d =
+      await api({
+        action:'rebuildWatchlist'
+      });
 
+    toast(
+      'Semakan siap. ' +
+      d.count +
+      ' pemohon perlu dijejak.',
+      'good'
+    );
 
-const d =
-await api({
-action:
-'rebuildWatchlist'
-});
+    await loadData(
+      'watchlist',
+      'watchTable'
+    );
 
+    await loadDashboard();
 
-toast(
+  }
+  catch(err){
 
-'Semakan siap. ' +
-d.count +
-' pemohon perlu dijejak.',
+    toast(
+      err.message,
+      'bad'
+    );
 
-'good'
-
-);
-
-
-await loadData(
-'watchlist',
-'watchTable'
-);
-
-
-await loadDashboard();
-
-
-}
-
-catch(err){
-
-toast(
-err.message,
-'bad'
-);
-
-}
+  }
 
 }
 
 
-
-/* ==========================================
+/* =========================================================
    LOAD DATA
-========================================== */
+========================================================= */
 
 async function loadData(
-dataType,
-target
+  dataType,
+  target
 ){
 
+  if(
+    !state.apiUrl ||
+    !state.apiKey
+  ){
+    return;
+  }
 
-if(
-!state.apiUrl ||
-!state.apiKey
-){
+  try{
 
-return;
+    const d =
+      await api({
+        action:'getData',
+        dataType:dataType,
+        limit:3000
+      });
 
-}
+    renderTable(
+      target,
+      d.rows || []
+    );
 
+  }
+  catch(err){
 
-try{
+    toast(
+      err.message,
+      'bad'
+    );
 
-
-const d =
-await api({
-
-action:
-'getData',
-
-dataType:
-dataType,
-
-limit:
-3000
-
-});
-
-
-renderTable(
-target,
-d.rows || []
-);
-
-
-}
-
-catch(err){
-
-toast(
-err.message,
-'bad'
-);
-
-}
+  }
 
 }
 
 
-
-/* ==========================================
+/* =========================================================
    SENARAI BERSIH
-========================================== */
+========================================================= */
 
 async function generateCleanList(){
 
+  try{
 
-try{
+    const project =
+      document
+      .getElementById('cleanProject')
+      .value
+      .trim();
 
+    const type =
+      document
+      .getElementById('cleanType')
+      .value
+      .trim();
 
-const project =
-document
-.getElementById(
-'cleanProject'
-)
-.value
-.trim();
+    if(
+      !project ||
+      !type
+    ){
+      throw new Error(
+        'Masukkan projek dan jenis rumah.'
+      );
+    }
 
+    const d =
+      await api({
+        action:'cleanList',
+        project:project,
+        type:type
+      });
 
-const type =
-document
-.getElementById(
-'cleanType'
-)
-.value
-.trim();
+    document
+    .getElementById('cleanSummary')
+    .textContent =
+      d.total +
+      ' pemohon masih layak untuk ' +
+      d.project +
+      ' · ' +
+      d.type +
+      '.';
 
+    renderTable(
+      'cleanTable',
+      d.rows || []
+    );
 
-if(
-!project ||
-!type
-){
+    toast(
+      'Senarai bersih berjaya dijana.',
+      'good'
+    );
 
-throw new Error(
-'Masukkan projek dan jenis rumah.'
-);
+  }
+  catch(err){
 
-}
+    toast(
+      err.message,
+      'bad'
+    );
 
-
-const d =
-await api({
-
-action:
-'cleanList',
-
-project:
-project,
-
-type:
-type
-
-});
-
-
-document
-.getElementById(
-'cleanSummary'
-)
-.textContent =
-
-d.total +
-' pemohon masih layak untuk ' +
-d.project +
-' · ' +
-d.type +
-'.';
-
-
-renderTable(
-'cleanTable',
-d.rows || []
-);
-
-
-toast(
-'Senarai bersih berjaya dijana.',
-'good'
-);
-
-
-}
-
-catch(err){
-
-toast(
-err.message,
-'bad'
-);
-
-}
+  }
 
 }
 
 
-
-/* ==========================================
+/* =========================================================
    RENDER TABLE
-========================================== */
+========================================================= */
 
 function renderTable(
-targetId,
-rows
+  targetId,
+  rows
 ){
 
+  state.lastTables[
+    targetId
+  ] =
+    rows;
 
-state.lastTables[
-targetId
-] =
-rows;
+  const root =
+    document
+    .getElementById(
+      targetId
+    );
 
+  if(
+    !rows ||
+    !rows.length
+  ){
 
-const root =
-document
-.getElementById(
-targetId
-);
+    root.innerHTML =
+      '<div style="padding:18px" class="muted">Tiada rekod.</div>';
 
+    return;
+  }
 
-if(
-!rows ||
-!rows.length
-){
+  const headers =
+    Object.keys(
+      rows[0]
+    );
 
-root.innerHTML =
-'<div style="padding:18px" class="muted">Tiada rekod.</div>';
+  const head =
+    headers
+    .map(function(h){
 
-return;
+      return (
+        '<th>' +
+        esc(
+          h.replaceAll(
+            '_',
+            ' '
+          )
+        ) +
+        '</th>'
+      );
 
+    })
+    .join('');
+
+  const body =
+    rows
+    .map(function(r){
+
+      return (
+        '<tr>' +
+        headers
+        .map(function(h){
+
+          return (
+            '<td>' +
+            formatCell(
+              h,
+              r[h]
+            ) +
+            '</td>'
+          );
+
+        })
+        .join('') +
+        '</tr>'
+      );
+
+    })
+    .join('');
+
+  root.innerHTML =
+    '<table>' +
+    '<thead>' +
+    '<tr>' +
+    head +
+    '</tr>' +
+    '</thead>' +
+    '<tbody>' +
+    body +
+    '</tbody>' +
+    '</table>';
 }
 
 
-const headers =
-Object.keys(
-rows[0]
-);
-
-
-const head =
-headers
-.map(
-
-function(h){
-
-return (
-
-'<th>' +
-
-esc(
-h.replaceAll(
-'_',
-' '
-)
-)
-
-+
-
-'</th>'
-
-);
-
-}
-
-)
-.join('');
-
-
-const body =
-rows
-.map(
-
-function(r){
-
-return (
-
-'<tr>' +
-
-headers
-.map(
-
-function(h){
-
-return (
-
-'<td>' +
-
-formatCell(
-h,
-r[h]
-)
-
-+
-
-'</td>'
-
-);
-
-}
-
-)
-.join('')
-
-+
-
-'</tr>'
-
-);
-
-}
-
-)
-.join('');
-
-
-root.innerHTML =
-
-'<table>' +
-
-'<thead>' +
-
-'<tr>' +
-head +
-'</tr>' +
-
-'</thead>' +
-
-'<tbody>' +
-body +
-'</tbody>' +
-
-'</table>';
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    FORMAT CELL
-========================================== */
+========================================================= */
 
 function formatCell(
-key,
-val
+  key,
+  val
 ){
 
+  let text =
+    val == null
+    ? ''
+    : String(val);
 
-let text =
-val == null
-?
-''
-:
-String(val);
+  if(
+    key.includes('AT') ||
+    key === 'TIMESTAMP'
+  ){
+    text =
+      formatDate(text);
+  }
 
+  const u =
+    text.toUpperCase();
 
-if(
-key.includes('AT') ||
-key === 'TIMESTAMP'
-){
+  if(
+    u === 'TIDAK LAYAK'
+  ){
+    return (
+      '<span class="badge red">TIDAK LAYAK</span>'
+    );
+  }
 
-text =
-formatDate(text);
+  if(
+    u === 'BERJAYA'
+  ){
+    return (
+      '<span class="badge green">BERJAYA</span>'
+    );
+  }
 
+  if(
+    u === 'PERLU JEJAK'
+  ){
+    return (
+      '<span class="badge orange">PERLU JEJAK</span>'
+    );
+  }
+
+  if(
+    u === 'LAYAK'
+  ){
+    return (
+      '<span class="badge blue">LAYAK</span>'
+    );
+  }
+
+  return esc(text);
 }
 
 
-const u =
-text.toUpperCase();
-
-
-if(
-u === 'TIDAK LAYAK'
-){
-
-return (
-'<span class="badge red">TIDAK LAYAK</span>'
-);
-
-}
-
-
-if(
-u === 'BERJAYA'
-){
-
-return (
-'<span class="badge green">BERJAYA</span>'
-);
-
-}
-
-
-if(
-u === 'PERLU JEJAK'
-){
-
-return (
-'<span class="badge orange">PERLU JEJAK</span>'
-);
-
-}
-
-
-if(
-u === 'LAYAK'
-){
-
-return (
-'<span class="badge blue">LAYAK</span>'
-);
-
-}
-
-
-return esc(text);
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    FORMAT TARIKH
-========================================== */
+========================================================= */
 
 function formatDate(v){
 
+  const d =
+    new Date(v);
 
-const d =
-new Date(v);
+  if(
+    isNaN(d)
+  ){
+    return v;
+  }
 
-
-if(
-isNaN(d)
-){
-
-return v;
-
+  return d.toLocaleString(
+    'ms-MY'
+  );
 }
 
 
-return d.toLocaleString(
-'ms-MY'
-);
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    DOWNLOAD CSV
-========================================== */
+========================================================= */
 
 function downloadTableCsv(
-targetId,
-filename
+  targetId,
+  filename
 ){
 
+  const rows =
+    state.lastTables[
+      targetId
+    ] || [];
 
-const rows =
-state.lastTables[
-targetId
-] || [];
+  if(
+    !rows.length
+  ){
 
+    toast(
+      'Tiada data untuk dimuat turun.',
+      'bad'
+    );
 
-if(
-!rows.length
-){
+    return;
+  }
 
-toast(
-'Tiada data untuk dimuat turun.',
-'bad'
-);
+  const ws =
+    XLSX
+    .utils
+    .json_to_sheet(
+      rows
+    );
 
-return;
+  const csv =
+    XLSX
+    .utils
+    .sheet_to_csv(
+      ws
+    );
 
+  const blob =
+    new Blob(
+      [
+        '\uFEFF' +
+        csv
+      ],
+      {
+        type:
+          'text/csv;charset=utf-8'
+      }
+    );
+
+  const a =
+    document
+    .createElement('a');
+
+  a.href =
+    URL.createObjectURL(
+      blob
+    );
+
+  a.download =
+    filename;
+
+  a.click();
+
+  setTimeout(
+    function(){
+
+      URL.revokeObjectURL(
+        a.href
+      );
+
+    },
+    1000
+  );
 }
 
 
-const ws =
-XLSX
-.utils
-.json_to_sheet(
-rows
-);
-
-
-const csv =
-XLSX
-.utils
-.sheet_to_csv(
-ws
-);
-
-
-const blob =
-new Blob(
-[
-'\uFEFF' +
-csv
-],
-{
-type:
-'text/csv;charset=utf-8'
-}
-);
-
-
-const a =
-document
-.createElement('a');
-
-
-a.href =
-URL.createObjectURL(
-blob
-);
-
-
-a.download =
-filename;
-
-
-a.click();
-
-
-setTimeout(
-function(){
-
-URL.revokeObjectURL(
-a.href
-);
-
-},
-1000
-);
-
-}
-
-
-
-/* ==========================================
+/* =========================================================
    TOAST
-========================================== */
+========================================================= */
 
 function toast(
-msg,
-type='info'
+  msg,
+  type='info'
 ){
 
+  const root =
+    document
+    .getElementById(
+      'toast'
+    );
 
-const root =
-document
-.getElementById(
-'toast'
-);
+  root.innerHTML =
+    '<div class="notice ' +
+    type +
+    '" style="' +
+    'position:fixed;' +
+    'right:20px;' +
+    'bottom:20px;' +
+    'max-width:420px;' +
+    'z-index:9999;' +
+    'box-shadow:0 12px 30px rgba(0,0,0,.15)' +
+    '">' +
+    esc(msg) +
+    '</div>';
 
-
-root.innerHTML =
-
-'<div class="notice ' +
-type +
-'" ' +
-
-'style="' +
-'position:fixed;' +
-'right:20px;' +
-'bottom:20px;' +
-'max-width:420px;' +
-'z-index:9999;' +
-'box-shadow:0 12px 30px rgba(0,0,0,.15)' +
-'">' +
-
-esc(msg) +
-
-'</div>';
-
-
-setTimeout(
-function(){
-
-root.innerHTML = '';
-
-},
-5000
-);
-
+  setTimeout(
+    function(){
+      root.innerHTML = '';
+    },
+    5000
+  );
 }
 
 
-
-/* ==========================================
+/* =========================================================
    ESCAPE HTML
-========================================== */
+========================================================= */
 
 function esc(v){
 
+  return String(
+    v == null
+    ? ''
+    : v
+  )
+  .replace(
+    /[&<>'"]/g,
+    function(c){
 
-return String(
-v == null
-?
-''
-:
-v
-)
+      return {
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        "'":'&#39;',
+        '"':'&quot;'
+      }[c];
 
-.replace(
-/[&<>'"]/g,
-
-function(c){
-
-return {
-
-'&':'&amp;',
-
-'<':'&lt;',
-
-'>':'&gt;',
-
-"'":'&#39;',
-
-'"':'&quot;'
-
-}[c];
-
+    }
+  );
 }
-
-);
-
-}
-
 
 </script>
 
-
 </body>
-
 </html>
