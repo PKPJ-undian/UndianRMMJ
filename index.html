@@ -1,4 +1,4 @@
-a<!doctype html>
+<!doctype html>
 <html lang="ms">
 <head>
 <meta charset="utf-8">
@@ -37,13 +37,35 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 .tablewrap{overflow:auto;border:1px solid #e6ebf2;border-radius:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px 12px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}th{background:#f4f7fb;color:#394960;position:sticky;top:0}
 .badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750}.badge.red{background:#ffe4e7;color:#b22132}.badge.green{background:#dff8e9;color:#177044}.badge.orange{background:#fff0d6;color:#9b5d00}.badge.blue{background:#e3efff;color:#1859a8}.badge.purple{background:#eee4ff;color:#6a3ab2}
 .projectbox{border:1px solid #e3e9f1;border-radius:12px;padding:14px;margin-bottom:10px}.projectbox h3{margin:0 0 10px}.typechips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef3f8;font-size:12px}
-.dataset-card{border:1px solid #dce6f2;border-radius:14px;padding:14px;margin:12px 0;background:#fbfdff}.dataset-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.dataset-title{font-weight:800}.fileline{border:2px dashed #bdd0e8;border-radius:12px;padding:16px;background:#fafdff;margin-top:12px}.fileline input{width:100%}
+.dataset-card{border:1px solid #dce6f2;border-radius:14px;padding:14px;margin:12px 0;background:#fbfdff}.dataset-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.dataset-title{font-weight:800}.fileline{border:2px dashed #bdd0e8;border-radius:12px;padding:16px;background:#fafdff;margin-top:12px}.fileline input{width:100%}.race-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.race-box{border:1px solid #dbe5f0;border-radius:13px;padding:13px;background:#fff}.race-box h4{margin:0 0 10px;font-size:14px}.race-box .fileline{margin-top:10px;padding:12px}.danger-zone{border:1px solid #ffd2d7;background:#fff8f9}
 .tabs{display:flex;gap:8px;margin-bottom:14px}.tabbtn{border:1px solid #dce5f1;background:#f7f9fc;padding:10px 14px;border-radius:10px;font-weight:750;cursor:pointer}.tabbtn.active{background:#1478ff;color:#fff;border-color:#1478ff}.tabcontent{display:none}.tabcontent.active{display:block}
 .checkgrid{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.checkchip{display:flex;align-items:center;gap:7px;border:1px solid #dce5ef;background:#f9fbfe;border-radius:999px;padding:8px 11px;font-size:12px}
 .summarybar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}.summarypill{background:#f1f5fa;border-radius:10px;padding:9px 11px;font-size:12px;font-weight:700}
+
+.progress-overlay{display:none;position:fixed;inset:0;background:rgba(8,24,52,.48);backdrop-filter:blur(3px);z-index:99999;align-items:center;justify-content:center;padding:20px}
+.progress-overlay.show{display:flex}
+.progress-modal{width:min(620px,96vw);background:#fff;border-radius:20px;padding:24px;box-shadow:0 24px 80px rgba(4,24,55,.28);border:1px solid #dfe8f3}
+.progress-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.progress-head h3{margin:0;font-size:21px}.progress-head p{margin:5px 0 0;color:#6d7b91;font-size:13px}
+.progress-percent{font-size:30px;font-weight:900;color:#1478ff;min-width:76px;text-align:right}
+.progress-track{height:14px;background:#e9eff7;border-radius:999px;overflow:hidden;margin:8px 0 16px}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#1478ff,#13a564);border-radius:999px;transition:width .25s ease}
+.progress-stage{font-weight:800;font-size:14px;margin-bottom:5px}
+.progress-detail{font-size:12px;color:#6f7c90;min-height:18px;word-break:break-word}
+.progress-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.progress-stat{background:#f5f8fc;border:1px solid #e4eaf2;border-radius:11px;padding:10px}
+.progress-stat b{display:block;font-size:18px;margin-top:3px}.progress-stat span{font-size:10px;color:#718096}
+.progress-note{margin-top:14px;padding:10px 12px;border-radius:10px;background:#fff7e7;color:#865d12;font-size:11px}
+.progress-actions{display:flex;justify-content:flex-end;margin-top:16px}
+.progress-actions .btn{display:none}
+.progress-actions .btn.show{display:inline-block}
+body.migration-busy{overflow:hidden}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:700px){.progress-stats{grid-template-columns:1fr 1fr}}
+
 .footer{font-size:11px;color:#8b97a8;margin-top:22px}.muted{color:#7d8898}.apiBox{max-width:760px}
 @media(max-width:1250px){.cards{grid-template-columns:repeat(3,1fr)}.grid4,.grid5,.grid6{grid-template-columns:1fr 1fr}}
-@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid4,.grid5,.grid6{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid4,.grid5,.grid6,.race-grid{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
 </style>
 </head>
 
@@ -81,9 +103,9 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
     <div class="card green"><div class="label">Jumlah Pemohon</div><div class="metric" id="mApplicants">0</div></div>
     <div class="card orange"><div class="label">Jenis Berganda Projek Sama</div><div class="metric" id="mSameProject">0</div></div>
     <div class="card cyan"><div class="label">Pemohon Antara Projek</div><div class="metric" id="mCrossProject">0</div></div>
-    <div class="card blue"><div class="label">Kuota Melayu</div><div class="metric" id="mMelayu">0</div></div>
-    <div class="card orange"><div class="label">Kuota Cina</div><div class="metric" id="mCina">0</div></div>
-    <div class="card green"><div class="label">Kuota India</div><div class="metric" id="mIndia">0</div></div>
+    <div class="card blue"><div class="label">Unit Melayu</div><div class="metric" id="mMelayu">0</div></div>
+    <div class="card orange"><div class="label">Unit Cina</div><div class="metric" id="mCina">0</div></div>
+    <div class="card green"><div class="label">Unit India</div><div class="metric" id="mIndia">0</div></div>
     <div class="card purple"><div class="label">Pemenang Direkod</div><div class="metric" id="mWinners">0</div></div>
     <div class="card red"><div class="label">Jumlah Ditapis</div><div class="metric" id="mFiltered">0</div></div>
   </div>
@@ -92,6 +114,12 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
     <h2>Status Projek, Jenis Rumah & Kaum</h2>
     <p>Ringkasan semua data yang telah dimasukkan ke sistem.</p>
     <div id="projectSummary"><div class="muted">Belum ada data.</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Tally Unit Undian & Pemohon Berjaya</h2>
+    <p>Sistem membandingkan jumlah unit yang ditetapkan bagi setiap kaum dengan bilangan pemohon yang telah berjaya.</p>
+    <div id="quotaTallyTable" class="tablewrap"></div>
   </div>
 </section>
 
@@ -108,14 +136,14 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 
     <div id="fileTab" class="tabcontent active">
       <div class="notice info">
-        <strong>INFO FORMAT DATA</strong><br>Tambah satu dataset bagi setiap <strong>projek / jenis / kaum</strong> yang hendak dibandingkan. Maklumat utama ialah <strong>No. Siri, Nama Pemohon, No. KP dan Kaum</strong>. Setiap projek dipecahkan kepada kuota <strong>Melayu, Cina dan India</strong>. Jika fail sudah mempunyai kolum KAUM/BANGSA, pilih "Auto dari fail"; jika fail diasingkan mengikut kaum, pilih kaum pada dataset.
+        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem terus menyediakan 3 ruang berasingan: <strong>Melayu, Cina dan India</strong>. Upload fail Excel mengikut kaum pada ruang masing-masing dan masukkan <strong>jumlah unit yang akan diundi</strong>. Maklumat pemohon utama ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
       </div>
 
       <div id="datasetList"></div>
 
       <div class="actions">
-        <button class="btn gray" onclick="addDataset()">+ Tambah Projek Lagi</button>
-        <button class="btn primary" onclick="importAllDatasets()">Import Semua Data</button>
+        <button class="btn gray" onclick="addDataset()">+ Tambah Projek / Jenis Lagi</button>
+        <button id="importAllBtn" class="btn primary" onclick="importAllDatasets()">Import Semua Data</button>
       </div>
     </div>
 
@@ -156,6 +184,20 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
       <button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button>
     </div>
     <div id="applicantTable" class="tablewrap"></div>
+  </div>
+
+  <div class="panel danger-zone">
+    <h2>Padam Data / Reset Ujian</h2>
+    <p>Untuk data percubaan, tuan boleh padam satu projek/jenis/kaum sahaja atau reset semua data operasi. CONFIG dan Audit Trail dikekalkan.</p>
+    <div class="grid3">
+      <div class="field"><label>Projek untuk dipadam</label><input id="deleteProject" placeholder="Contoh: TAMAN MAWAR"></div>
+      <div class="field"><label>Jenis Rumah (kosong = semua jenis)</label><input id="deleteType" placeholder="Contoh: JENIS A"></div>
+      <div class="field"><label>Kaum (kosong = semua kaum)</label><select id="deleteRace"><option value="">Semua Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
+    </div>
+    <div class="actions">
+      <button class="btn danger" onclick="deleteSelectedData()">Padam Data Dipilih</button>
+      <button class="btn danger" onclick="resetAllTestData()">Reset Semua Data Ujian</button>
+    </div>
   </div>
 </section>
 
@@ -272,6 +314,41 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </section>
 
 
+
+<div id="migrationProgress" class="progress-overlay" aria-live="polite">
+  <div class="progress-modal">
+    <div class="progress-head">
+      <div>
+        <h3 id="progressTitle">Memproses Data</h3>
+        <p id="progressSubtitle">Sila tunggu sehingga proses selesai.</p>
+      </div>
+      <div id="progressPercent" class="progress-percent">0%</div>
+    </div>
+
+    <div class="progress-track">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
+
+    <div id="progressStage" class="progress-stage">Menyediakan proses...</div>
+    <div id="progressDetail" class="progress-detail">Jangan tutup atau refresh halaman ini.</div>
+
+    <div class="progress-stats">
+      <div class="progress-stat"><span>Fail selesai</span><b id="progressFiles">0 / 0</b></div>
+      <div class="progress-stat"><span>Rekod dibaca</span><b id="progressRows">0</b></div>
+      <div class="progress-stat"><span>Rekod disimpan</span><b id="progressSaved">0</b></div>
+      <div class="progress-stat"><span>Duplikasi</span><b id="progressDuplicate">0</b></div>
+    </div>
+
+    <div id="progressNote" class="progress-note">
+      Proses sedang berjalan. Jangan tutup tab browser sehingga status menunjukkan SIAP.
+    </div>
+
+    <div class="progress-actions">
+      <button id="progressCloseBtn" class="btn primary" onclick="closeMigrationProgress()">Tutup</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 <div class="footer">STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
 
@@ -290,7 +367,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.4.0';
+const MIN_API_VERSION = '2.5.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -451,14 +528,15 @@ async function loadDashboard(){
     document.getElementById('mApplicants').textContent = s.applicants || 0;
     document.getElementById('mSameProject').textContent = s.sameProject || 0;
     document.getElementById('mCrossProject').textContent = s.crossProject || 0;
-    const races = s.races || {};
-    document.getElementById('mMelayu').textContent = races.MELAYU || 0;
-    document.getElementById('mCina').textContent = races.CINA || 0;
-    document.getElementById('mIndia').textContent = races.INDIA || 0;
+    const units = s.unitQuota || {};
+    document.getElementById('mMelayu').textContent = units.MELAYU || 0;
+    document.getElementById('mCina').textContent = units.CINA || 0;
+    document.getElementById('mIndia').textContent = units.INDIA || 0;
     document.getElementById('mWinners').textContent = s.winners || 0;
     document.getElementById('mFiltered').textContent = s.filtered || 0;
 
     renderProjects(d.projects || {});
+    renderTable('quotaTallyTable',d.quotaTally || []);
   }catch(err){
     toast(err.message,'bad');
   }
@@ -491,7 +569,7 @@ function renderProjects(projects){
 
 
 /* =========================================================
-   DATASET MULTI-PROJEK
+   PROJEK / JENIS + 3 KAUM
 ========================================================= */
 
 function addDataset(){
@@ -503,17 +581,28 @@ function addDataset(){
   div.className = 'dataset-card';
   div.dataset.id = id;
 
+  function raceBox(race,label){
+    return '<div class="race-box" data-race="'+race+'">'+
+      '<h4>'+label+'</h4>'+
+      '<div class="field"><label>Jumlah Unit Akan Diundi</label><input class="race-units" type="number" min="0" step="1" placeholder="Contoh: 20"></div>'+
+      '<div class="fileline"><strong>Fail Pemohon '+label+'</strong><br><br><input class="race-file" type="file" accept=".xlsx,.xls,.csv"></div>'+
+    '</div>';
+  }
+
   div.innerHTML =
     '<div class="dataset-head">'+
-      '<div class="dataset-title">Dataset Projek '+id+'</div>'+
+      '<div class="dataset-title">Projek / Jenis '+id+'</div>'+
       '<button class="btn danger small" onclick="removeDataset('+id+')">Buang</button>'+
     '</div>'+
-    '<div class="grid3">'+
+    '<div class="grid2">'+
       '<div class="field"><label>Nama Projek</label><input class="ds-project" placeholder="Contoh: TAMAN MAWAR"></div>'+
       '<div class="field"><label>Jenis Rumah</label><input class="ds-type" placeholder="Contoh: JENIS A"></div>'+
-      '<div class="field"><label>Kaum / Kuota</label><select class="ds-race"><option value="">Auto dari fail</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>'+
     '</div>'+
-    '<div class="fileline"><strong>Pilih Excel / CSV bagi dataset ini</strong><br><br><input class="ds-file" type="file" accept=".xlsx,.xls,.csv"></div>';
+    '<div class="race-grid">'+
+      raceBox('MELAYU','Melayu')+
+      raceBox('CINA','Cina')+
+      raceBox('INDIA','India')+
+    '</div>';
 
   root.appendChild(div);
 }
@@ -523,90 +612,377 @@ function removeDataset(id){
   if(card) card.remove();
 }
 
+
+function openMigrationProgress(title,totalFiles){
+  document.body.classList.add('migration-busy');
+  const overlay = document.getElementById('migrationProgress');
+  overlay.classList.add('show');
+
+  document.getElementById('progressTitle').textContent = title || 'Memindahkan Data';
+  document.getElementById('progressSubtitle').textContent = 'Sistem sedang membaca fail, menyimpan kuota dan memindahkan rekod ke database.';
+  document.getElementById('progressPercent').textContent = '0%';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressStage').textContent = 'Menyediakan proses...';
+  document.getElementById('progressDetail').textContent = 'Jangan tutup atau refresh halaman ini.';
+  document.getElementById('progressFiles').textContent = '0 / '+Number(totalFiles || 0);
+  document.getElementById('progressRows').textContent = '0';
+  document.getElementById('progressSaved').textContent = '0';
+  document.getElementById('progressDuplicate').textContent = '0';
+  document.getElementById('progressNote').textContent = 'Proses sedang berjalan. Jangan tutup tab browser sehingga status menunjukkan SIAP.';
+  document.getElementById('progressCloseBtn').classList.remove('show');
+
+  const btn = document.getElementById('importAllBtn');
+  if(btn) btn.disabled = true;
+}
+
+function updateMigrationProgress(percent,stage,detail,stats){
+  const safe = Math.max(0,Math.min(100,Math.round(Number(percent || 0))));
+  document.getElementById('progressPercent').textContent = safe+'%';
+  document.getElementById('progressFill').style.width = safe+'%';
+
+  if(stage !== undefined) document.getElementById('progressStage').textContent = stage;
+  if(detail !== undefined) document.getElementById('progressDetail').textContent = detail;
+
+  stats = stats || {};
+  if(stats.filesDone !== undefined || stats.totalFiles !== undefined){
+    const current = stats.filesDone !== undefined ? stats.filesDone : 0;
+    const total = stats.totalFiles !== undefined ? stats.totalFiles : 0;
+    document.getElementById('progressFiles').textContent = current+' / '+total;
+  }
+  if(stats.rowsRead !== undefined) document.getElementById('progressRows').textContent = Number(stats.rowsRead || 0).toLocaleString('ms-MY');
+  if(stats.saved !== undefined) document.getElementById('progressSaved').textContent = Number(stats.saved || 0).toLocaleString('ms-MY');
+  if(stats.duplicate !== undefined) document.getElementById('progressDuplicate').textContent = Number(stats.duplicate || 0).toLocaleString('ms-MY');
+}
+
+function finishMigrationProgress(summary){
+  updateMigrationProgress(
+    100,
+    'SIAP',
+    summary || 'Semua data telah berjaya diproses.',
+    {}
+  );
+  document.getElementById('progressTitle').textContent = 'Migrasi Data Selesai';
+  document.getElementById('progressSubtitle').textContent = 'Data telah dihantar ke database dan paparan sistem telah dikemas kini.';
+  document.getElementById('progressNote').textContent = 'Proses selesai. Anda boleh tutup paparan ini dan teruskan semakan data.';
+  document.getElementById('progressCloseBtn').classList.add('show');
+  document.body.classList.remove('migration-busy');
+
+  const btn = document.getElementById('importAllBtn');
+  if(btn) btn.disabled = false;
+}
+
+function failMigrationProgress(message){
+  document.getElementById('progressTitle').textContent = 'Proses Tidak Selesai';
+  document.getElementById('progressStage').textContent = 'RALAT';
+  document.getElementById('progressDetail').textContent = message || 'Berlaku ralat semasa memproses data.';
+  document.getElementById('progressNote').textContent = 'Semak mesej ralat di atas. Data yang sempat disimpan sebelum ralat kekal dalam database.';
+  document.getElementById('progressCloseBtn').classList.add('show');
+  document.body.classList.remove('migration-busy');
+
+  const btn = document.getElementById('importAllBtn');
+  if(btn) btn.disabled = false;
+}
+
+function closeMigrationProgress(){
+  document.getElementById('migrationProgress').classList.remove('show');
+  document.body.classList.remove('migration-busy');
+}
+
+
 async function importAllDatasets(){
+  let progressOpened = false;
+
   try{
     const cards = Array.from(document.querySelectorAll('.dataset-card'));
-    const activeCards = cards.filter(card => card.querySelector('.ds-file').files[0]);
-
-    if(!activeCards.length){
-      throw new Error('Pilih sekurang-kurangnya satu fail projek.');
-    }
-
-    let totalRead = 0;
     let totalImported = 0;
     let totalDuplicate = 0;
     let totalInvalid = 0;
-    let lastCross = 0;
-    let lastSame = 0;
     let processedFiles = 0;
+    let lastCross = 0;
+    let totalRowsRead = 0;
 
-    if(!confirm('Proses '+activeCards.length+' fail/dataset dan simpan semua rekod ke Google Sheet?')) return;
+    const jobs = [];
 
-    for(const card of activeCards){
+    cards.forEach(function(card){
       const project = card.querySelector('.ds-project').value.trim();
-      const type = card.querySelector('.ds-type').value.trim();
-      const race = card.querySelector('.ds-race').value.trim();
-      const file = card.querySelector('.ds-file').files[0];
+      const type = card.querySelector('.ds-type').value.trim() || 'TIDAK DINYATAKAN';
 
-      if(!project){
-        throw new Error('Nama Projek wajib diisi untuk Dataset Projek '+card.dataset.id+'.');
+      card.querySelectorAll('.race-box').forEach(function(box){
+        const race = box.dataset.race;
+        const file = box.querySelector('.race-file').files[0];
+        const unitsText = box.querySelector('.race-units').value.trim();
+
+        if(file || unitsText !== ''){
+          jobs.push({
+            card,
+            project,
+            type,
+            race,
+            file,
+            unitsText,
+            parsedRows:[],
+            parsedInvalid:0,
+            chunkCount:0
+          });
+        }
+      });
+    });
+
+    if(!jobs.length){
+      throw new Error('Pilih sekurang-kurangnya satu fail kaum atau masukkan jumlah unit.');
+    }
+
+    for(const job of jobs){
+      if(!job.project){
+        throw new Error('Nama Projek wajib diisi untuk Projek / Jenis '+job.card.dataset.id+'.');
+      }
+      if(job.unitsText === ''){
+        throw new Error('Masukkan jumlah unit bagi '+job.race+' untuk '+job.project+' · '+job.type+'.');
       }
 
-      toast('Membaca Dataset Projek '+card.dataset.id+'...','info');
+      const units = Number(job.unitsText);
+      if(!Number.isInteger(units) || units < 0){
+        throw new Error('Jumlah unit '+job.race+' mesti nombor bulat 0 atau lebih.');
+      }
+    }
 
-      const parsed = await readApplicantFileSmart(file, project, type, race);
-      const rows = parsed.rows;
+    const fileJobs = jobs.filter(job=>!!job.file);
+    const totalFiles = fileJobs.length;
 
-      if(!rows.length){
-        throw new Error('Tiada rekod pemohon sah dijumpai dalam '+file.name+'.');
+    if(!confirm(
+      'Simpan jumlah unit dan import '+totalFiles+' fail kaum yang dipilih?\n\n'+
+      'Paparan progress akan menunjukkan status sehingga proses benar-benar selesai.'
+    )) return;
+
+    openMigrationProgress('Memindahkan Data Pemohon', totalFiles);
+    progressOpened = true;
+
+    /* ---------------------------------------------------------
+       FASA 1: BACA SEMUA FAIL
+       0% - 20%
+    --------------------------------------------------------- */
+
+    updateMigrationProgress(
+      2,
+      'Fasa 1/3 · Membaca fail',
+      totalFiles ? 'Menyediakan '+totalFiles+' fail untuk diproses...' : 'Tiada fail pemohon. Sistem hanya akan menyimpan kuota.',
+      {filesDone:0,totalFiles:totalFiles,rowsRead:0,saved:0,duplicate:0}
+    );
+
+    let readFiles = 0;
+
+    for(const job of jobs){
+      if(!job.file) continue;
+
+      const beforePct = totalFiles ? 2 + (readFiles / totalFiles) * 16 : 18;
+
+      updateMigrationProgress(
+        beforePct,
+        'Fasa 1/3 · Membaca fail '+(readFiles+1)+' / '+totalFiles,
+        job.project+' · '+job.type+' · '+job.race+' · '+job.file.name,
+        {
+          filesDone:readFiles,
+          totalFiles:totalFiles,
+          rowsRead:totalRowsRead,
+          saved:totalImported,
+          duplicate:totalDuplicate
+        }
+      );
+
+      const parsed = await readApplicantFileSmart(
+        job.file,
+        job.project,
+        job.type,
+        job.race
+      );
+
+      if(!parsed.rows.length){
+        throw new Error('Tiada rekod pemohon sah dijumpai dalam '+job.file.name+'.');
       }
 
-      totalRead += rows.length;
-      totalInvalid += parsed.invalidRows || 0;
+      job.parsedRows = parsed.rows;
+      job.parsedInvalid = Number(parsed.invalidRows || 0);
+      job.chunkCount = Math.ceil(job.parsedRows.length / 400);
 
-      // Hantar secara batch kecil supaya fail besar / banyak projek lebih stabil.
+      totalRowsRead += job.parsedRows.length;
+      totalInvalid += job.parsedInvalid;
+      readFiles++;
+
+      updateMigrationProgress(
+        totalFiles ? 2 + (readFiles / totalFiles) * 18 : 20,
+        'Fasa 1/3 · Fail berjaya dibaca',
+        job.file.name+' · '+job.parsedRows.length.toLocaleString('ms-MY')+' rekod sah',
+        {
+          filesDone:readFiles,
+          totalFiles:totalFiles,
+          rowsRead:totalRowsRead,
+          saved:totalImported,
+          duplicate:totalDuplicate
+        }
+      );
+    }
+
+    /* ---------------------------------------------------------
+       FASA 2: SIMPAN KUOTA + REKOD KE API
+       20% - 92%
+    --------------------------------------------------------- */
+
+    const totalApiOps =
+      jobs.length +
+      jobs.reduce((sum,job)=>sum+Number(job.chunkCount || 0),0);
+
+    let completedApiOps = 0;
+
+    function apiPercent(){
+      if(!totalApiOps) return 92;
+      return 20 + (completedApiOps / totalApiOps) * 72;
+    }
+
+    for(const job of jobs){
+      const units = Number(job.unitsText);
+
+      updateMigrationProgress(
+        apiPercent(),
+        'Fasa 2/3 · Menyimpan kuota',
+        job.project+' · '+job.type+' · '+job.race+' · '+units+' unit',
+        {
+          filesDone:processedFiles,
+          totalFiles:totalFiles,
+          rowsRead:totalRowsRead,
+          saved:totalImported,
+          duplicate:totalDuplicate
+        }
+      );
+
+      await api({
+        action:'setQuota',
+        project:job.project,
+        type:job.type,
+        race:job.race,
+        units:units
+      });
+
+      completedApiOps++;
+
+      if(!job.file) continue;
+
+      const rows = job.parsedRows;
       const chunkSize = 400;
+
       for(let i=0;i<rows.length;i+=chunkSize){
         const chunk = rows.slice(i,i+chunkSize);
-        toast(
-          'Dataset '+card.dataset.id+': menyimpan '+
-          Math.min(i+chunk.length,rows.length)+' / '+rows.length+' rekod...',
-          'info'
+        const endRow = Math.min(i+chunk.length,rows.length);
+
+        updateMigrationProgress(
+          apiPercent(),
+          'Fasa 2/3 · Memindahkan rekod',
+          job.project+' · '+job.type+' · '+job.race+
+          ' · '+endRow.toLocaleString('ms-MY')+' / '+rows.length.toLocaleString('ms-MY'),
+          {
+            filesDone:processedFiles,
+            totalFiles:totalFiles,
+            rowsRead:totalRowsRead,
+            saved:totalImported,
+            duplicate:totalDuplicate
+          }
         );
 
         const d = await api({
           action:'importApplicants',
           rows:chunk,
-          source:'FAIL_PELBAGAI_PROJEK'
+          source:'FAIL_'+job.race
         });
 
         totalImported += Number(d.imported || 0);
-        totalDuplicate += Number(d.duplicates || 0);
+        totalDuplicate += Number(d.duplicates || d.skipped || 0);
         totalInvalid += Number(d.invalid || 0);
         lastCross = Number(d.crossProjectCount || 0);
-        lastSame = Number(d.sameProjectCount || 0);
+        completedApiOps++;
+
+        updateMigrationProgress(
+          apiPercent(),
+          'Fasa 2/3 · Rekod sedang disimpan',
+          job.race+' · '+endRow.toLocaleString('ms-MY')+' / '+rows.length.toLocaleString('ms-MY')+' selesai dihantar',
+          {
+            filesDone:processedFiles,
+            totalFiles:totalFiles,
+            rowsRead:totalRowsRead,
+            saved:totalImported,
+            duplicate:totalDuplicate
+          }
+        );
       }
 
       processedFiles++;
+
+      updateMigrationProgress(
+        apiPercent(),
+        'Fasa 2/3 · Fail selesai dimigrasi',
+        job.file.name+' telah selesai.',
+        {
+          filesDone:processedFiles,
+          totalFiles:totalFiles,
+          rowsRead:totalRowsRead,
+          saved:totalImported,
+          duplicate:totalDuplicate
+        }
+      );
     }
 
-    toast(
-      'Siap: '+processedFiles+' fail diproses · '+
-      totalImported+' rekod disimpan · '+
-      totalDuplicate+' duplikasi · '+
-      totalInvalid+' tidak lengkap · '+
-      lastCross+' pertindihan antara projek.',
-      'good'
+    /* ---------------------------------------------------------
+       FASA 3: REFRESH PAPARAN
+       92% - 100%
+    --------------------------------------------------------- */
+
+    updateMigrationProgress(
+      94,
+      'Fasa 3/3 · Mengemas kini dashboard',
+      'Membaca semula rekod daripada database...',
+      {
+        filesDone:processedFiles,
+        totalFiles:totalFiles,
+        rowsRead:totalRowsRead,
+        saved:totalImported,
+        duplicate:totalDuplicate
+      }
     );
 
     await loadDashboard();
+
+    updateMigrationProgress(
+      97,
+      'Fasa 3/3 · Mengemas kini semakan',
+      'Mengemas kini senarai projek dan rekod pemohon...',
+      {
+        filesDone:processedFiles,
+        totalFiles:totalFiles,
+        rowsRead:totalRowsRead,
+        saved:totalImported,
+        duplicate:totalDuplicate
+      }
+    );
+
     await loadProjectFilters();
     await loadData('applicants','applicantTable');
+
+    const summary =
+      processedFiles+' fail selesai · '+
+      totalImported.toLocaleString('ms-MY')+' rekod disimpan · '+
+      totalDuplicate.toLocaleString('ms-MY')+' duplikasi · '+
+      totalInvalid.toLocaleString('ms-MY')+' tidak lengkap · '+
+      lastCross.toLocaleString('ms-MY')+' pertindihan antara projek.';
+
+    finishMigrationProgress(summary);
+
+    toast('Migrasi siap sepenuhnya. '+summary,'good');
+
   }catch(err){
+    if(progressOpened){
+      failMigrationProgress(err.message);
+    }
     toast(err.message,'bad');
   }
 }
-
 
 /* =========================================================
    INPUT MANUAL
@@ -958,6 +1334,52 @@ function getFirst(obj,aliases){
 }
 
 
+
+/* =========================================================
+   PADAM / RESET DATA UJIAN
+========================================================= */
+
+async function deleteSelectedData(){
+  try{
+    const project = document.getElementById('deleteProject').value.trim();
+    const type = document.getElementById('deleteType').value.trim();
+    const race = document.getElementById('deleteRace').value.trim();
+
+    if(!project) throw new Error('Masukkan projek yang hendak dipadam.');
+
+    const scope = project + (type ? ' · '+type : '') + (race ? ' · '+race : ' · SEMUA KAUM');
+    if(!confirm('PADAM data untuk '+scope+'? Rekod pemohon, pemenang, tapisan dan jumlah unit yang sepadan akan dipadam.')) return;
+
+    const d = await api({action:'deleteDataScope',project:project,type:type,race:race});
+    toast('Data dipadam: '+Number(d.total || 0)+' rekod berkaitan.','good');
+
+    await loadDashboard();
+    await loadProjectFilters();
+    await loadData('applicants','applicantTable');
+  }catch(err){
+    toast(err.message,'bad');
+  }
+}
+
+async function resetAllTestData(){
+  try{
+    const answer = prompt('Taip tepat: PADAM SEMUA DATA UJIAN');
+    if(answer === null) return;
+    if(answer.trim().toUpperCase() !== 'PADAM SEMUA DATA UJIAN'){
+      throw new Error('Reset dibatalkan kerana frasa pengesahan tidak tepat.');
+    }
+
+    const d = await api({action:'resetTestData',confirm:answer});
+    toast('Semua data operasi ujian telah dipadam. Audit Trail dikekalkan.','good');
+
+    await loadDashboard();
+    await loadProjectFilters();
+    await loadData('applicants','applicantTable');
+  }catch(err){
+    toast(err.message,'bad');
+  }
+}
+
 /* =========================================================
    SEMAKAN PERTINDIHAN
 ========================================================= */
@@ -1142,6 +1564,9 @@ function formatCell(key,val){
   if(u === 'BERJAYA') return '<span class="badge green">BERJAYA</span>';
   if(u === 'PERLU JEJAK') return '<span class="badge orange">PERLU JEJAK</span>';
   if(u === 'LAYAK') return '<span class="badge blue">LAYAK</span>';
+  if(u === 'CUKUP') return '<span class="badge green">CUKUP</span>';
+  if(u === 'BELUM CUKUP') return '<span class="badge orange">BELUM CUKUP</span>';
+  if(u === 'LEBIH KUOTA') return '<span class="badge red">LEBIH KUOTA</span>';
   if(u === 'PADANAN NAMA + IC') return '<span class="badge green">PADANAN NAMA + IC</span>';
   if(u === 'SEMAK NAMA') return '<span class="badge orange">SEMAK NAMA</span>';
   if(u === 'ANTARA_PROJEK') return '<span class="badge purple">ANTARA PROJEK</span>';
