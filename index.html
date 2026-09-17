@@ -6,6 +6,8 @@
 <title>STU-RMMJ | Sistem Tapisan Undian RMMJ</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -34,7 +36,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 .btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer}.btn.primary{background:#1478ff;color:#fff}.btn.green{background:#13a564;color:#fff}.btn.orange{background:#f2a222;color:#fff}.btn.gray{background:#edf1f6;color:#23344e}.btn.danger{background:#e84f5f;color:#fff}.btn.small{padding:8px 11px;font-size:12px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .notice{padding:12px 14px;border-radius:10px;margin:12px 0;font-size:13px}.notice.info{position:relative;padding:14px 16px 14px 52px;background:#eaf4ff;color:#144f8d;border:1px solid #cfe5ff}.notice.info::before{content:'i';position:absolute;left:15px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1478ff;color:#fff;font-weight:900;font-family:Georgia,serif;font-size:17px;box-shadow:0 3px 10px rgba(20,120,255,.2)}.notice.good{background:#e9f9f0;color:#17633f}.notice.warn{background:#fff7e7;color:#865d12}.notice.bad{background:#fff0f1;color:#8c2630}
-.tablewrap{overflow:auto;border:1px solid #e6ebf2;border-radius:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px 12px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}th{background:#f4f7fb;color:#394960;position:sticky;top:0}
+.tablewrap{overflow:auto;border:1px solid #e6ebf2;border-radius:12px}.table-total{padding:10px 12px;background:#eef5ff;border-bottom:1px solid #dfe8f3;color:#24466f;font-size:12px;position:sticky;left:0}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px 12px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}th{background:#f4f7fb;color:#394960;position:sticky;top:0}
 .badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750}.badge.red{background:#ffe4e7;color:#b22132}.badge.green{background:#dff8e9;color:#177044}.badge.orange{background:#fff0d6;color:#9b5d00}.badge.blue{background:#e3efff;color:#1859a8}.badge.purple{background:#eee4ff;color:#6a3ab2}
 .projectbox{border:1px solid #e3e9f1;border-radius:12px;padding:14px;margin-bottom:10px}.projectbox h3{margin:0 0 10px}.typechips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef3f8;font-size:12px}
 .dataset-card{border:1px solid #dce6f2;border-radius:14px;padding:14px;margin:12px 0;background:#fbfdff}.dataset-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.dataset-title{font-weight:800}.fileline{border:2px dashed #bdd0e8;border-radius:12px;padding:16px;background:#fafdff;margin-top:12px}.fileline input{width:100%}.race-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.race-box{border:1px solid #dbe5f0;border-radius:13px;padding:13px;background:#fff}.race-box h4{margin:0 0 10px;font-size:14px}.race-box .fileline{margin-top:10px;padding:12px}.danger-zone{border:1px solid #ffd2d7;background:#fff8f9}
@@ -80,9 +82,9 @@ body.migration-busy{overflow:hidden}
     <button class="active" data-page="dashboard">Dashboard</button>
     <button data-page="pemohon">Pengurusan Data</button>
     <button data-page="watchlist">Semakan Pemohon</button>
-    <button data-page="pemenang">Rekod Pemenang</button>
-    <button data-page="ditapis">Senarai Ditapis</button>
-    <button data-page="bersih">Senarai Bersih</button>
+    <button data-page="pemenang">Pemohon Berjaya</button>
+    <button data-page="ditapis">Tidak Layak Undian Seterusnya</button>
+    <button data-page="bersih">Layak Ke Undian Seterusnya</button>
     <button data-page="audit">Laporan & Audit</button>
   </div>
 </aside>
@@ -106,8 +108,8 @@ body.migration-busy{overflow:hidden}
     <div class="card blue"><div class="label">Unit Melayu</div><div class="metric" id="mMelayu">0</div></div>
     <div class="card orange"><div class="label">Unit Cina</div><div class="metric" id="mCina">0</div></div>
     <div class="card green"><div class="label">Unit India</div><div class="metric" id="mIndia">0</div></div>
-    <div class="card purple"><div class="label">Pemenang Direkod</div><div class="metric" id="mWinners">0</div></div>
-    <div class="card red"><div class="label">Jumlah Ditapis</div><div class="metric" id="mFiltered">0</div></div>
+    <div class="card purple"><div class="label">Pemohon Berjaya</div><div class="metric" id="mWinners">0</div></div>
+    <div class="card red"><div class="label">Tidak Layak Seterusnya</div><div class="metric" id="mFiltered">0</div></div>
   </div>
 
   <div class="panel">
@@ -119,6 +121,7 @@ body.migration-busy{overflow:hidden}
   <div class="panel">
     <h2>Tally Unit Undian & Pemohon Berjaya</h2>
     <p>Sistem membandingkan jumlah unit yang ditetapkan bagi setiap kaum dengan bilangan pemohon yang telah berjaya.</p>
+    <div class="actions"><button class="btn gray" onclick="downloadTablePdf('quotaTallyTable','Tally Unit Undian dan Pemohon Berjaya','tally_unit_undian.pdf')">Muat Turun PDF</button></div>
     <div id="quotaTallyTable" class="tablewrap"></div>
   </div>
 </section>
@@ -181,7 +184,7 @@ body.migration-busy{overflow:hidden}
         <h2>Rekod Pemohon</h2>
         <p>Semua pemohon yang telah disimpan melalui fail atau input manual.</p>
       </div>
-      <button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button>
+      <div class="actions"><button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button><button class="btn primary" onclick="downloadTablePdf('applicantTable','Rekod Pemohon','rekod_pemohon.pdf')">Muat Turun PDF</button></div>
     </div>
     <div id="applicantTable" class="tablewrap"></div>
   </div>
@@ -233,6 +236,7 @@ body.migration-busy{overflow:hidden}
       <button class="btn orange" onclick="refreshWatchlist()">Semak Semula Semua Data</button>
       <button class="btn primary" onclick="runOverlapSearch()">Cari Pertindihan</button>
       <button class="btn green" onclick="downloadTableCsv('overlapTable','semakan_pertindihan.csv')">Muat Turun CSV</button>
+      <button class="btn primary" onclick="downloadTablePdf('overlapTable','Semakan Pertindihan Pemohon','semakan_pertindihan.pdf')">Muat Turun PDF</button>
     </div>
   </div>
 
@@ -244,58 +248,76 @@ body.migration-busy{overflow:hidden}
 
 <section id="pemenang" class="page">
   <div class="panel">
-    <h2>Import Pemenang Sesi Undian</h2>
-    <p>Selepas sesuatu sesi undian selesai, upload senarai pemenang. Auto-tapisan sedia ada kekal untuk jenis lain dalam projek yang sama.</p>
+    <h2>Import Pemohon Berjaya</h2>
+    <p>Masukkan satu projek dan jenis rumah yang telah selesai diundi. Upload fail pemohon berjaya secara berasingan mengikut kuota Melayu, Cina dan India.</p>
 
-    <div class="notice warn">
-      Semakan antara projek pada versi ini ialah untuk mengenal pasti pertindihan. Sistem tidak akan auto-batalkan projek lain sehingga peraturan kelayakan antara projek disahkan.
+    <div class="notice info">
+      <strong>ALIRAN PEMOHON BERJAYA</strong><br>Selepas fail berjaya dimasukkan, sistem akan cross-check No. KP dengan senarai jenis rumah lain dalam projek yang sama. Jika pemohon masih wujud dalam undian seterusnya, sistem akan mengenal pasti <strong>No. Siri undian seterusnya</strong> supaya bola pingpong tersebut boleh dikeluarkan sebelum sesi bermula.
     </div>
 
-    <div class="grid4">
-      <div class="field"><label>Projek</label><input id="winnerProject" placeholder="Contoh: TAMAN MAWAR"></div>
-      <div class="field"><label>Jenis Rumah</label><input id="winnerType" placeholder="Contoh: JENIS A"></div>
-      <div class="field"><label>Kaum / Kuota</label><select id="winnerRace"><option value="">Pilih Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
-      <div class="field"><label>Sesi Undian</label><input id="winnerSession" placeholder="Contoh: 9.00 PAGI"></div>
+    <div class="grid3">
+      <div class="field"><label>Nama Projek</label><input id="successProject" placeholder="Contoh: TAMAN MAWAR"></div>
+      <div class="field"><label>Jenis Rumah Yang Telah Diundi</label><input id="successType" placeholder="Contoh: JENIS A"></div>
+      <div class="field"><label>Sesi Undian</label><input id="successSession" placeholder="Contoh: 9.00 PAGI"></div>
     </div>
 
-    <div class="fileline">
-      <strong>Pilih fail Excel atau CSV pemenang</strong><br><br>
-      <input id="winnerFile" type="file" accept=".xlsx,.xls,.csv">
+    <div class="race-grid" id="successRaceGrid">
+      <div class="race-box" data-race="MELAYU"><h4>Melayu</h4><div class="fileline"><strong>Fail Pemohon Berjaya Melayu</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv"></div></div>
+      <div class="race-box" data-race="CINA"><h4>Cina</h4><div class="fileline"><strong>Fail Pemohon Berjaya Cina</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv"></div></div>
+      <div class="race-box" data-race="INDIA"><h4>India</h4><div class="fileline"><strong>Fail Pemohon Berjaya India</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv"></div></div>
     </div>
 
     <div class="actions">
-      <button class="btn green" onclick="importWinners()">Import Pemenang & Tapis Automatik</button>
-      <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula Pemenang</button>
+      <button class="btn green" onclick="importSuccessfulApplicants()">Import Semua Pemohon Berjaya</button>
+      <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula</button>
+      <button class="btn primary" onclick="downloadTablePdf('winnerTable','Pemohon Berjaya','pemohon_berjaya.pdf')">Muat Turun PDF</button>
     </div>
   </div>
 
-  <div class="panel"><h2>Rekod Pemenang</h2><div id="winnerTable" class="tablewrap"></div></div>
+  <div class="panel">
+    <h2>Pemohon Berjaya</h2>
+    <p>Jumlah dan senarai semua pemohon berjaya yang telah direkodkan.</p>
+    <div id="winnerTable" class="tablewrap"></div>
+  </div>
 </section>
 
 <section id="ditapis" class="page">
   <div class="panel">
-    <h2>Hasil Tapisan</h2>
-    <p>Pemohon yang tidak lagi layak bagi jenis lain dalam projek yang sama kerana telah berjaya dalam sesi terdahulu.</p>
+    <h2>Senarai Tidak Layak Untuk Undian Seterusnya</h2>
+    <p>Pilih undian yang akan berlangsung seterusnya. Sistem akan cross-check senarai tersebut dengan Pemohon Berjaya dan mengeluarkan No. Siri yang perlu dikeluarkan daripada bola pingpong.</p>
+
+    <div class="grid3">
+      <div class="field"><label>Projek Undian Seterusnya</label><input id="nextProject" placeholder="Contoh: TAMAN MAWAR"></div>
+      <div class="field"><label>Jenis Rumah Undian Seterusnya</label><input id="nextType" placeholder="Contoh: JENIS B"></div>
+      <div class="field"><label>Kaum / Kuota</label><select id="nextRace"><option value="">Pilih Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
+    </div>
+
     <div class="actions">
-      <button class="btn primary" onclick="loadData('filtered','filteredTable')">Muat Semula</button>
-      <button class="btn green" onclick="downloadTableCsv('filteredTable','senarai_ditapis.csv')">Muat Turun CSV</button>
+      <button class="btn danger" onclick="checkNextDrawExclusions()">Cross-Check & Keluarkan No. Siri</button>
+      <button class="btn primary" onclick="downloadTablePdf('nextExcludedTable','Tidak Layak Untuk Undian Seterusnya','tidak_layak_undian_seterusnya.pdf')">Muat Turun PDF</button>
+      <button class="btn green" onclick="downloadTableCsv('nextExcludedTable','tidak_layak_undian_seterusnya.csv')">Muat Turun CSV</button>
     </div>
   </div>
-  <div class="panel"><div id="filteredTable" class="tablewrap"></div></div>
+
+  <div class="panel">
+    <div id="nextExcludedSummary" class="notice warn">Belum dibuat cross-check.</div>
+    <div id="nextExcludedTable" class="tablewrap"></div>
+  </div>
 </section>
 
 <section id="bersih" class="page">
   <div class="panel">
-    <h2>Jana Senarai Bersih untuk Undian Seterusnya</h2>
-    <p>Pilih projek, jenis rumah dan kaum. Setiap kuota undian dijana secara berasingan untuk Melayu, Cina dan India.</p>
+    <h2>Senarai Layak Ke Undian Seterusnya</h2>
+    <p>Pilih projek, jenis rumah dan kaum. Senarai ini hanya mengandungi pemohon yang masih layak masuk ke sesi undian seterusnya.</p>
     <div class="grid3">
       <div class="field"><label>Projek</label><input id="cleanProject" placeholder="Contoh: TAMAN MAWAR"></div>
       <div class="field"><label>Jenis Rumah</label><input id="cleanType" placeholder="Contoh: JENIS B"></div>
       <div class="field"><label>Kaum / Kuota</label><select id="cleanRace"><option value="">Pilih Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
     </div>
     <div class="actions">
-      <button class="btn primary" onclick="generateCleanList()">Jana Senarai Bersih</button>
-      <button class="btn green" onclick="downloadTableCsv('cleanTable','senarai_bersih.csv')">Muat Turun CSV</button>
+      <button class="btn primary" onclick="generateCleanList()">Jana Senarai Layak</button>
+      <button class="btn green" onclick="downloadTableCsv('cleanTable','layak_undian_seterusnya.csv')">Muat Turun CSV</button>
+      <button class="btn primary" onclick="downloadTablePdf('cleanTable','Layak Ke Undian Seterusnya','layak_undian_seterusnya.pdf')">Muat Turun PDF</button>
     </div>
   </div>
   <div class="panel">
@@ -308,7 +330,7 @@ body.migration-busy{overflow:hidden}
   <div class="panel">
     <h2>Laporan & Audit Trail</h2>
     <p>Rekod import fail, input manual, semakan pertindihan dan proses tapisan.</p>
-    <button class="btn primary" onclick="loadData('audit','auditTable')">Muat Semula Audit</button>
+    <div class="actions"><button class="btn primary" onclick="loadData('audit','auditTable')">Muat Semula Audit</button><button class="btn gray" onclick="downloadTablePdf('auditTable','Laporan dan Audit Trail','laporan_audit.pdf')">Muat Turun PDF</button></div>
   </div>
   <div class="panel"><div id="auditTable" class="tablewrap"></div></div>
 </section>
@@ -367,7 +389,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.5.0';
+const MIN_API_VERSION = '2.7.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1452,46 +1474,98 @@ async function runOverlapSearch(){
 
 
 /* =========================================================
-   PEMENANG
+   PEMOHON BERJAYA - 1 PROJEK PECAH 3 KAUM
 ========================================================= */
 
-async function importWinners(){
+async function importSuccessfulApplicants(){
   try{
-    let rows = await readSheet('winnerFile');
-    if(!rows.length) throw new Error('Fail tiada rekod.');
+    const project = document.getElementById('successProject').value.trim();
+    const type = document.getElementById('successType').value.trim();
+    const session = document.getElementById('successSession').value.trim();
 
-    const project = document.getElementById('winnerProject').value.trim();
-    const type = document.getElementById('winnerType').value.trim();
-    const race = document.getElementById('winnerRace').value.trim();
-    const session = document.getElementById('winnerSession').value.trim();
-
-    if(!project || !type || !race){
-      throw new Error('Masukkan projek, jenis rumah dan kaum bagi sesi pemenang.');
+    if(!project || !type){
+      throw new Error('Masukkan projek dan jenis rumah yang telah diundi.');
     }
 
-    rows = rows.map(function(r){
-      return {
-        ...r,
-        PROJEK:getFirst(r,['PROJEK','Projek','NAMA PROJEK']) || project,
-        JENIS:getFirst(r,['JENIS','Jenis','JENIS RUMAH']) || type,
-        KAUM:normalizeRaceClient(getFirst(r,['KAUM','Bangsa','BANGSA','RACE','ETNIK']) || race),
-        SESI:getFirst(r,['SESI','Sesi','MASA']) || session
-      };
-    });
+    const boxes = Array.from(document.querySelectorAll('#successRaceGrid .race-box'));
+    const jobs = [];
 
-    if(!confirm('Import '+rows.length+' pemenang dan jalankan tapisan projek/jenis sedia ada?')) return;
+    for(const box of boxes){
+      const race = box.dataset.race;
+      const file = box.querySelector('.success-file').files[0];
+      if(!file) continue;
 
-    toast('Sedang mengimport pemenang dan menapis...','info');
+      const parsed = await readApplicantFileSmart(file,project,type,race);
+      if(!parsed.rows.length){
+        throw new Error('Tiada rekod sah dalam fail Pemohon Berjaya '+race+'.');
+      }
 
-    const d = await api({action:'importWinners',rows:rows,autoFilter:true});
-    toast('Siap: '+d.imported+' pemenang import, '+d.filtered+' rekod jenis lain ditapis.','good');
+      const rows = parsed.rows.map(function(r){
+        return {...r,SESI:session};
+      });
+
+      jobs.push({race,file,rows});
+    }
+
+    if(!jobs.length){
+      throw new Error('Pilih sekurang-kurangnya satu fail Pemohon Berjaya mengikut kaum.');
+    }
+
+    const totalRows = jobs.reduce((s,j)=>s+j.rows.length,0);
+    if(!confirm('Import '+totalRows+' Pemohon Berjaya daripada '+jobs.length+' fail kaum?')) return;
+
+    openMigrationProgress('Mengimport Pemohon Berjaya',jobs.length);
+    let imported=0, skipped=0, filtered=0, done=0;
+
+    for(const job of jobs){
+      const chunkSize=400;
+      for(let i=0;i<job.rows.length;i+=chunkSize){
+        const chunk=job.rows.slice(i,i+chunkSize);
+        updateMigrationProgress(
+          5 + ((done + i/job.rows.length)/jobs.length)*88,
+          'Memproses Pemohon Berjaya · '+job.race,
+          (i+chunk.length).toLocaleString('ms-MY')+' / '+job.rows.length.toLocaleString('ms-MY')+' rekod',
+          {filesDone:done,totalFiles:jobs.length,rowsRead:totalRows,saved:imported,duplicate:skipped}
+        );
+
+        const d=await api({action:'importWinners',rows:chunk,autoFilter:true});
+        imported += Number(d.imported||0);
+        skipped += Number(d.skipped||0);
+        filtered += Number(d.filtered||0);
+      }
+      done++;
+    }
 
     await loadDashboard();
     await loadData('winners','winnerTable');
     await refreshWatchlist();
+
+    finishMigrationProgress(
+      imported.toLocaleString('ms-MY')+' Pemohon Berjaya disimpan · '+
+      filtered.toLocaleString('ms-MY')+' rekod undian lain dikenal pasti tidak layak.'
+    );
+    toast('Pemohon Berjaya berjaya dikemas kini.','good');
   }catch(err){
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
     toast(err.message,'bad');
   }
+}
+
+async function checkNextDrawExclusions(){
+  try{
+    const project=document.getElementById('nextProject').value.trim();
+    const type=document.getElementById('nextType').value.trim();
+    const race=document.getElementById('nextRace').value.trim();
+    if(!project || !type || !race) throw new Error('Pilih projek, jenis rumah dan kaum untuk undian seterusnya.');
+
+    const d=await api({action:'nextDrawCheck',project:project,type:type,race:race});
+    const total=Number(d.total||0);
+    document.getElementById('nextExcludedSummary').innerHTML = total
+      ? '<strong>'+total.toLocaleString('ms-MY')+' bola pingpong / No. Siri perlu dikeluarkan</strong> sebelum undian '+esc(d.project)+' · '+esc(d.type)+' · '+esc(d.race)+'.'
+      : '<strong>0 rekod.</strong> Tiada Pemohon Berjaya terdahulu ditemui dalam senarai undian ini.';
+    renderTable('nextExcludedTable',d.rows||[]);
+    toast('Cross-check selesai: '+total+' rekod tidak layak.','good');
+  }catch(err){toast(err.message,'bad')}
 }
 
 
@@ -1519,9 +1593,9 @@ async function generateCleanList(){
     if(!project || !type || !race) throw new Error('Masukkan projek, jenis rumah dan kaum.');
 
     const d = await api({action:'cleanList',project:project,type:type,race:race});
-    document.getElementById('cleanSummary').textContent = d.total+' pemohon masih layak untuk '+d.project+' · '+d.type+' · '+d.race+'.';
+    document.getElementById('cleanSummary').textContent = 'JUMLAH LAYAK: '+Number(d.total||0).toLocaleString('ms-MY')+' pemohon · '+d.project+' · '+d.type+' · '+d.race+'.';
     renderTable('cleanTable',d.rows || []);
-    toast('Senarai bersih berjaya dijana.','good');
+    toast('Senarai layak ke undian seterusnya berjaya dijana.','good');
   }catch(err){
     toast(err.message,'bad');
   }
@@ -1533,25 +1607,25 @@ async function generateCleanList(){
 ========================================================= */
 
 function renderTable(targetId,rows,allowHtml=false){
-  state.lastTables[targetId] = rows;
+  state.lastTables[targetId] = rows || [];
   const root = document.getElementById(targetId);
 
   if(!rows || !rows.length){
-    root.innerHTML = '<div style="padding:18px" class="muted">Tiada rekod.</div>';
+    root.innerHTML = '<div class="table-total"><strong>Jumlah: 0 rekod</strong></div><div style="padding:18px" class="muted">Tiada rekod.</div>';
     return;
   }
 
   const headers = Object.keys(rows[0]);
-  const head = headers.map(function(h){return '<th>'+esc(h.replaceAll('_',' '))+'</th>'}).join('');
+  const head = '<th>BIL.</th>'+headers.map(function(h){return '<th>'+esc(h.replaceAll('_',' '))+'</th>'}).join('');
 
-  const body = rows.map(function(r){
-    return '<tr>'+headers.map(function(h){
+  const body = rows.map(function(r,index){
+    return '<tr><td><strong>'+(index+1)+'</strong></td>'+headers.map(function(h){
       if(allowHtml && h === 'TINDAKAN') return '<td>'+r[h]+'</td>';
       return '<td>'+formatCell(h,r[h])+'</td>';
     }).join('')+'</tr>';
   }).join('');
 
-  root.innerHTML = '<table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table>';
+  root.innerHTML = '<div class="table-total"><strong>Jumlah: '+rows.length.toLocaleString('ms-MY')+' rekod</strong></div><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table>';
 }
 
 function formatCell(key,val){
@@ -1579,6 +1653,58 @@ function formatDate(v){
   const d = new Date(v);
   if(isNaN(d)) return v;
   return d.toLocaleString('ms-MY');
+}
+
+function downloadTablePdf(targetId,title,filename){
+  const rows = state.lastTables[targetId] || [];
+  if(!rows.length){toast('Tiada data untuk dijadikan PDF.','bad');return}
+
+  if(!window.jspdf || !window.jspdf.jsPDF){
+    toast('Modul PDF belum dimuatkan. Refresh halaman dan cuba semula.','bad');
+    return;
+  }
+
+  const cleanRows = rows.map(function(r){
+    const copy={...r};
+    delete copy.TINDAKAN;
+    return copy;
+  });
+
+  const headers = Object.keys(cleanRows[0]);
+  const body = cleanRows.map(function(r,index){
+    return [String(index+1)].concat(headers.map(function(h){
+      let v=r[h];
+      if(v===null || v===undefined) return '';
+      if(h.includes('AT') || h==='TIMESTAMP') v=formatDate(v);
+      // Semua nilai, terutamanya No. KP dan No. Siri, dipaksa jadi teks dalam PDF.
+      return String(v);
+    }));
+  });
+
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  doc.setFontSize(14);
+  doc.text(String(title||'Laporan STU-RMMJ'),14,14);
+  doc.setFontSize(9);
+  doc.text('Jumlah: '+cleanRows.length.toLocaleString('ms-MY')+' rekod',14,20);
+  doc.text('Dijana: '+new Date().toLocaleString('ms-MY'),14,25);
+
+  doc.autoTable({
+    startY:30,
+    head:[[ 'BIL.' ].concat(headers.map(h=>h.replaceAll('_',' ')))],
+    body:body,
+    styles:{fontSize:6.8,cellPadding:1.5,overflow:'linebreak'},
+    headStyles:{fontSize:7,fontStyle:'bold'},
+    margin:{left:8,right:8},
+    theme:'grid',
+    didDrawPage:function(data){
+      const pageCount=doc.internal.getNumberOfPages();
+      doc.setFontSize(7);
+      doc.text('STU-RMMJ · Halaman '+pageCount,doc.internal.pageSize.getWidth()-35,doc.internal.pageSize.getHeight()-5);
+    }
+  });
+
+  doc.save(filename||'laporan.pdf');
 }
 
 function downloadTableCsv(targetId,filename){
