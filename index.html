@@ -1,4 +1,4 @@
-<!doctype html>
+a<!doctype html>
 <html lang="ms">
 <head>
 <meta charset="utf-8">
@@ -28,7 +28,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 .card.blue{background:#edf5ff}.card.green{background:#ebfbf2}.card.orange{background:#fff6e9}.card.purple{background:#f5efff}.card.red{background:#fff0f1}.card.cyan{background:#ebfbff}
 .panel{background:#fff;border:1px solid #e4eaf2;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 8px 26px rgba(20,48,88,.06)}
 .panel h2{margin:0 0 4px;font-size:20px}.panel p{margin:0 0 16px;color:#6f7c90;font-size:13px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid5{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr 1fr;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid5{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr 1fr;gap:10px}.grid6{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr 1fr 1fr;gap:10px}
 .field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;font-weight:700}
 .field input,.field select{width:100%;padding:11px 12px;border:1px solid #d6deea;border-radius:10px;background:#fff;color:#22324c}
 .btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer}.btn.primary{background:#1478ff;color:#fff}.btn.green{background:#13a564;color:#fff}.btn.orange{background:#f2a222;color:#fff}.btn.gray{background:#edf1f6;color:#23344e}.btn.danger{background:#e84f5f;color:#fff}.btn.small{padding:8px 11px;font-size:12px}
@@ -42,8 +42,8 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 .checkgrid{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.checkchip{display:flex;align-items:center;gap:7px;border:1px solid #dce5ef;background:#f9fbfe;border-radius:999px;padding:8px 11px;font-size:12px}
 .summarybar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}.summarypill{background:#f1f5fa;border-radius:10px;padding:9px 11px;font-size:12px;font-weight:700}
 .footer{font-size:11px;color:#8b97a8;margin-top:22px}.muted{color:#7d8898}.apiBox{max-width:760px}
-@media(max-width:1250px){.cards{grid-template-columns:repeat(3,1fr)}.grid5{grid-template-columns:1fr 1fr}}
-@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid5{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
+@media(max-width:1250px){.cards{grid-template-columns:repeat(3,1fr)}.grid4,.grid5,.grid6{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid4,.grid5,.grid6{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
 </style>
 </head>
 
@@ -81,12 +81,15 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
     <div class="card green"><div class="label">Jumlah Pemohon</div><div class="metric" id="mApplicants">0</div></div>
     <div class="card orange"><div class="label">Jenis Berganda Projek Sama</div><div class="metric" id="mSameProject">0</div></div>
     <div class="card cyan"><div class="label">Pemohon Antara Projek</div><div class="metric" id="mCrossProject">0</div></div>
+    <div class="card blue"><div class="label">Kuota Melayu</div><div class="metric" id="mMelayu">0</div></div>
+    <div class="card orange"><div class="label">Kuota Cina</div><div class="metric" id="mCina">0</div></div>
+    <div class="card green"><div class="label">Kuota India</div><div class="metric" id="mIndia">0</div></div>
     <div class="card purple"><div class="label">Pemenang Direkod</div><div class="metric" id="mWinners">0</div></div>
     <div class="card red"><div class="label">Jumlah Ditapis</div><div class="metric" id="mFiltered">0</div></div>
   </div>
 
   <div class="panel">
-    <h2>Status Projek & Jenis Rumah</h2>
+    <h2>Status Projek, Jenis Rumah & Kaum</h2>
     <p>Ringkasan semua data yang telah dimasukkan ke sistem.</p>
     <div id="projectSummary"><div class="muted">Belum ada data.</div></div>
   </div>
@@ -105,7 +108,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 
     <div id="fileTab" class="tabcontent active">
       <div class="notice info">
-        <strong>INFO FORMAT DATA</strong><br>Tambah satu dataset bagi setiap projek/jenis yang hendak dibandingkan. Maklumat utama yang digunakan oleh sistem ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>. Sistem boleh menerima 2, 3 atau lebih projek dalam satu proses dan akan mencari pemohon yang sama berdasarkan data tersebut.
+        <strong>INFO FORMAT DATA</strong><br>Tambah satu dataset bagi setiap <strong>projek / jenis / kaum</strong> yang hendak dibandingkan. Maklumat utama ialah <strong>No. Siri, Nama Pemohon, No. KP dan Kaum</strong>. Setiap projek dipecahkan kepada kuota <strong>Melayu, Cina dan India</strong>. Jika fail sudah mempunyai kolum KAUM/BANGSA, pilih "Auto dari fail"; jika fail diasingkan mengikut kaum, pilih kaum pada dataset.
       </div>
 
       <div id="datasetList"></div>
@@ -118,15 +121,16 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 
     <div id="manualTab" class="tabcontent">
       <div class="notice info">
-        <strong>INFO INPUT MANUAL</strong><br>Jika tidak menggunakan fail, masukkan terus <strong>Nama Pemohon, No. KP, No. Siri, Projek dan Jenis</strong>. Tambah rekod ke senarai sementara dan simpan semua sekali.
+        <strong>INFO INPUT MANUAL</strong><br>Jika tidak menggunakan fail, masukkan terus <strong>Nama Pemohon, No. KP, No. Siri, Projek, Jenis dan Kaum</strong>. Tambah rekod ke senarai sementara dan simpan semua sekali.
       </div>
 
-      <div class="grid5">
+      <div class="grid6">
         <div class="field"><label>Nama Pemohon</label><input id="manualName" placeholder="Contoh: AHMAD BIN ALI"></div>
         <div class="field"><label>No. KP</label><input id="manualIc" placeholder="900101011234"></div>
         <div class="field"><label>No. Siri</label><input id="manualSerial" placeholder="Contoh: 125"></div>
         <div class="field"><label>Projek</label><input id="manualProject" placeholder="Contoh: TAMAN MAWAR"></div>
         <div class="field"><label>Jenis</label><input id="manualType" placeholder="Contoh: JENIS A"></div>
+        <div class="field"><label>Kaum</label><select id="manualRace"><option value="">Pilih Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
       </div>
 
       <div class="actions">
@@ -205,9 +209,10 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
       Semakan antara projek pada versi ini ialah untuk mengenal pasti pertindihan. Sistem tidak akan auto-batalkan projek lain sehingga peraturan kelayakan antara projek disahkan.
     </div>
 
-    <div class="grid3">
+    <div class="grid4">
       <div class="field"><label>Projek</label><input id="winnerProject" placeholder="Contoh: TAMAN MAWAR"></div>
       <div class="field"><label>Jenis Rumah</label><input id="winnerType" placeholder="Contoh: JENIS A"></div>
+      <div class="field"><label>Kaum / Kuota</label><select id="winnerRace"><option value="">Pilih Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
       <div class="field"><label>Sesi Undian</label><input id="winnerSession" placeholder="Contoh: 9.00 PAGI"></div>
     </div>
 
@@ -240,10 +245,11 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <section id="bersih" class="page">
   <div class="panel">
     <h2>Jana Senarai Bersih untuk Undian Seterusnya</h2>
-    <p>Masukkan projek dan jenis rumah. Sistem mengeluarkan hanya pemohon yang masih berstatus layak.</p>
-    <div class="grid2">
+    <p>Pilih projek, jenis rumah dan kaum. Setiap kuota undian dijana secara berasingan untuk Melayu, Cina dan India.</p>
+    <div class="grid3">
       <div class="field"><label>Projek</label><input id="cleanProject" placeholder="Contoh: TAMAN MAWAR"></div>
       <div class="field"><label>Jenis Rumah</label><input id="cleanType" placeholder="Contoh: JENIS B"></div>
+      <div class="field"><label>Kaum / Kuota</label><select id="cleanRace"><option value="">Pilih Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
     </div>
     <div class="actions">
       <button class="btn primary" onclick="generateCleanList()">Jana Senarai Bersih</button>
@@ -284,7 +290,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.3.0';
+const MIN_API_VERSION = '2.4.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -445,6 +451,10 @@ async function loadDashboard(){
     document.getElementById('mApplicants').textContent = s.applicants || 0;
     document.getElementById('mSameProject').textContent = s.sameProject || 0;
     document.getElementById('mCrossProject').textContent = s.crossProject || 0;
+    const races = s.races || {};
+    document.getElementById('mMelayu').textContent = races.MELAYU || 0;
+    document.getElementById('mCina').textContent = races.CINA || 0;
+    document.getElementById('mIndia').textContent = races.INDIA || 0;
     document.getElementById('mWinners').textContent = s.winners || 0;
     document.getElementById('mFiltered').textContent = s.filtered || 0;
 
@@ -465,12 +475,17 @@ function renderProjects(projects){
 
   root.innerHTML = names.map(function(p){
     const types = projects[p];
-    const chips = Object.keys(types).map(function(t){
-      const x = types[t];
-      return '<span class="chip"><b>'+esc(t)+'</b> · '+x.total+' rekod · '+x.layak+' layak · '+x.tidakLayak+' ditapis · '+x.berjaya+' berjaya</span>';
+    const typeBlocks = Object.keys(types).map(function(t){
+      const races = types[t] || {};
+      const raceChips = Object.keys(races).map(function(k){
+        const x = races[k];
+        return '<span class="chip"><b>'+esc(k)+'</b> · '+x.total+' rekod · '+x.layak+' layak · '+x.tidakLayak+' ditapis · '+x.berjaya+' berjaya</span>';
+      }).join('');
+
+      return '<div style="margin:10px 0"><div style="font-weight:800;margin-bottom:7px">'+esc(t)+'</div><div class="typechips">'+raceChips+'</div></div>';
     }).join('');
 
-    return '<div class="projectbox"><h3>'+esc(p)+'</h3><div class="typechips">'+chips+'</div></div>';
+    return '<div class="projectbox"><h3>'+esc(p)+'</h3>'+typeBlocks+'</div>';
   }).join('');
 }
 
@@ -493,9 +508,10 @@ function addDataset(){
       '<div class="dataset-title">Dataset Projek '+id+'</div>'+
       '<button class="btn danger small" onclick="removeDataset('+id+')">Buang</button>'+
     '</div>'+
-    '<div class="grid2">'+
+    '<div class="grid3">'+
       '<div class="field"><label>Nama Projek</label><input class="ds-project" placeholder="Contoh: TAMAN MAWAR"></div>'+
       '<div class="field"><label>Jenis Rumah</label><input class="ds-type" placeholder="Contoh: JENIS A"></div>'+
+      '<div class="field"><label>Kaum / Kuota</label><select class="ds-race"><option value="">Auto dari fail</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>'+
     '</div>'+
     '<div class="fileline"><strong>Pilih Excel / CSV bagi dataset ini</strong><br><br><input class="ds-file" type="file" accept=".xlsx,.xls,.csv"></div>';
 
@@ -529,6 +545,7 @@ async function importAllDatasets(){
     for(const card of activeCards){
       const project = card.querySelector('.ds-project').value.trim();
       const type = card.querySelector('.ds-type').value.trim();
+      const race = card.querySelector('.ds-race').value.trim();
       const file = card.querySelector('.ds-file').files[0];
 
       if(!project){
@@ -537,7 +554,7 @@ async function importAllDatasets(){
 
       toast('Membaca Dataset Projek '+card.dataset.id+'...','info');
 
-      const parsed = await readApplicantFileSmart(file, project, type);
+      const parsed = await readApplicantFileSmart(file, project, type, race);
       const rows = parsed.rows;
 
       if(!rows.length){
@@ -601,11 +618,12 @@ function addManualRow(){
     NO_KP: document.getElementById('manualIc').value.trim(),
     NO_SIRI: document.getElementById('manualSerial').value.trim(),
     PROJEK: document.getElementById('manualProject').value.trim(),
-    JENIS: document.getElementById('manualType').value.trim()
+    JENIS: document.getElementById('manualType').value.trim(),
+    KAUM: document.getElementById('manualRace').value.trim()
   };
 
-  if(!row.NAMA || !row.NO_KP || !row.PROJEK || !row.JENIS){
-    toast('Nama, No. KP, Projek dan Jenis wajib diisi.','bad');
+  if(!row.NAMA || !row.NO_KP || !row.NO_SIRI || !row.PROJEK || !row.JENIS || !row.KAUM){
+    toast('Nama, No. KP, No. Siri, Projek, Jenis dan Kaum wajib diisi.','bad');
     return;
   }
 
@@ -671,7 +689,7 @@ async function saveManualRows(){
 ========================================================= */
 
 
-async function readApplicantFileSmart(file, defaultProject, defaultType){
+async function readApplicantFileSmart(file, defaultProject, defaultType, defaultRace){
   const buf = await file.arrayBuffer();
   const wb = XLSX.read(buf,{type:'array'});
   const ws = wb.Sheets[wb.SheetNames[0]];
@@ -719,6 +737,13 @@ async function readApplicantFileSmart(file, defaultProject, defaultType){
     );
   }
 
+  if(!defaultRace && mapping.race < 0){
+    throw new Error(
+      'Kaum tidak dapat dikenal pasti dalam fail "'+file.name+'". '+
+      'Pilih Kaum / Kuota pada dataset: Melayu, Cina atau India, atau pastikan fail mempunyai kolum KAUM/BANGSA.'
+    );
+  }
+
   const rows = [];
   let invalidRows = 0;
 
@@ -732,12 +757,14 @@ async function readApplicantFileSmart(file, defaultProject, defaultType){
 
     const fileProject = mapping.project >= 0 ? cellText(r[mapping.project]) : '';
     const fileType = mapping.type >= 0 ? cellText(r[mapping.type]) : '';
+    const fileRace = mapping.race >= 0 ? cellText(r[mapping.race]) : '';
 
     const project = String(defaultProject || fileProject || '').trim();
     const type = String(defaultType || fileType || 'TIDAK DINYATAKAN').trim();
+    const race = normalizeRaceClient(defaultRace || fileRace || '');
 
     // NO SIRI, NAMA dan NO KP ialah data wajib.
-    if(!serial || !name || !ic || !project){
+    if(!serial || !name || !ic || !project || !race){
       invalidRows++;
       continue;
     }
@@ -747,7 +774,8 @@ async function readApplicantFileSmart(file, defaultProject, defaultType){
       NAMA:name,
       NO_KP:ic,
       PROJEK:project,
-      JENIS:type || 'TIDAK DINYATAKAN'
+      JENIS:type || 'TIDAK DINYATAKAN',
+      KAUM:race
     });
   }
 
@@ -778,7 +806,10 @@ function detectApplicantColumns(headers){
     ],['PROJEK']),
     type: findHeaderIndex(keys,[
       'JENIS','JENISRUMAH','TYPE','KATEGORI','KATEGORIRUMAH'
-    ],['JENIS','KATEGORI'])
+    ],['JENIS','KATEGORI']),
+    race: findHeaderIndex(keys,[
+      'KAUM','BANGSA','RACE','ETNIK','ETHNICITY'
+    ],['KAUM','BANGSA','RACE','ETNIK'])
   };
 }
 
@@ -844,7 +875,8 @@ function inferApplicantColumns(matrix){
     name:nameBest.idx,
     ic:icBest.idx,
     project:-1,
-    type:-1
+    type:-1,
+    race:-1
   };
 
   let firstDataRow = 0;
@@ -879,6 +911,15 @@ function normalizeHeaderClient(v){
   return String(v == null ? '' : v)
     .toUpperCase()
     .replace(/[^A-Z0-9]/g,'');
+}
+
+function normalizeRaceClient(v){
+  const x = String(v == null ? '' : v).trim().toUpperCase();
+  if(!x) return '';
+  if(['M','MELAYU','MALAY'].includes(x)) return 'MELAYU';
+  if(['C','CINA','CHINESE'].includes(x)) return 'CINA';
+  if(['I','INDIA','INDIAN'].includes(x)) return 'INDIA';
+  return x;
 }
 
 function cellText(v){
@@ -999,10 +1040,11 @@ async function importWinners(){
 
     const project = document.getElementById('winnerProject').value.trim();
     const type = document.getElementById('winnerType').value.trim();
+    const race = document.getElementById('winnerRace').value.trim();
     const session = document.getElementById('winnerSession').value.trim();
 
-    if(!project || !type){
-      throw new Error('Masukkan projek dan jenis rumah bagi sesi pemenang.');
+    if(!project || !type || !race){
+      throw new Error('Masukkan projek, jenis rumah dan kaum bagi sesi pemenang.');
     }
 
     rows = rows.map(function(r){
@@ -1010,6 +1052,7 @@ async function importWinners(){
         ...r,
         PROJEK:getFirst(r,['PROJEK','Projek','NAMA PROJEK']) || project,
         JENIS:getFirst(r,['JENIS','Jenis','JENIS RUMAH']) || type,
+        KAUM:normalizeRaceClient(getFirst(r,['KAUM','Bangsa','BANGSA','RACE','ETNIK']) || race),
         SESI:getFirst(r,['SESI','Sesi','MASA']) || session
       };
     });
@@ -1049,11 +1092,12 @@ async function generateCleanList(){
   try{
     const project = document.getElementById('cleanProject').value.trim();
     const type = document.getElementById('cleanType').value.trim();
+    const race = document.getElementById('cleanRace').value.trim();
 
-    if(!project || !type) throw new Error('Masukkan projek dan jenis rumah.');
+    if(!project || !type || !race) throw new Error('Masukkan projek, jenis rumah dan kaum.');
 
-    const d = await api({action:'cleanList',project:project,type:type});
-    document.getElementById('cleanSummary').textContent = d.total+' pemohon masih layak untuk '+d.project+' · '+d.type+'.';
+    const d = await api({action:'cleanList',project:project,type:type,race:race});
+    document.getElementById('cleanSummary').textContent = d.total+' pemohon masih layak untuk '+d.project+' · '+d.type+' · '+d.race+'.';
     renderTable('cleanTable',d.rows || []);
     toast('Senarai bersih berjaya dijana.','good');
   }catch(err){
