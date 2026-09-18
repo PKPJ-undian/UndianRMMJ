@@ -405,6 +405,20 @@ th,td{padding:8px 10px}
   .brand-title{text-align:left;max-width:none;font-size:14px}
 }
 
+
+/* Pecahan keputusan pertindihan mengikut kaum */
+.overlap-race-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.overlap-race-card{border:1px solid #dce7f5;border-radius:16px;padding:13px 15px;background:#fff;box-shadow:0 8px 20px rgba(31,75,145,.07)}
+.overlap-race-card .race-name{font-size:12px;font-weight:800;color:#526983;text-transform:uppercase;letter-spacing:.3px}
+.overlap-race-card .race-count{font-size:24px;font-weight:800;color:#0f2f59;margin-top:3px}
+.overlap-race-card.melayu{background:linear-gradient(135deg,#eef5ff,#ffffff)}
+.overlap-race-card.cina{background:linear-gradient(135deg,#fff6e9,#ffffff)}
+.overlap-race-card.india{background:linear-gradient(135deg,#effcf4,#ffffff)}
+.overlap-race-section{margin-top:16px;border:1px solid #dce7f5;border-radius:18px;background:#fff;overflow:hidden}
+.overlap-race-title{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;font-size:13px;font-weight:800;background:#f7faff;border-bottom:1px solid #e3eaf4}
+.overlap-race-title .count{font-size:11px;padding:5px 9px;border-radius:999px;background:#eaf2ff;color:#225baf}
+@media(max-width:800px){.overlap-race-summary{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -671,8 +685,12 @@ th,td{padding:8px 10px}
 
     <div class="actions">
       <button class="btn green" onclick="importSuccessfulApplicants()">Import Semua Pemohon Berjaya</button>
+      <button class="btn danger" onclick="deleteSuccessfulApplicants()">Padam Data Pemohon Berjaya</button>
       <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula</button>
       <button class="btn primary" onclick="downloadTablePdf('winnerTable','Pemohon Berjaya','pemohon_berjaya.pdf')">Muat Turun PDF</button>
+    </div>
+    <div class="notice warn" style="margin-top:12px">
+      <strong>Untuk testing / tersalah import:</strong> butang padam hanya membuang <strong>Pemohon Berjaya</strong> bagi Projek + Jenis + Kaum yang sedang dipilih. Senarai pemohon asal dan kuota unit tidak dipadam. Status layak/tidak layak dikira semula secara automatik.
     </div>
   </div>
 
@@ -875,7 +893,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.9.1';
+const MIN_API_VERSION = '2.9.5';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -2468,8 +2486,7 @@ async function runOverlapSearch(showProgress=true){
     if(timer){ clearInterval(timer); timer=null; }
 
     const modeText = mode === 'crossProject' ? 'pertindihan antara projek' : 'jenis berganda dalam projek sama';
-    document.getElementById('overlapSummary').textContent = d.total+' rekod '+modeText+' ditemui.';
-    renderTable('overlapTable',d.rows || []);
+    renderOverlapByRace(d.rows || [], modeText);
 
     if(showProgress){
       finishOverlapProgress(d.total || 0);
@@ -2483,6 +2500,58 @@ async function runOverlapSearch(showProgress=true){
   }
 }
 
+
+
+function overlapRaceKey(row){
+  const text=String(row && row.KAUM_TERLIBAT || '').toUpperCase();
+  const hits=['MELAYU','CINA','INDIA'].filter(function(x){return text.indexOf(x)!==-1});
+  return hits.length===1 ? hits[0] : 'SEMAK';
+}
+
+function renderOverlapByRace(rows,modeText){
+  rows=rows || [];
+  state.lastTables.overlapTable=rows;
+
+  const groups={MELAYU:[],CINA:[],INDIA:[],SEMAK:[]};
+  rows.forEach(function(r){ groups[overlapRaceKey(r)].push(r); });
+
+  document.getElementById('overlapSummary').innerHTML =
+    '<strong>Jumlah: '+rows.length.toLocaleString('ms-MY')+' rekod '+esc(modeText)+' ditemui.</strong> '+
+    'Melayu: '+groups.MELAYU.length.toLocaleString('ms-MY')+
+    ' · Cina: '+groups.CINA.length.toLocaleString('ms-MY')+
+    ' · India: '+groups.INDIA.length.toLocaleString('ms-MY')+
+    (groups.SEMAK.length ? ' · Semak kaum: '+groups.SEMAK.length.toLocaleString('ms-MY') : '');
+
+  const root=document.getElementById('overlapTable');
+  if(!rows.length){
+    root.classList.add('tablewrap');
+    root.innerHTML='<div class="table-total"><strong>Jumlah: 0 rekod</strong></div><div style="padding:18px" class="muted">Tiada rekod.</div>';
+    return;
+  }
+
+  root.classList.remove('tablewrap');
+  root.innerHTML =
+    '<div class="overlap-race-summary">'+
+      '<div class="overlap-race-card melayu"><div class="race-name">Melayu</div><div class="race-count">'+groups.MELAYU.length.toLocaleString('ms-MY')+'</div></div>'+
+      '<div class="overlap-race-card cina"><div class="race-name">Cina</div><div class="race-count">'+groups.CINA.length.toLocaleString('ms-MY')+'</div></div>'+
+      '<div class="overlap-race-card india"><div class="race-name">India</div><div class="race-count">'+groups.INDIA.length.toLocaleString('ms-MY')+'</div></div>'+
+    '</div><div id="overlapRaceSections"></div>';
+
+  const sections=document.getElementById('overlapRaceSections');
+  const order=[['MELAYU','Melayu'],['CINA','Cina'],['INDIA','India']];
+  if(groups.SEMAK.length) order.push(['SEMAK','Perlu Semak Kaum']);
+
+  order.forEach(function(pair){
+    const key=pair[0],label=pair[1],data=groups[key];
+    if(!data.length) return;
+    const id='overlap_'+key.toLowerCase()+'_table';
+    const block=document.createElement('div');
+    block.className='overlap-race-section';
+    block.innerHTML='<div class="overlap-race-title"><span>'+esc(label)+'</span><span class="count">'+data.length.toLocaleString('ms-MY')+' rekod</span></div><div id="'+id+'" class="tablewrap"></div>';
+    sections.appendChild(block);
+    renderTable(id,data);
+  });
+}
 
 /* =========================================================
    PEMOHON BERJAYA - 1 PROJEK PECAH 3 KAUM
@@ -2564,6 +2633,47 @@ async function importSuccessfulApplicants(){
     toast('Pemohon Berjaya berjaya dikemas kini.','good');
   }catch(err){
     if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }
+}
+
+
+async function deleteSuccessfulApplicants(){
+  try{
+    const project=String(state.activeProject || document.getElementById('successProject').value || '').trim();
+    const type=String(state.activeType || document.getElementById('successType').value || '').trim();
+    const race=String(state.activeRace || '').trim();
+
+    if(!project || !type || !race){
+      throw new Error('Pilih Projek, Jenis Rumah dan Kaum / Sesi yang hendak dipadam dahulu.');
+    }
+
+    const raceBox=document.querySelector('.race-box[data-race="'+race+'"]');
+    const session=raceBox ? String(raceBox.dataset.session || '').trim() : '';
+    const label=project+' · '+type+' · '+race+(session ? ' · '+session : '');
+
+    if(!confirm(
+      'PADAM data Pemohon Berjaya untuk:\n\n'+label+'\n\n'+
+      'Senarai pemohon asal dan jumlah unit tidak akan dipadam. Status tapisan akan dikira semula. Teruskan?'
+    )) return;
+
+    const d=await api({
+      action:'deleteWinnersScope',
+      project:project,
+      type:type,
+      race:race,
+      session:session
+    });
+
+    toast('Pemohon Berjaya dipadam: '+Number(d.deleted || 0).toLocaleString('ms-MY')+' rekod. Status tapisan telah dikira semula.','good');
+
+    await Promise.all([
+      loadData('winners','winnerTable',{progress:false}),
+      loadDashboard(),
+      loadDrawOptions(true)
+    ]);
+    await refreshWatchlist();
+  }catch(err){
     toast(err.message,'bad');
   }
 }
