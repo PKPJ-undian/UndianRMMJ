@@ -422,6 +422,56 @@ th,td{padding:8px 10px}
 .overlap-race-title .count{font-size:11px;padding:5px 9px;border-radius:999px;background:#eaf2ff;color:#225baf}
 @media(max-width:800px){.overlap-race-summary{grid-template-columns:1fr}}
 
+
+
+/* ===== V2.9.8 COMPACT WORKFLOW + PROJECT/RACE VIEW ===== */
+.overlap-race-summary{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px;align-items:stretch}
+.overlap-race-card{width:136px;min-height:58px;border-radius:11px;padding:8px 10px;box-shadow:0 5px 13px rgba(31,75,145,.06)}
+.overlap-race-card:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(31,75,145,.11)}
+.overlap-race-card.active{box-shadow:0 0 0 2px rgba(47,125,246,.11),0 7px 16px rgba(31,75,145,.10)}
+.overlap-race-card .race-name{font-size:10px;letter-spacing:.2px}
+.overlap-race-card .race-count{font-size:18px;margin-top:1px;line-height:1.15}
+
+.workflow-nav{display:flex;flex-direction:column;gap:6px}
+.workflow-nav button{position:relative;display:grid!important;grid-template-columns:28px 1fr 18px;align-items:center;gap:9px;min-height:52px;padding:7px 9px!important;border-radius:12px!important;margin:0!important;background:rgba(255,255,255,.055)!important;border:1px solid rgba(255,255,255,.09)!important;color:#e9f2ff!important;box-shadow:none!important}
+.workflow-nav button:hover{background:rgba(255,255,255,.11)!important;transform:translateX(2px)}
+.workflow-nav button.active{background:linear-gradient(90deg,#2d7df5,#5795ff)!important;border-color:rgba(255,255,255,.25)!important;box-shadow:0 8px 20px rgba(8,48,120,.22)!important}
+.workflow-nav .step-no{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.13);font-size:12px;font-weight:800;color:#fff}
+.workflow-nav button.active .step-no{background:#fff;color:#2768d8}
+.workflow-nav button.visited:not(.active) .step-no{background:#1db66f;color:#fff}
+.workflow-nav .step-copy{min-width:0;display:flex;flex-direction:column;line-height:1.1;text-align:left}
+.workflow-nav .step-copy strong{font-size:11px;color:inherit;white-space:normal}
+.workflow-nav .step-copy small{font-size:8.5px;color:#bfd1ee;margin-top:4px;font-weight:500;white-space:normal}
+.workflow-nav button.active .step-copy small{color:#eaf3ff}
+.workflow-nav .step-arrow{font-size:16px;font-weight:800;text-align:center;color:#bcd0ef}
+.workflow-nav button.active .step-arrow{color:#fff}
+
+.workflow-step-popup{position:fixed;right:22px;top:22px;z-index:99998;display:flex;align-items:center;gap:10px;min-width:250px;max-width:340px;padding:10px 12px;border-radius:15px;background:#fff;border:1px solid #dce8f7;box-shadow:0 18px 45px rgba(15,52,108,.18);opacity:0;transform:translateY(-12px);pointer-events:none;transition:.2s ease}
+.workflow-step-popup.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.workflow-step-badge{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2b7df6,#665ef5);color:#fff;font-weight:800;font-size:13px}
+.workflow-step-info{display:flex;flex-direction:column;flex:1;min-width:0}
+.workflow-step-info small{font-size:9px;font-weight:800;color:#71839d;letter-spacing:.5px}
+.workflow-step-info strong{font-size:12px;color:#17365e;margin-top:2px;white-space:normal}
+.workflow-step-popup>button{border:0;background:#eef3fa;color:#58708f;width:25px;height:25px;border-radius:8px;cursor:pointer;font-size:16px}
+
+.applicant-group-area{margin:10px 0 12px}
+.applicant-project-group{border:1px solid #dde7f4;border-radius:14px;background:#fbfdff;padding:10px 12px;margin-bottom:8px;box-shadow:0 5px 14px rgba(27,70,137,.045)}
+.applicant-project-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.applicant-project-head strong{font-size:11.5px;color:#163a68;line-height:1.3}
+.applicant-project-head .project-total{font-size:9.5px;font-weight:800;color:#4d6685;background:#edf4ff;border-radius:999px;padding:4px 8px;white-space:nowrap}
+.applicant-race-row{display:flex;flex-wrap:wrap;gap:6px}
+.applicant-filter-card{border:1px solid #dce7f4;background:#fff;border-radius:10px;padding:6px 9px;min-width:92px;cursor:pointer;transition:.15s ease;text-align:left;box-shadow:0 4px 10px rgba(31,75,145,.04)}
+.applicant-filter-card:hover{border-color:#82aff4;transform:translateY(-1px)}
+.applicant-filter-card.active{border-color:#2f7df6;background:#edf5ff;box-shadow:0 0 0 2px rgba(47,125,246,.09)}
+.applicant-filter-card .af-label{font-size:9px;font-weight:800;color:#60738d;text-transform:uppercase}
+.applicant-filter-card .af-count{font-size:15px;font-weight:800;color:#14375f;margin-top:1px}
+.applicant-filter-card.melayu{background:linear-gradient(135deg,#eef5ff,#fff)}
+.applicant-filter-card.cina{background:linear-gradient(135deg,#fff7ea,#fff)}
+.applicant-filter-card.india{background:linear-gradient(135deg,#effbf4,#fff)}
+.applicant-filter-card.semua{background:linear-gradient(135deg,#f3f5fa,#fff)}
+.applicant-selected-title{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin:8px 0;border-radius:10px;background:#eef5ff;color:#244f86;font-size:10px;font-weight:800}
+@media(max-width:700px){.overlap-race-card{width:calc(50% - 4px)}.workflow-step-popup{left:14px;right:14px;top:14px;max-width:none}.applicant-filter-card{min-width:calc(50% - 3px)}}
+
 </style>
 </head>
 
@@ -434,15 +484,15 @@ th,td{padding:8px 10px}
     <div class="brand-title">Sistem Tapisan Undian RMMJ</div>
   </div>
 
-  <div class="nav">
-    <button class="active" data-page="dashboard">Dashboard</button>
-    <button data-page="pemohon">Pengurusan Data</button>
-    <button data-page="watchlist">Semakan Pemohon</button>
-    <button data-page="pemenang">Pemohon Berjaya</button>
-    <button data-page="ditapis">Tidak Layak Undian Seterusnya</button>
-    <button data-page="bersih">Layak Ke Undian Seterusnya</button>
-    <button data-page="audit">Laporan & Audit</button>
-    <button data-page="arkib">Arkib</button>
+  <div class="nav workflow-nav">
+    <button class="active" data-page="dashboard" data-step="1" data-step-title="Dashboard"><span class="step-no">1</span><span class="step-copy"><strong>Dashboard</strong><small>Ringkasan sistem</small></span><span class="step-arrow">›</span></button>
+    <button data-page="pemohon" data-step="2" data-step-title="Pengurusan Data"><span class="step-no">2</span><span class="step-copy"><strong>Pengurusan Data</strong><small>Masuk & semak rekod</small></span><span class="step-arrow">›</span></button>
+    <button data-page="watchlist" data-step="3" data-step-title="Semakan Pemohon"><span class="step-no">3</span><span class="step-copy"><strong>Semakan Pemohon</strong><small>Cari pertindihan</small></span><span class="step-arrow">›</span></button>
+    <button data-page="pemenang" data-step="4" data-step-title="Pemohon Berjaya"><span class="step-no">4</span><span class="step-copy"><strong>Pemohon Berjaya</strong><small>Rekod keputusan</small></span><span class="step-arrow">›</span></button>
+    <button data-page="ditapis" data-step="5" data-step-title="Tidak Layak Undian Seterusnya"><span class="step-no">5</span><span class="step-copy"><strong>Tidak Layak</strong><small>Undian seterusnya</small></span><span class="step-arrow">›</span></button>
+    <button data-page="bersih" data-step="6" data-step-title="Layak Ke Undian Seterusnya"><span class="step-no">6</span><span class="step-copy"><strong>Layak</strong><small>Undian seterusnya</small></span><span class="step-arrow">›</span></button>
+    <button data-page="audit" data-step="7" data-step-title="Laporan & Audit"><span class="step-no">7</span><span class="step-copy"><strong>Laporan & Audit</strong><small>Semak & eksport</small></span><span class="step-arrow">›</span></button>
+    <button data-page="arkib" data-step="8" data-step-title="Arkib / Selesai"><span class="step-no">8</span><span class="step-copy"><strong>Arkib / Selesai</strong><small>Simpan rujukan akhir</small></span><span class="step-arrow">✓</span></button>
   </div>
 </aside>
 
@@ -590,7 +640,10 @@ th,td{padding:8px 10px}
       </div>
       <div class="actions"><button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button><button class="btn primary" onclick="downloadTablePdf('applicantTable','Rekod Pemohon','rekod_pemohon.pdf')">Muat Turun PDF</button></div>
     </div>
-    <div id="applicantTable" class="tablewrap"></div>
+    <div id="applicantGroupCards" class="applicant-group-area">
+      <div class="muted">Muat semula rekod untuk paparkan kotak projek dan kaum.</div>
+    </div>
+    <div id="applicantTable" class="tablewrap"><div style="padding:16px" class="muted">Pilih kotak projek / kaum untuk melihat senarai nama.</div></div>
   </div>
 
   <div class="panel danger-zone">
@@ -880,6 +933,12 @@ th,td{padding:8px 10px}
   </div>
 </div>
 
+<div id="workflowStepPopup" class="workflow-step-popup" role="status" aria-live="polite">
+  <div class="workflow-step-badge" id="workflowStepBadge">1</div>
+  <div class="workflow-step-info"><small id="workflowStepMeta">LANGKAH 1 / 8</small><strong id="workflowStepTitle">Dashboard</strong></div>
+  <button type="button" onclick="hideWorkflowStepPopup()" aria-label="Tutup">×</button>
+</div>
+
 <div id="toast"></div>
 <div class="footer">STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
 
@@ -915,7 +974,12 @@ const state = {
   busy: false,
   overlapAllRows: [],
   overlapGroups: {SEMUA:[],MELAYU:[],CINA:[],INDIA:[],SEMAK:[]},
-  overlapActiveRace: 'SEMUA'
+  overlapActiveRace: 'SEMUA',
+  applicantAllRows: [],
+  applicantProjectGroups: {},
+  applicantActiveProject: '',
+  applicantActiveRace: '',
+  workflowVisited: {}
 };
 
 
@@ -980,12 +1044,40 @@ function bindNav(){
 
       btn.classList.add('active');
       document.getElementById(btn.dataset.page).classList.add('active');
-      document.getElementById('pageTitle').textContent = btn.textContent;
+      const displayTitle = btn.dataset.stepTitle || btn.textContent.trim();
+      document.getElementById('pageTitle').textContent = displayTitle;
+
+      const step=String(btn.dataset.step || '');
+      if(step){
+        state.workflowVisited[step]=true;
+        document.querySelectorAll('.workflow-nav button').forEach(function(x){
+          const s=String(x.dataset.step || '');
+          x.classList.toggle('visited',!!state.workflowVisited[s]);
+        });
+        showWorkflowStepPopup(step,displayTitle);
+      }
 
       const page = btn.dataset.page;
       await loadPageData(page,false);
     });
   });
+}
+
+
+function showWorkflowStepPopup(step,title){
+  const root=document.getElementById('workflowStepPopup');
+  if(!root) return;
+  document.getElementById('workflowStepBadge').textContent=step;
+  document.getElementById('workflowStepMeta').textContent='LANGKAH '+step+' / 8';
+  document.getElementById('workflowStepTitle').textContent=title || '';
+  root.classList.add('show');
+  clearTimeout(showWorkflowStepPopup._timer);
+  showWorkflowStepPopup._timer=setTimeout(function(){root.classList.remove('show')},1800);
+}
+
+function hideWorkflowStepPopup(){
+  const root=document.getElementById('workflowStepPopup');
+  if(root) root.classList.remove('show');
 }
 
 function bindTabs(){
@@ -2786,6 +2878,83 @@ function isMigrationProgressOpen_(){
    LOAD DATA / CLEAN LIST
 ========================================================= */
 
+async function normalizeApplicantRace_(value){
+  const x=String(value || '').trim().toUpperCase();
+  if(x.indexOf('MELAYU')!==-1) return 'MELAYU';
+  if(x.indexOf('CINA')!==-1 || x.indexOf('CHINESE')!==-1) return 'CINA';
+  if(x.indexOf('INDIA')!==-1 || x.indexOf('INDIAN')!==-1) return 'INDIA';
+  return 'LAIN';
+}
+
+function renderApplicantProjectRace(rows){
+  rows=rows || [];
+  state.applicantAllRows=rows;
+  const root=document.getElementById('applicantGroupCards');
+  const table=document.getElementById('applicantTable');
+  if(!root || !table) return;
+
+  if(!rows.length){
+    root.innerHTML='<div class="muted">Tiada rekod pemohon.</div>';
+    renderTable('applicantTable',[]);
+    return;
+  }
+
+  const projects={};
+  rows.forEach(function(r){
+    const project=String(r.PROJEK || 'TIDAK DINYATAKAN').trim() || 'TIDAK DINYATAKAN';
+    const race=normalizeApplicantRace_(r.KAUM);
+    if(!projects[project]) projects[project]={SEMUA:[],MELAYU:[],CINA:[],INDIA:[],LAIN:[]};
+    projects[project].SEMUA.push(r);
+    projects[project][race].push(r);
+  });
+  state.applicantProjectGroups=projects;
+
+  const names=Object.keys(projects).sort(function(a,b){return a.localeCompare(b,'ms')});
+  root.innerHTML=names.map(function(project){
+    const g=projects[project];
+    const key=encodeURIComponent(project);
+    return '<div class="applicant-project-group">'+
+      '<div class="applicant-project-head"><strong>'+esc(project)+'</strong><span class="project-total">'+g.SEMUA.length.toLocaleString('ms-MY')+' rekod</span></div>'+
+      '<div class="applicant-race-row">'+
+        applicantFilterCard_(key,'SEMUA','Semua',g.SEMUA.length,'semua')+
+        applicantFilterCard_(key,'MELAYU','Melayu',g.MELAYU.length,'melayu')+
+        applicantFilterCard_(key,'CINA','Cina',g.CINA.length,'cina')+
+        applicantFilterCard_(key,'INDIA','India',g.INDIA.length,'india')+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  state.lastTables.applicantTable=rows;
+  table.innerHTML='<div class="applicant-selected-title"><span>Pilih kotak projek / kaum di atas</span><span>'+rows.length.toLocaleString('ms-MY')+' rekod keseluruhan</span></div><div style="padding:14px" class="muted">Senarai nama hanya akan dirender selepas kotak dipilih. Ini membantu kekalkan paparan lebih ringan dan laju.</div>';
+}
+
+function applicantFilterCard_(projectKey,race,label,count,cls){
+  return '<button type="button" class="applicant-filter-card '+cls+'" data-project="'+projectKey+'" data-race="'+race+'" onclick="showApplicantProjectRace(this)"><div class="af-label">'+esc(label)+'</div><div class="af-count">'+Number(count||0).toLocaleString('ms-MY')+'</div></button>';
+}
+
+function showApplicantProjectRace(btn){
+  const project=decodeURIComponent(btn.dataset.project || '');
+  const race=String(btn.dataset.race || 'SEMUA');
+  const groups=state.applicantProjectGroups || {};
+  const g=groups[project] || {};
+  const rows=g[race] || [];
+  state.applicantActiveProject=project;
+  state.applicantActiveRace=race;
+
+  document.querySelectorAll('.applicant-filter-card').forEach(function(x){x.classList.remove('active')});
+  btn.classList.add('active');
+
+  renderTable('applicantTable',rows);
+  const table=document.getElementById('applicantTable');
+  if(table){
+    const label=race==='SEMUA'?'Semua Kaum':race.charAt(0)+race.slice(1).toLowerCase();
+    const first=table.querySelector('.table-total');
+    if(first){
+      first.innerHTML='<strong>'+esc(project)+' · '+esc(label)+' · '+rows.length.toLocaleString('ms-MY')+' rekod</strong>';
+    }
+  }
+}
+
 async function loadData(dataType,target,options={}){
   if(!state.apiUrl || !state.apiKey) return;
 
@@ -2856,7 +3025,11 @@ async function loadData(dataType,target,options={}){
       await new Promise(function(resolve){setTimeout(resolve,60)});
     }
 
-    renderTable(target,allRows);
+    if(dataType==='applicants' && target==='applicantTable'){
+      renderApplicantProjectRace(allRows);
+    }else{
+      renderTable(target,allRows);
+    }
 
     if(useProgress){
       finishReloadProgress(dataType,allRows.length,total);
