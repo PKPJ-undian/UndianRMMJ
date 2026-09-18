@@ -2878,7 +2878,7 @@ function isMigrationProgressOpen_(){
    LOAD DATA / CLEAN LIST
 ========================================================= */
 
-async function normalizeApplicantRace_(value){
+function normalizeApplicantRace_(value){
   const x=String(value || '').trim().toUpperCase();
   if(x.indexOf('MELAYU')!==-1) return 'MELAYU';
   if(x.indexOf('CINA')!==-1 || x.indexOf('CHINESE')!==-1) return 'CINA';
@@ -2905,6 +2905,7 @@ function renderApplicantProjectRace(rows){
     const race=normalizeApplicantRace_(r.KAUM);
     if(!projects[project]) projects[project]={SEMUA:[],MELAYU:[],CINA:[],INDIA:[],LAIN:[]};
     projects[project].SEMUA.push(r);
+    if(!projects[project][race]) projects[project][race]=[];
     projects[project][race].push(r);
   });
   state.applicantProjectGroups=projects;
