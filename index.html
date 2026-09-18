@@ -621,7 +621,7 @@ th,td{padding:8px 10px}
 
     <div class="actions">
       <button class="btn orange" onclick="refreshWatchlist()">Semak Semula Semua Data</button>
-      <button class="btn primary" onclick="runOverlapSearch()">Cari Pertindihan</button>
+      <button id="overlapSearchBtn" class="btn primary" onclick="runOverlapSearch(true)">Cari Pertindihan</button>
       <button class="btn green" onclick="downloadTableCsv('overlapTable','semakan_pertindihan.csv')">Muat Turun CSV</button>
       <button class="btn primary" onclick="downloadTablePdf('overlapTable','Semakan Pertindihan Pemohon','semakan_pertindihan.pdf')">Muat Turun PDF</button>
     </div>
@@ -783,6 +783,26 @@ th,td{padding:8px 10px}
 
 
 
+<div id="overlapProgress" class="reload-progress-overlay" aria-live="polite">
+  <div id="overlapProgressBox" class="reload-progress-box">
+    <div class="reload-progress-top">
+      <div>
+        <h3 id="overlapProgressTitle">Menyemak Pertindihan Pemohon</h3>
+        <p id="overlapProgressSub">Sistem sedang membuat cross-check rekod pemohon.</p>
+      </div>
+      <div id="overlapProgressPercent" class="reload-progress-percent">0%</div>
+    </div>
+    <div class="reload-progress-track"><div id="overlapProgressFill" class="reload-progress-fill"></div></div>
+    <div id="overlapProgressStage" class="reload-progress-stage">Menyediakan semakan...</div>
+    <div id="overlapProgressDetail" class="reload-progress-detail">Sila tunggu sehingga semakan selesai.</div>
+    <div class="reload-progress-counts">
+      <div class="reload-progress-count"><span>Projek dipilih</span><b id="overlapProgressProjects">0</b></div>
+      <div class="reload-progress-count"><span>Rekod ditemui</span><b id="overlapProgressFound">—</b></div>
+    </div>
+    <div id="overlapProgressNote" class="reload-progress-note">Jangan tutup atau refresh halaman semasa semakan sedang berjalan.</div>
+  </div>
+</div>
+
 <div id="reloadProgress" class="reload-progress-overlay" aria-live="polite">
   <div id="reloadProgressBox" class="reload-progress-box">
     <div class="reload-progress-top">
@@ -909,7 +929,7 @@ async function loadPageData(page, force=false){
   try{
     if(page === 'dashboard') await loadDashboard();
     if(page === 'pemohon') await loadData('applicants','applicantTable');
-    if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(); }
+    if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(false); }
     if(page === 'pemenang') { await loadDrawOptions(); await loadData('winners','winnerTable'); }
     if(page === 'ditapis') { prefillNextDrawFromActive(); }
     if(page === 'bersih') { prefillNextDrawFromActive(); }
@@ -2325,11 +2345,118 @@ async function refreshWatchlist(){
   }
 }
 
-async function runOverlapSearch(){
+function openOverlapProgress(mode,projectCount){
+  const overlay=document.getElementById('overlapProgress');
+  const box=document.getElementById('overlapProgressBox');
+  if(!overlay || !box) return;
+
+  box.classList.remove('error');
+  overlay.classList.add('show');
+  document.body.classList.add('migration-busy');
+
+  const modeText = mode === 'crossProject'
+    ? 'Antara projek berbeza'
+    : 'Projek sama - jenis rumah berlainan';
+
+  document.getElementById('overlapProgressTitle').textContent='Menyemak Pertindihan Pemohon';
+  document.getElementById('overlapProgressSub').textContent=modeText;
+  document.getElementById('overlapProgressPercent').textContent='8%';
+  document.getElementById('overlapProgressFill').style.width='8%';
+  document.getElementById('overlapProgressStage').textContent='Menyediakan data semakan...';
+  document.getElementById('overlapProgressDetail').textContent='Menghubungi database dan menyediakan senarai pemohon.';
+  document.getElementById('overlapProgressProjects').textContent=Number(projectCount||0).toLocaleString('ms-MY');
+  document.getElementById('overlapProgressFound').textContent='—';
+  document.getElementById('overlapProgressNote').textContent='Cross-check sedang berjalan. Sila tunggu sehingga status SIAP.';
+
+  const btn=document.getElementById('overlapSearchBtn');
+  if(btn) btn.disabled=true;
+}
+
+function updateOverlapProgress(percent,stage,detail){
+  const p=Math.max(0,Math.min(100,Math.round(Number(percent||0))));
+  const percentEl=document.getElementById('overlapProgressPercent');
+  const fillEl=document.getElementById('overlapProgressFill');
+  if(percentEl) percentEl.textContent=p+'%';
+  if(fillEl) fillEl.style.width=p+'%';
+  if(stage!==undefined){
+    const el=document.getElementById('overlapProgressStage');
+    if(el) el.textContent=stage;
+  }
+  if(detail!==undefined){
+    const el=document.getElementById('overlapProgressDetail');
+    if(el) el.textContent=detail;
+  }
+}
+
+function finishOverlapProgress(total){
+  const found=document.getElementById('overlapProgressFound');
+  if(found) found.textContent=Number(total||0).toLocaleString('ms-MY');
+  updateOverlapProgress(
+    100,
+    'SIAP',
+    'Semakan pertindihan selesai dan keputusan telah dipaparkan.'
+  );
+  const note=document.getElementById('overlapProgressNote');
+  if(note) note.textContent='Semakan selesai. '+Number(total||0).toLocaleString('ms-MY')+' rekod pertindihan ditemui.';
+  setTimeout(closeOverlapProgress,700);
+}
+
+function failOverlapProgress(message){
+  const box=document.getElementById('overlapProgressBox');
+  if(box) box.classList.add('error');
+  updateOverlapProgress(100,'RALAT',message||'Semakan pertindihan tidak dapat diselesaikan.');
+  const note=document.getElementById('overlapProgressNote');
+  if(note) note.textContent='Sila semak sambungan API dan cuba semula.';
+  setTimeout(closeOverlapProgress,2200);
+}
+
+function closeOverlapProgress(){
+  const overlay=document.getElementById('overlapProgress');
+  const box=document.getElementById('overlapProgressBox');
+  if(overlay) overlay.classList.remove('show');
+  if(box) box.classList.remove('error');
+  document.body.classList.remove('migration-busy');
+  const btn=document.getElementById('overlapSearchBtn');
+  if(btn) btn.disabled=false;
+}
+
+async function runOverlapSearch(showProgress=true){
+  let timer=null;
+  let pct=8;
+
   try{
     const mode = document.getElementById('overlapMode').value;
     const projects = selectedProjects();
     const search = document.getElementById('overlapSearch').value.trim();
+
+    if(showProgress){
+      openOverlapProgress(mode,projects.length);
+
+      timer=setInterval(function(){
+        if(pct>=88) return;
+        pct=Math.min(88,pct+4);
+
+        if(pct<34){
+          updateOverlapProgress(
+            pct,
+            'Membaca senarai pemohon...',
+            'Mengambil maklumat No. KP, projek dan jenis rumah daripada database.'
+          );
+        }else if(pct<68){
+          updateOverlapProgress(
+            pct,
+            'Cross-check No. KP...',
+            'Membandingkan pemohon mengikut kaedah semakan yang dipilih.'
+          );
+        }else{
+          updateOverlapProgress(
+            pct,
+            'Menyusun keputusan...',
+            'Menapis dan menyediakan rekod pertindihan untuk dipaparkan.'
+          );
+        }
+      },320);
+    }
 
     const d = await api({
       action:'getOverlaps',
@@ -2338,10 +2465,20 @@ async function runOverlapSearch(){
       search:search
     });
 
+    if(timer){ clearInterval(timer); timer=null; }
+
     const modeText = mode === 'crossProject' ? 'pertindihan antara projek' : 'jenis berganda dalam projek sama';
     document.getElementById('overlapSummary').textContent = d.total+' rekod '+modeText+' ditemui.';
     renderTable('overlapTable',d.rows || []);
+
+    if(showProgress){
+      finishOverlapProgress(d.total || 0);
+    }
   }catch(err){
+    if(timer){ clearInterval(timer); timer=null; }
+    if(showProgress){
+      failOverlapProgress(err.message);
+    }
     toast(err.message,'bad');
   }
 }
