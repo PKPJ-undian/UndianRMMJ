@@ -893,7 +893,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.9.5';
+const MIN_API_VERSION = '2.9.6';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1003,7 +1003,7 @@ async function api(payload){
   }
 
   const ctrl = new AbortController();
-  const timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+  const timer = setTimeout(function(){ ctrl.abort(); }, 90000);
 
   let res;
   try{
@@ -1016,7 +1016,7 @@ async function api(payload){
     });
   }catch(err){
     if(err.name === 'AbortError'){
-      throw new Error('Permintaan ke API mengambil masa terlalu lama. Sila cuba semula.');
+      throw new Error('API mengambil masa terlalu lama. Sistem telah hentikan permintaan ini. Cuba Muat Semula sekali lagi.');
     }
     throw err;
   }finally{
@@ -2741,9 +2741,10 @@ function finishReloadProgress(dataType,loaded,total){
 function failReloadProgress(message){
   const box=document.getElementById('reloadProgressBox');
   box.classList.add('error');
-  updateReloadProgress(100,'RALAT',message||'Data tidak dapat dimuat semula.',null,null);
-  document.getElementById('reloadProgressNote').textContent='Semak sambungan API dan cuba Muat Semula sekali lagi.';
-  setTimeout(closeReloadProgress,2200);
+  const current=parseInt(document.getElementById('reloadProgressPercent').textContent,10)||0;
+  updateReloadProgress(Math.min(current,95),'RALAT',message||'Data tidak dapat dimuat semula.',null,null);
+  document.getElementById('reloadProgressNote').textContent='Proses dihentikan. Cuba Muat Semula sekali lagi selepas beberapa saat.';
+  setTimeout(closeReloadProgress,3200);
 }
 
 function closeReloadProgress(){
@@ -2768,7 +2769,7 @@ async function loadData(dataType,target,options={}){
   if(!state.apiUrl || !state.apiKey) return;
 
   const useProgress = options.progress !== false && !isMigrationProgressOpen_();
-  const chunkSize = Number(options.chunkSize || 1500);
+  const chunkSize = Number(options.chunkSize || 500);
   const allRows = [];
   let offset = 0;
   let total = null;
