@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>STU-RMMJ | Sistem Tapisan Undian RMMJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -11,7 +14,7 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#13233f}
+body{margin:0;font-family:Poppins,Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#13233f}
 .app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
 .sidebar{background:linear-gradient(180deg,#082451,#0c376f);color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh}
 .brand{font-size:24px;font-weight:800;line-height:1.05;margin-bottom:4px}
@@ -71,6 +74,173 @@ body.migration-busy{overflow:hidden}
 .session-pill{display:inline-flex;align-items:center;gap:6px;background:#eef5ff;border:1px solid #cfe1fa;color:#174d91;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800;margin:6px 0 10px}.session-pill.missing{background:#fff5e8;border-color:#ffd69d;color:#8a5a13}.race-box.disabled{opacity:.55;background:#f4f6f9}.race-box.disabled input[type=file]{pointer-events:none}.linked-badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#e9f8ef;color:#176a39;font-size:11px;font-weight:800}.archive-ready{border-color:#b8e5ca;background:#f2fcf6}.archive-notready{border-color:#ffd1a8;background:#fff9f2}.archive-note{font-size:11px;color:#6e7a8c;margin-top:7px}.archive-select{min-width:320px}
 @media(max-width:1250px){.cards{grid-template-columns:repeat(3,1fr)}.grid4,.grid5,.grid6{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid4,.grid5,.grid6,.race-grid{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
+
+
+:root{
+  --pkpj-blue:#1f63ff;
+  --pkpj-dark:#0b2350;
+  --pkpj-indigo:#635bff;
+  --pkpj-gold:#f7c948;
+  --soft-border:#dbe6f4;
+  --soft-shadow:0 18px 45px rgba(27,73,151,.12);
+}
+body{
+  background:linear-gradient(180deg,#f8fbff 0%,#eef4fc 100%);
+  color:#163357;
+}
+.app{grid-template-columns:270px 1fr}
+.sidebar{
+  background:linear-gradient(180deg,#0a2552 0%,#0d3b81 45%,#2767ff 100%);
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.08);
+}
+.brandwrap{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px;
+  margin-bottom:24px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:22px;
+  backdrop-filter:blur(8px);
+}
+.logo-pkpj{
+  width:66px;height:66px;border-radius:18px;
+  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.05));
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 12px 25px rgba(0,0,0,.18);
+  flex:0 0 66px;
+}
+.logo-pkpj svg{width:42px;height:42px;display:block}
+.brand{font-size:29px;font-weight:800;letter-spacing:.2px;margin-bottom:3px}
+.sub{font-size:12px;opacity:.9;margin-bottom:0;line-height:1.35}
+.sub2{opacity:.72;margin-top:4px}
+.nav button{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 14px;
+  border:1px solid transparent;
+  transition:.2s ease;
+  font-size:14px;
+}
+.nav button:hover,
+.nav button.active{
+  background:linear-gradient(90deg,#1d71ff,#4b85ff);
+  border-color:rgba(255,255,255,.14);
+  box-shadow:0 10px 24px rgba(13,67,155,.35);
+}
+.main{padding:28px 28px 38px}
+.topbar{
+  margin-bottom:22px;
+  padding:18px 22px;
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--soft-border);
+  border-radius:24px;
+  box-shadow:var(--soft-shadow);
+  backdrop-filter:blur(10px);
+}
+.title h1{font-size:33px;font-weight:800;letter-spacing:-.4px}
+.title p{font-size:15px;color:#657691}
+.status{
+  background:#fff8e2;
+  border-color:#f4df9c;
+  box-shadow:0 8px 18px rgba(222,184,64,.12);
+}
+.status.ok{background:#e7fbef;border-color:#bcf0cb;box-shadow:0 8px 18px rgba(38,166,91,.12)}
+.cards{gap:16px}
+.card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:20px;
+  box-shadow:var(--soft-shadow);
+  backdrop-filter:blur(8px);
+}
+.card:before{
+  content:'';
+  position:absolute;
+  inset:0 auto 0 0;
+  width:7px;
+  border-radius:20px 0 0 20px;
+  background:linear-gradient(180deg,var(--pkpj-blue),#79a8ff);
+}
+.card.blue{background:linear-gradient(135deg,#edf5ff,#ffffff)}
+.card.green{background:linear-gradient(135deg,#ecfff4,#ffffff)}
+.card.orange{background:linear-gradient(135deg,#fff6e7,#ffffff)}
+.card.purple{background:linear-gradient(135deg,#f4efff,#ffffff)}
+.card.red{background:linear-gradient(135deg,#fff0f4,#ffffff)}
+.card.cyan{background:linear-gradient(135deg,#eafcff,#ffffff)}
+.card .label{font-size:13px;font-weight:600;color:#667892}
+.card .metric{font-size:42px;font-weight:800;letter-spacing:-.7px;color:#0d2a54}
+.panel{
+  border-radius:22px;
+  border:1px solid var(--soft-border);
+  box-shadow:var(--soft-shadow);
+  padding:20px;
+}
+.panel h2{font-size:28px;font-weight:800;color:#0f2c56}
+.panel p{font-size:13px}
+.field input,.field select,.field textarea{
+  border-radius:14px;
+  border:1px solid #d7e3f2;
+  background:#fbfdff;
+  font-family:Poppins,Inter,Segoe UI,Arial,sans-serif;
+}
+.btn{
+  border-radius:14px;
+  font-family:Poppins,Inter,Segoe UI,Arial,sans-serif;
+  font-weight:700;
+  box-shadow:0 10px 24px rgba(30,87,196,.14);
+}
+.btn.primary{background:linear-gradient(135deg,#1a73ff,#4f8bff)}
+.btn.green{background:linear-gradient(135deg,#16a34a,#38c172)}
+.btn.gray{box-shadow:none}
+.tablewrap{
+  border-radius:18px;
+  border:1px solid var(--soft-border);
+  box-shadow:0 10px 22px rgba(23,63,126,.06);
+  background:#fff;
+}
+.table-total{
+  background:linear-gradient(90deg,#eef5ff,#f8fbff);
+  color:#21456f;
+  font-weight:700;
+}
+th{background:#f7faff;color:#334866}
+td,th{font-size:12px}
+.badge{font-weight:800}
+.choice-chip,.checkchip{
+  background:#fff;
+  border:1px solid #dbe6f4;
+  box-shadow:0 6px 18px rgba(35,84,168,.06);
+}
+.choice-chip:has(input:checked),.checkchip:has(input:checked){
+  background:linear-gradient(135deg,#edf4ff,#ffffff);
+  border-color:#74a7ff;
+  box-shadow:0 8px 20px rgba(22,84,187,.14);
+}
+.summarypill,.session-pill{
+  box-shadow:0 8px 18px rgba(29,89,176,.08);
+}
+.notice{
+  border-radius:16px;
+  font-family:Poppins,Inter,Segoe UI,Arial,sans-serif;
+}
+@media (max-width:1200px){
+  .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:920px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto}
+  .brandwrap{margin-bottom:16px}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .cards{grid-template-columns:1fr}
+  .topbar{padding:16px}
+  .title h1{font-size:28px}
+}
+
 </style>
 </head>
 
@@ -78,8 +248,21 @@ body.migration-busy{overflow:hidden}
 <div class="app">
 
 <aside class="sidebar">
-  <div class="brand">STU-RMMJ</div>
-  <div class="sub">Sistem Tapisan Undian RMMJ</div>
+  <div class="brandwrap">
+    <div class="logo-pkpj" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="7" y="30" width="10" height="24" rx="2" fill="#F7C948"/>
+        <rect x="22" y="20" width="10" height="34" rx="2" fill="#F7C948"/>
+        <rect x="37" y="12" width="10" height="42" rx="2" fill="#F7C948"/>
+        <path d="M6 57C20 49 27 46 31.5 46C36 46 43.5 49 58 57" stroke="#F7C948" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand">STU-RMMJ</div>
+      <div class="sub">Sistem Tapisan Undian RMMJ</div>
+      <div class="sub sub2">PKPJ • Perbadanan Kemajuan Perumahan Johor</div>
+    </div>
+  </div>
 
   <div class="nav">
     <button class="active" data-page="dashboard">Dashboard</button>
@@ -451,7 +634,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.8.0';
+const MIN_API_VERSION = '2.9.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -463,7 +646,9 @@ const state = {
   activeProject: '',
   activeType: '',
   activeRace: '',
-  archives: []
+  archives: [],
+  loadedPages: {},
+  busy: false
 };
 
 
@@ -482,14 +667,38 @@ window.addEventListener('DOMContentLoaded', async function(){
   if(state.apiUrl && state.apiKey){
     const apiOk = await testApi(false);
     if(apiOk){
-      await loadDashboard();
-      await loadProjectFilters();
-      await loadDrawOptions(true);
+      await Promise.all([
+        loadDashboard(),
+        loadProjectFilters(),
+        loadDrawOptions(true)
+      ]);
+      state.loadedPages.dashboard = true;
     }else{
       toast('API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.', 'bad');
     }
   }
 });
+
+async function loadPageData(page, force=false){
+  if(state.busy) return;
+  const done = !!state.loadedPages[page];
+  if(done && !force) return;
+
+  state.busy = true;
+  try{
+    if(page === 'dashboard') await loadDashboard();
+    if(page === 'pemohon') await loadData('applicants','applicantTable');
+    if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(); }
+    if(page === 'pemenang') { await loadDrawOptions(); await loadData('winners','winnerTable'); }
+    if(page === 'ditapis') { prefillNextDrawFromActive(); }
+    if(page === 'bersih') { prefillNextDrawFromActive(); }
+    if(page === 'audit') await loadData('audit','auditTable');
+    if(page === 'arkib') { await loadDrawOptions(); await loadArchives(); renderArchiveProjectChoices(); }
+    state.loadedPages[page] = true;
+  }finally{
+    state.busy = false;
+  }
+}
 
 
 /* =========================================================
@@ -507,14 +716,7 @@ function bindNav(){
       document.getElementById('pageTitle').textContent = btn.textContent;
 
       const page = btn.dataset.page;
-      if(page === 'dashboard') await loadDashboard();
-      if(page === 'pemohon') await loadData('applicants','applicantTable');
-      if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(); }
-      if(page === 'pemenang') { await loadDrawOptions(); await loadData('winners','winnerTable'); }
-      if(page === 'ditapis') { prefillNextDrawFromActive(); }
-      if(page === 'bersih') { prefillNextDrawFromActive(); }
-      if(page === 'audit') await loadData('audit','auditTable');
-      if(page === 'arkib') { await loadDrawOptions(); await loadArchives(); renderArchiveProjectChoices(); }
+      await loadPageData(page,false);
     });
   });
 }
@@ -540,12 +742,26 @@ async function api(payload){
     throw new Error('API belum dikonfigurasi.');
   }
 
-  const res = await fetch(state.apiUrl,{
-    method:'POST',
-    redirect:'follow',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify({...payload,key:state.apiKey})
-  });
+  const ctrl = new AbortController();
+  const timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+
+  let res;
+  try{
+    res = await fetch(state.apiUrl,{
+      method:'POST',
+      redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({...payload,key:state.apiKey}),
+      signal: ctrl.signal
+    });
+  }catch(err){
+    if(err.name === 'AbortError'){
+      throw new Error('Permintaan ke API mengambil masa terlalu lama. Sila cuba semula.');
+    }
+    throw err;
+  }finally{
+    clearTimeout(timer);
+  }
 
   const text = await res.text();
   let data;
