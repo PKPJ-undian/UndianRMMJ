@@ -408,9 +408,12 @@ th,td{padding:8px 10px}
 
 /* Pecahan keputusan pertindihan mengikut kaum */
 .overlap-race-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
-.overlap-race-card{border:1px solid #dce7f5;border-radius:16px;padding:13px 15px;background:#fff;box-shadow:0 8px 20px rgba(31,75,145,.07)}
+.overlap-race-card{border:1px solid #dce7f5;border-radius:16px;padding:13px 15px;background:#fff;box-shadow:0 8px 20px rgba(31,75,145,.07);cursor:pointer;transition:.16s ease;user-select:none}
+.overlap-race-card:hover{transform:translateY(-2px);box-shadow:0 12px 25px rgba(31,75,145,.13)}
+.overlap-race-card.active{border-color:#2f7df6;box-shadow:0 0 0 3px rgba(47,125,246,.12),0 12px 25px rgba(31,75,145,.12)}
 .overlap-race-card .race-name{font-size:12px;font-weight:800;color:#526983;text-transform:uppercase;letter-spacing:.3px}
 .overlap-race-card .race-count{font-size:24px;font-weight:800;color:#0f2f59;margin-top:3px}
+.overlap-race-card.semua{background:linear-gradient(135deg,#f2f5fb,#ffffff)}
 .overlap-race-card.melayu{background:linear-gradient(135deg,#eef5ff,#ffffff)}
 .overlap-race-card.cina{background:linear-gradient(135deg,#fff6e9,#ffffff)}
 .overlap-race-card.india{background:linear-gradient(135deg,#effcf4,#ffffff)}
@@ -716,6 +719,7 @@ th,td{padding:8px 10px}
       <button class="btn danger" onclick="checkNextDrawExclusions()">Cross-Check & Keluarkan No. Siri</button>
       <button class="btn primary" onclick="downloadTablePdf('nextExcludedTable','Tidak Layak Untuk Undian Seterusnya','tidak_layak_undian_seterusnya.pdf')">Muat Turun PDF</button>
       <button class="btn green" onclick="downloadTableCsv('nextExcludedTable','tidak_layak_undian_seterusnya.csv')">Muat Turun CSV</button>
+      <button class="btn gray" onclick="clearNextExcludedTestData()">Padam Data Ujian</button>
     </div>
   </div>
 
@@ -738,6 +742,7 @@ th,td{padding:8px 10px}
       <button class="btn primary" onclick="generateCleanList()">Jana Senarai Layak</button>
       <button class="btn green" onclick="downloadTableCsv('cleanTable','layak_undian_seterusnya.csv')">Muat Turun CSV</button>
       <button class="btn primary" onclick="downloadTablePdf('cleanTable','Layak Ke Undian Seterusnya','layak_undian_seterusnya.pdf')">Muat Turun PDF</button>
+      <button class="btn gray" onclick="clearCleanTestData()">Padam Data Ujian</button>
     </div>
   </div>
   <div class="panel">
@@ -907,7 +912,10 @@ const state = {
   activeRace: '',
   archives: [],
   loadedPages: {},
-  busy: false
+  busy: false,
+  overlapAllRows: [],
+  overlapGroups: {SEMUA:[],MELAYU:[],CINA:[],INDIA:[],SEMAK:[]},
+  overlapActiveRace: 'SEMUA'
 };
 
 
@@ -2510,17 +2518,17 @@ function overlapRaceKey(row){
 
 function renderOverlapByRace(rows,modeText){
   rows=rows || [];
-  state.lastTables.overlapTable=rows;
+  state.overlapAllRows=rows;
 
-  const groups={MELAYU:[],CINA:[],INDIA:[],SEMAK:[]};
+  const groups={SEMUA:rows,MELAYU:[],CINA:[],INDIA:[],SEMAK:[]};
   rows.forEach(function(r){ groups[overlapRaceKey(r)].push(r); });
+  state.overlapGroups=groups;
+  state.overlapActiveRace='SEMUA';
+  state.lastTables.overlapTable=rows;
 
   document.getElementById('overlapSummary').innerHTML =
     '<strong>Jumlah: '+rows.length.toLocaleString('ms-MY')+' rekod '+esc(modeText)+' ditemui.</strong> '+
-    'Melayu: '+groups.MELAYU.length.toLocaleString('ms-MY')+
-    ' · Cina: '+groups.CINA.length.toLocaleString('ms-MY')+
-    ' · India: '+groups.INDIA.length.toLocaleString('ms-MY')+
-    (groups.SEMAK.length ? ' · Semak kaum: '+groups.SEMAK.length.toLocaleString('ms-MY') : '');
+    'Tekan kotak kaum untuk paparkan senarai terus.';
 
   const root=document.getElementById('overlapTable');
   if(!rows.length){
@@ -2532,25 +2540,38 @@ function renderOverlapByRace(rows,modeText){
   root.classList.remove('tablewrap');
   root.innerHTML =
     '<div class="overlap-race-summary">'+
-      '<div class="overlap-race-card melayu"><div class="race-name">Melayu</div><div class="race-count">'+groups.MELAYU.length.toLocaleString('ms-MY')+'</div></div>'+
-      '<div class="overlap-race-card cina"><div class="race-name">Cina</div><div class="race-count">'+groups.CINA.length.toLocaleString('ms-MY')+'</div></div>'+
-      '<div class="overlap-race-card india"><div class="race-name">India</div><div class="race-count">'+groups.INDIA.length.toLocaleString('ms-MY')+'</div></div>'+
-    '</div><div id="overlapRaceSections"></div>';
+      '<div class="overlap-race-card semua active" data-race="SEMUA" onclick="showOverlapRace(\'SEMUA\')"><div class="race-name">Semua</div><div class="race-count">'+rows.length.toLocaleString('ms-MY')+'</div></div>'+
+      '<div class="overlap-race-card melayu" data-race="MELAYU" onclick="showOverlapRace(\'MELAYU\')"><div class="race-name">Melayu</div><div class="race-count">'+groups.MELAYU.length.toLocaleString('ms-MY')+'</div></div>'+
+      '<div class="overlap-race-card cina" data-race="CINA" onclick="showOverlapRace(\'CINA\')"><div class="race-name">Cina</div><div class="race-count">'+groups.CINA.length.toLocaleString('ms-MY')+'</div></div>'+
+      '<div class="overlap-race-card india" data-race="INDIA" onclick="showOverlapRace(\'INDIA\')"><div class="race-name">India</div><div class="race-count">'+groups.INDIA.length.toLocaleString('ms-MY')+'</div></div>'+
+    '</div>'+
+    (groups.SEMAK.length ? '<div class="notice warn" style="margin:8px 0 12px">'+groups.SEMAK.length.toLocaleString('ms-MY')+' rekod mempunyai kaum bercampur / perlu disemak.</div>' : '')+
+    '<div id="overlapRaceCurrentTitle" class="overlap-race-title"><span>Semua Kaum</span><span class="count">'+rows.length.toLocaleString('ms-MY')+' rekod</span></div>'+
+    '<div id="overlapRaceCurrentTable" class="tablewrap"></div>';
 
-  const sections=document.getElementById('overlapRaceSections');
-  const order=[['MELAYU','Melayu'],['CINA','Cina'],['INDIA','India']];
-  if(groups.SEMAK.length) order.push(['SEMAK','Perlu Semak Kaum']);
+  renderTable('overlapRaceCurrentTable',rows);
+  // Kekalkan eksport pada keseluruhan senarai sehingga pengguna menekan kaum tertentu.
+  state.lastTables.overlapTable=rows;
+}
 
-  order.forEach(function(pair){
-    const key=pair[0],label=pair[1],data=groups[key];
-    if(!data.length) return;
-    const id='overlap_'+key.toLowerCase()+'_table';
-    const block=document.createElement('div');
-    block.className='overlap-race-section';
-    block.innerHTML='<div class="overlap-race-title"><span>'+esc(label)+'</span><span class="count">'+data.length.toLocaleString('ms-MY')+' rekod</span></div><div id="'+id+'" class="tablewrap"></div>';
-    sections.appendChild(block);
-    renderTable(id,data);
+function showOverlapRace(race){
+  const groups=state.overlapGroups || {};
+  const data=groups[race] || [];
+  state.overlapActiveRace=race;
+
+  document.querySelectorAll('.overlap-race-card[data-race]').forEach(function(card){
+    card.classList.toggle('active',card.dataset.race===race);
   });
+
+  const labels={SEMUA:'Semua Kaum',MELAYU:'Melayu',CINA:'Cina',INDIA:'India',SEMAK:'Perlu Semak Kaum'};
+  const title=document.getElementById('overlapRaceCurrentTitle');
+  if(title){
+    title.innerHTML='<span>'+esc(labels[race]||race)+'</span><span class="count">'+data.length.toLocaleString('ms-MY')+' rekod</span>';
+  }
+
+  renderTable('overlapRaceCurrentTable',data);
+  // Eksport CSV/PDF akan ikut kaum yang sedang dipaparkan.
+  state.lastTables.overlapTable=data;
 }
 
 /* =========================================================
@@ -2867,6 +2888,41 @@ async function generateCleanList(){
 }
 
 
+
+
+function clearNextExcludedTestData(){
+  const rows=state.lastTables.nextExcludedTable || [];
+  if(rows.length && !confirm('Padam paparan data ujian Tidak Layak Undian Seterusnya? Data asal Pemohon dan Pemohon Berjaya tidak akan dipadam.')) return;
+
+  state.lastTables.nextExcludedTable=[];
+  const summary=document.getElementById('nextExcludedSummary');
+  if(summary){
+    summary.className='notice warn';
+    summary.textContent='Data ujian telah dikosongkan. Buat Cross-Check semula bila diperlukan.';
+  }
+  const table=document.getElementById('nextExcludedTable');
+  if(table){
+    table.innerHTML='<div class="table-total"><strong>Jumlah: 0 rekod</strong></div><div style="padding:18px" class="muted">Tiada rekod dipaparkan.</div>';
+  }
+  toast('Paparan data ujian Tidak Layak telah dikosongkan. Data induk kekal selamat.','good');
+}
+
+function clearCleanTestData(){
+  const rows=state.lastTables.cleanTable || [];
+  if(rows.length && !confirm('Padam paparan data ujian Senarai Layak Ke Undian Seterusnya? Data asal Pemohon tidak akan dipadam.')) return;
+
+  state.lastTables.cleanTable=[];
+  const summary=document.getElementById('cleanSummary');
+  if(summary){
+    summary.className='notice info';
+    summary.textContent='Data ujian telah dikosongkan. Jana semula senarai apabila diperlukan.';
+  }
+  const table=document.getElementById('cleanTable');
+  if(table){
+    table.innerHTML='<div class="table-total"><strong>Jumlah: 0 rekod</strong></div><div style="padding:18px" class="muted">Tiada rekod dipaparkan.</div>';
+  }
+  toast('Paparan data ujian Senarai Layak telah dikosongkan. Data induk kekal selamat.','good');
+}
 
 /* =========================================================
    ARKIB
