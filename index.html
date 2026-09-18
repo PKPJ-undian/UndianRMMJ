@@ -1102,41 +1102,93 @@ async function api(payload){
     throw new Error('API belum dikonfigurasi.');
   }
 
-  const ctrl = new AbortController();
-  const timer = setTimeout(function(){ ctrl.abort(); }, 90000);
+  const maxAttempts = 3;
+  let lastError = null;
 
-  let res;
-  try{
-    res = await fetch(state.apiUrl,{
-      method:'POST',
-      redirect:'follow',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({...payload,key:state.apiKey}),
-      signal: ctrl.signal
-    });
-  }catch(err){
-    if(err.name === 'AbortError'){
-      throw new Error('API mengambil masa terlalu lama. Sistem telah hentikan permintaan ini. Cuba Muat Semula sekali lagi.');
+  for(let attempt=1; attempt<=maxAttempts; attempt++){
+    const ctrl = new AbortController();
+    const timer = setTimeout(function(){ ctrl.abort(); }, 90000);
+
+    try{
+      const res = await fetch(state.apiUrl,{
+        method:'POST',
+        redirect:'follow',
+        cache:'no-store',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({...payload,key:state.apiKey}),
+        signal:ctrl.signal
+      });
+
+      const raw = await res.text();
+      let data;
+
+      try{
+        data = JSON.parse(raw);
+      }catch(parseErr){
+        const preview = String(raw || '').replace(/\s+/g,' ').slice(0,180);
+        console.warn(
+          'API response bukan JSON. Percubaan '+attempt+'/'+maxAttempts+
+          ' | action='+String(payload.action || '')+
+          ' | HTTP '+res.status+
+          ' | preview=', preview
+        );
+
+        lastError = new Error(
+          'Respons sementara daripada Google Apps Script tidak dapat dibaca.'
+        );
+
+        if(attempt < maxAttempts){
+          await new Promise(resolve=>setTimeout(resolve, 700 * attempt));
+          continue;
+        }
+
+        throw new Error(
+          'Respons API tidak stabil selepas '+maxAttempts+
+          ' percubaan. Cuba semula proses ini. Data yang telah berjaya disimpan sebelum ini kekal.'
+        );
+      }
+
+      if(!data.ok){
+        // Ini ialah ralat aplikasi sebenar dalam format JSON.
+        // Jangan ulang automatik supaya operasi yang tidak sah tidak dihantar berkali-kali.
+        throw new Error(data.error || data.message || 'Operasi API gagal.');
+      }
+
+      return data;
+
+    }catch(err){
+      lastError = err;
+
+      if(err.name === 'AbortError'){
+        lastError = new Error(
+          'API mengambil masa terlalu lama. Sistem akan cuba semula secara automatik.'
+        );
+      }
+
+      const retryable =
+        err.name === 'AbortError' ||
+        err instanceof TypeError ||
+        String(err.message || '').includes('Respons sementara') ||
+        String(err.message || '').includes('Respons API tidak stabil');
+
+      if(retryable && attempt < maxAttempts){
+        console.warn(
+          'API retry '+(attempt+1)+'/'+maxAttempts+
+          ' untuk action '+String(payload.action || ''),
+          err
+        );
+        await new Promise(resolve=>setTimeout(resolve, 700 * attempt));
+        continue;
+      }
+
+      throw lastError;
+
+    }finally{
+      clearTimeout(timer);
     }
-    throw err;
-  }finally{
-    clearTimeout(timer);
   }
 
-  const text = await res.text();
-  let data;
-
-  try{ data = JSON.parse(text); }
-  catch(e){
-    console.error('RAW API RESPONSE:',text);
-    throw new Error('Respons API tidak sah. Pastikan Google Apps Script telah dideploy semula.');
-  }
-
-  if(!data.ok){
-    throw new Error(data.error || data.message || 'Operasi API gagal.');
-  }
-
-  return data;
+  throw lastError || new Error('Operasi API gagal.');
 }
 
 async function testApi(show=true){
@@ -1510,7 +1562,7 @@ function failMigrationProgress(message){
   document.getElementById('progressTitle').textContent = 'Proses Tidak Selesai';
   document.getElementById('progressStage').textContent = 'RALAT';
   document.getElementById('progressDetail').textContent = message || 'Berlaku ralat semasa memproses data.';
-  document.getElementById('progressNote').textContent = 'Semak mesej ralat di atas. Data yang sempat disimpan sebelum ralat kekal dalam database.';
+  document.getElementById('progressNote').textContent = 'Semak mesej ralat di atas. Sistem akan cuba semula automatik untuk gangguan API sementara. Data yang sempat disimpan sebelum ralat kekal dalam database.';
   document.getElementById('progressCloseBtn').classList.add('show');
   document.body.classList.remove('migration-busy');
 
