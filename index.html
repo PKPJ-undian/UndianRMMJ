@@ -66,6 +66,9 @@ body.migration-busy{overflow:hidden}
 @media(max-width:700px){.progress-stats{grid-template-columns:1fr 1fr}}
 
 .footer{font-size:11px;color:#8b97a8;margin-top:22px}.muted{color:#7d8898}.apiBox{max-width:760px}
+
+.choice-block{margin:14px 0}.choice-label{font-size:12px;font-weight:850;color:#33455f;margin-bottom:8px}.choice-grid{display:flex;flex-wrap:wrap;gap:9px}.choice-chip{position:relative;display:inline-flex;align-items:center;gap:8px;border:1px solid #d7e2ef;background:#f8fbff;border-radius:12px;padding:10px 13px;font-size:12px;font-weight:800;cursor:pointer;transition:.15s}.choice-chip:hover{border-color:#8bbcff;background:#f1f7ff}.choice-chip input{accent-color:#1478ff}.choice-chip:has(input:checked){background:#eaf3ff;border-color:#1478ff;color:#0b57b7;box-shadow:0 0 0 2px rgba(20,120,255,.08)}
+.session-pill{display:inline-flex;align-items:center;gap:6px;background:#eef5ff;border:1px solid #cfe1fa;color:#174d91;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800;margin:6px 0 10px}.session-pill.missing{background:#fff5e8;border-color:#ffd69d;color:#8a5a13}.race-box.disabled{opacity:.55;background:#f4f6f9}.race-box.disabled input[type=file]{pointer-events:none}.linked-badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#e9f8ef;color:#176a39;font-size:11px;font-weight:800}.archive-ready{border-color:#b8e5ca;background:#f2fcf6}.archive-notready{border-color:#ffd1a8;background:#fff9f2}.archive-note{font-size:11px;color:#6e7a8c;margin-top:7px}.archive-select{min-width:320px}
 @media(max-width:1250px){.cards{grid-template-columns:repeat(3,1fr)}.grid4,.grid5,.grid6{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid4,.grid5,.grid6,.race-grid{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto;gap:6px}.nav button{min-width:max-content}.main{padding:16px}}
 </style>
@@ -86,6 +89,7 @@ body.migration-busy{overflow:hidden}
     <button data-page="ditapis">Tidak Layak Undian Seterusnya</button>
     <button data-page="bersih">Layak Ke Undian Seterusnya</button>
     <button data-page="audit">Laporan & Audit</button>
+    <button data-page="arkib">Arkib</button>
   </div>
 </aside>
 
@@ -139,7 +143,7 @@ body.migration-busy{overflow:hidden}
 
     <div id="fileTab" class="tabcontent active">
       <div class="notice info">
-        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem terus menyediakan 3 ruang berasingan: <strong>Melayu, Cina dan India</strong>. Upload fail Excel mengikut kaum pada ruang masing-masing dan masukkan <strong>jumlah unit yang akan diundi</strong>. Maklumat pemohon utama ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
+        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem terus menyediakan 3 ruang berasingan: <strong>Melayu, Cina dan India</strong>. Upload fail Excel mengikut kaum pada ruang masing-masing, masukkan <strong>jumlah unit</strong> dan <strong>masa / sesi undian</strong> bagi setiap kaum. Maklumat pemohon utama ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
       </div>
 
       <div id="datasetList"></div>
@@ -255,16 +259,31 @@ body.migration-busy{overflow:hidden}
       <strong>ALIRAN PEMOHON BERJAYA</strong><br>Selepas fail berjaya dimasukkan, sistem akan cross-check No. KP dengan senarai jenis rumah lain dalam projek yang sama. Jika pemohon masih wujud dalam undian seterusnya, sistem akan mengenal pasti <strong>No. Siri undian seterusnya</strong> supaya bola pingpong tersebut boleh dikeluarkan sebelum sesi bermula.
     </div>
 
-    <div class="grid3">
-      <div class="field"><label>Nama Projek</label><input id="successProject" placeholder="Contoh: TAMAN MAWAR"></div>
-      <div class="field"><label>Jenis Rumah Yang Telah Diundi</label><input id="successType" placeholder="Contoh: JENIS A"></div>
-      <div class="field"><label>Sesi Undian</label><input id="successSession" placeholder="Contoh: 9.00 PAGI"></div>
+    <input id="successProject" type="hidden">
+    <input id="successType" type="hidden">
+
+    <div class="choice-block">
+      <div class="choice-label">1. Pilih Nama Projek</div>
+      <div id="successProjectChoices" class="choice-grid"><span class="muted">Memuatkan projek...</span></div>
     </div>
 
+    <div class="choice-block">
+      <div class="choice-label">2. Pilih Jenis Rumah Yang Telah Diundi</div>
+      <div id="successTypeChoices" class="choice-grid"><span class="muted">Pilih projek dahulu.</span></div>
+    </div>
+
+    <div class="choice-block">
+      <div class="choice-label">3. Pilih Sesi / Kaum Yang Telah Selesai Diundi</div>
+      <div id="successSessionChoices" class="choice-grid"><span class="muted">Pilih jenis rumah dahulu.</span></div>
+      <div class="archive-note">Pilihan ini diambil terus daripada Projek / Jenis / Masa Undian yang telah disimpan di Pengurusan Data.</div>
+    </div>
+
+    <div id="successLinkedInfo" class="notice good" style="display:none"></div>
+
     <div class="race-grid" id="successRaceGrid">
-      <div class="race-box" data-race="MELAYU"><h4>Melayu</h4><div class="fileline"><strong>Fail Pemohon Berjaya Melayu</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv"></div></div>
-      <div class="race-box" data-race="CINA"><h4>Cina</h4><div class="fileline"><strong>Fail Pemohon Berjaya Cina</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv"></div></div>
-      <div class="race-box" data-race="INDIA"><h4>India</h4><div class="fileline"><strong>Fail Pemohon Berjaya India</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv"></div></div>
+      <div class="race-box disabled" data-race="MELAYU" data-session=""><h4>Melayu</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="fileline"><strong>Fail Pemohon Berjaya Melayu</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
+      <div class="race-box disabled" data-race="CINA" data-session=""><h4>Cina</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="fileline"><strong>Fail Pemohon Berjaya Cina</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
+      <div class="race-box disabled" data-race="INDIA" data-session=""><h4>India</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="fileline"><strong>Fail Pemohon Berjaya India</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
     </div>
 
     <div class="actions">
@@ -335,6 +354,49 @@ body.migration-busy{overflow:hidden}
   <div class="panel"><div id="auditTable" class="tablewrap"></div></div>
 </section>
 
+<section id="arkib" class="page">
+  <div class="panel">
+    <h2>Arkib Projek Undian</h2>
+    <p>Selepas semua sesi undian bagi sesuatu projek selesai dan jumlah Pemohon Berjaya telah tally dengan unit undian, simpan satu snapshot lengkap sebagai rujukan akan datang.</p>
+
+    <div class="notice info">
+      <strong>INFO ARKIB</strong><br>Fungsi ini <strong>menyalin</strong> rekod projek ke arkib. Data aktif tidak dipadam secara automatik, jadi rekod asal masih selamat untuk semakan.
+    </div>
+
+    <div class="choice-block">
+      <div class="choice-label">Pilih Projek Yang Telah Selesai Semua Undian</div>
+      <div id="archiveProjectChoices" class="choice-grid"><span class="muted">Memuatkan projek...</span></div>
+    </div>
+    <input id="archiveProject" type="hidden">
+
+    <div id="archiveReadiness" class="notice warn">Pilih projek untuk semak sama ada semua kuota telah lengkap.</div>
+
+    <div class="field" style="max-width:760px;margin-top:12px"><label>Catatan Arkib (pilihan)</label><input id="archiveNote" placeholder="Contoh: Majlis Undian RMMJ selesai sepenuhnya"></div>
+
+    <div class="actions">
+      <button class="btn orange" onclick="checkArchiveReadiness()">Semak Kesiapsiagaan</button>
+      <button id="archiveSaveBtn" class="btn green" onclick="saveProjectArchive()" disabled>Simpan Semua ke Arkib</button>
+      <button class="btn gray" onclick="loadArchives()">Muat Semula Arkib</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Senarai Arkib</h2>
+    <div class="actions"><button class="btn primary" onclick="downloadTablePdf('archiveTable','Senarai Arkib Projek','senarai_arkib_projek.pdf')">Muat Turun PDF</button></div>
+    <div id="archiveTable" class="tablewrap"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Butiran Arkib</h2>
+    <div class="grid2">
+      <div class="field"><label>Pilih Snapshot Arkib</label><select id="archiveSelect" class="archive-select" onchange="loadArchiveDetail()"><option value="">Pilih Arkib</option></select></div>
+      <div class="field"><label>Jenis Rekod</label><select id="archiveCategory" onchange="loadArchiveDetail()"><option value="">Semua Rekod</option><option value="PEMOHON">Pemohon</option><option value="PEMOHON BERJAYA">Pemohon Berjaya</option><option value="TIDAK LAYAK">Tidak Layak</option><option value="KUOTA">Kuota / Sesi</option></select></div>
+    </div>
+    <div class="actions"><button class="btn primary" onclick="downloadTablePdf('archiveDetailTable','Butiran Arkib Projek','butiran_arkib_projek.pdf')">Muat Turun PDF</button></div>
+    <div id="archiveDetailSummary" class="notice info">Pilih snapshot arkib untuk melihat butiran.</div>
+    <div id="archiveDetailTable" class="tablewrap"></div>
+  </div>
+</section>
 
 
 <div id="migrationProgress" class="progress-overlay" aria-live="polite">
@@ -389,14 +451,19 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.7.0';
+const MIN_API_VERSION = '2.8.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
   apiKey: DEFAULT_API_KEY,
   lastTables: {},
   manualRows: [],
-  datasetCounter: 0
+  datasetCounter: 0,
+  drawOptions: [],
+  activeProject: '',
+  activeType: '',
+  activeRace: '',
+  archives: []
 };
 
 
@@ -417,6 +484,7 @@ window.addEventListener('DOMContentLoaded', async function(){
     if(apiOk){
       await loadDashboard();
       await loadProjectFilters();
+      await loadDrawOptions(true);
     }else{
       toast('API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.', 'bad');
     }
@@ -441,10 +509,12 @@ function bindNav(){
       const page = btn.dataset.page;
       if(page === 'dashboard') await loadDashboard();
       if(page === 'pemohon') await loadData('applicants','applicantTable');
-      if(page === 'watchlist') { await loadProjectFilters(); await runOverlapSearch(); }
-      if(page === 'pemenang') await loadData('winners','winnerTable');
-      if(page === 'ditapis') await loadData('filtered','filteredTable');
+      if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(); }
+      if(page === 'pemenang') { await loadDrawOptions(); await loadData('winners','winnerTable'); }
+      if(page === 'ditapis') { prefillNextDrawFromActive(); }
+      if(page === 'bersih') { prefillNextDrawFromActive(); }
       if(page === 'audit') await loadData('audit','auditTable');
+      if(page === 'arkib') { await loadDrawOptions(); await loadArchives(); renderArchiveProjectChoices(); }
     });
   });
 }
@@ -607,6 +677,7 @@ function addDataset(){
     return '<div class="race-box" data-race="'+race+'">'+
       '<h4>'+label+'</h4>'+
       '<div class="field"><label>Jumlah Unit Akan Diundi</label><input class="race-units" type="number" min="0" step="1" placeholder="Contoh: 20"></div>'+
+      '<div class="field" style="margin-top:9px"><label>Masa / Sesi Undian</label><input class="race-session" placeholder="Contoh: 9.00 PAGI"></div>'+
       '<div class="fileline"><strong>Fail Pemohon '+label+'</strong><br><br><input class="race-file" type="file" accept=".xlsx,.xls,.csv"></div>'+
     '</div>';
   }
@@ -733,8 +804,9 @@ async function importAllDatasets(){
         const race = box.dataset.race;
         const file = box.querySelector('.race-file').files[0];
         const unitsText = box.querySelector('.race-units').value.trim();
+        const sessionText = box.querySelector('.race-session').value.trim();
 
-        if(file || unitsText !== ''){
+        if(file || unitsText !== '' || sessionText !== ''){
           jobs.push({
             card,
             project,
@@ -742,6 +814,7 @@ async function importAllDatasets(){
             race,
             file,
             unitsText,
+            sessionText,
             parsedRows:[],
             parsedInvalid:0,
             chunkCount:0
@@ -760,6 +833,9 @@ async function importAllDatasets(){
       }
       if(job.unitsText === ''){
         throw new Error('Masukkan jumlah unit bagi '+job.race+' untuk '+job.project+' · '+job.type+'.');
+      }
+      if(!job.sessionText){
+        throw new Error('Masukkan masa / sesi undian bagi '+job.race+' untuk '+job.project+' · '+job.type+'.');
       }
 
       const units = Number(job.unitsText);
@@ -881,7 +957,8 @@ async function importAllDatasets(){
         project:job.project,
         type:job.type,
         race:job.race,
-        units:units
+        units:units,
+        session:job.sessionText
       });
 
       completedApiOps++;
@@ -970,6 +1047,7 @@ async function importAllDatasets(){
     );
 
     await loadDashboard();
+    await loadDrawOptions(true);
 
     updateMigrationProgress(
       97,
@@ -1402,6 +1480,195 @@ async function resetAllTestData(){
   }
 }
 
+
+/* =========================================================
+   PILIHAN UNDIAN AUTOMATIK - PROJEK / JENIS / MASA
+========================================================= */
+
+async function loadDrawOptions(force=false){
+  if(state.drawOptions.length && !force){
+    renderSuccessProjectChoices();
+    renderArchiveProjectChoices();
+    return state.drawOptions;
+  }
+
+  try{
+    const d = await api({action:'getDrawOptions'});
+    state.drawOptions = d.projects || [];
+    renderSuccessProjectChoices();
+    renderArchiveProjectChoices();
+    return state.drawOptions;
+  }catch(err){
+    console.error(err);
+    return [];
+  }
+}
+
+function findDrawProject(project){
+  return (state.drawOptions || []).find(function(x){ return x.project === project; }) || null;
+}
+
+function findDrawType(project,type){
+  const p = findDrawProject(project);
+  return p ? (p.types || []).find(function(x){ return x.type === type; }) || null : null;
+}
+
+function renderSuccessProjectChoices(){
+  const root = document.getElementById('successProjectChoices');
+  if(!root) return;
+  const projects = state.drawOptions || [];
+  if(!projects.length){
+    root.innerHTML = '<span class="muted">Belum ada projek. Import data di Pengurusan Data dahulu.</span>';
+    return;
+  }
+  root.innerHTML = projects.map(function(x){
+    const checked = state.activeProject === x.project ? ' checked' : '';
+    return '<label class="choice-chip"><input type="radio" name="successProjectChoice" value="'+escAttr(x.project)+'" onchange="selectSuccessProject(this.value)"'+checked+'> '+esc(x.project)+'</label>';
+  }).join('');
+
+  if(state.activeProject) renderSuccessTypeChoices();
+}
+
+function selectSuccessProject(project){
+  state.activeProject = project;
+  state.activeType = '';
+  state.activeRace = '';
+  document.getElementById('successProject').value = project;
+  document.getElementById('successType').value = '';
+  renderSuccessTypeChoices();
+  renderSuccessSessionChoices();
+  syncSemakanToActiveProject();
+  prefillNextDrawFromActive();
+}
+
+function renderSuccessTypeChoices(){
+  const root = document.getElementById('successTypeChoices');
+  if(!root) return;
+  const p = findDrawProject(state.activeProject);
+  if(!p){
+    root.innerHTML = '<span class="muted">Pilih projek dahulu.</span>';
+    return;
+  }
+  root.innerHTML = (p.types || []).map(function(x){
+    const checked = state.activeType === x.type ? ' checked' : '';
+    return '<label class="choice-chip"><input type="radio" name="successTypeChoice" value="'+escAttr(x.type)+'" onchange="selectSuccessType(this.value)"'+checked+'> '+esc(x.type)+'</label>';
+  }).join('') || '<span class="muted">Tiada jenis rumah untuk projek ini.</span>';
+}
+
+function selectSuccessType(type){
+  state.activeType = type;
+  state.activeRace = '';
+  document.getElementById('successType').value = type;
+  renderSuccessSessionChoices();
+  syncSemakanToActiveProject();
+  prefillNextDrawFromActive();
+}
+
+function renderSuccessSessionChoices(){
+  const root = document.getElementById('successSessionChoices');
+  if(!root) return;
+  const t = findDrawType(state.activeProject,state.activeType);
+
+  document.querySelectorAll('#successRaceGrid .race-box').forEach(function(box){
+    box.classList.add('disabled');
+    box.dataset.session = '';
+    box.querySelector('.success-file').disabled = true;
+    const pill = box.querySelector('.session-pill');
+    pill.textContent = 'Sesi: belum dipilih';
+    pill.classList.add('missing');
+  });
+
+  if(!t){
+    root.innerHTML = '<span class="muted">Pilih jenis rumah dahulu.</span>';
+    document.getElementById('successLinkedInfo').style.display='none';
+    return;
+  }
+
+  const races = t.races || [];
+  root.innerHTML = races.map(function(r){
+    const label = r.race+' · '+(r.session || 'MASA BELUM DITETAPKAN')+' · '+Number(r.units||0)+' UNIT';
+    return '<label class="choice-chip"><input type="checkbox" class="success-session-check" value="'+escAttr(r.race)+'" onchange="toggleSuccessSession(this.value,this.checked)" data-session="'+escAttr(r.session||'')+'"> '+esc(label)+'</label>';
+  }).join('') || '<span class="muted">Tiada kuota / sesi ditemui.</span>';
+
+  const info = document.getElementById('successLinkedInfo');
+  info.style.display='block';
+  info.innerHTML = '<span class="linked-badge">TERKAIT AUTOMATIK</span> '+esc(state.activeProject)+' · '+esc(state.activeType)+' kini turut digunakan sebagai projek aktif dalam <strong>Semakan Pemohon</strong>.';
+}
+
+function toggleSuccessSession(race,checked){
+  const t = findDrawType(state.activeProject,state.activeType);
+  const r = t ? (t.races || []).find(function(x){return x.race===race}) : null;
+  const box = document.querySelector('#successRaceGrid .race-box[data-race="'+race+'"]');
+  if(!box) return;
+  const session = r ? String(r.session || '') : '';
+  box.dataset.session = session;
+  box.classList.toggle('disabled',!checked);
+  box.querySelector('.success-file').disabled = !checked;
+  const pill = box.querySelector('.session-pill');
+  pill.textContent = 'Sesi: '+(session || 'BELUM DITETAPKAN');
+  pill.classList.toggle('missing',!session);
+  if(checked) state.activeRace = race;
+  else if(state.activeRace === race) state.activeRace = '';
+  prefillNextDrawFromActive();
+}
+
+function syncSemakanToActiveProject(){
+  if(!state.activeProject) return;
+  const mode = document.getElementById('overlapMode');
+  if(mode){ mode.value='sameProject'; updateOverlapHelp(); }
+  const search = document.getElementById('overlapSearch');
+  if(search && state.activeType) search.value = state.activeType;
+  document.querySelectorAll('.project-check').forEach(function(cb){
+    cb.checked = cb.value === state.activeProject;
+  });
+}
+
+function prefillNextDrawFromActive(){
+  if(!state.activeProject) return;
+  const nextProject = document.getElementById('nextProject');
+  const cleanProject = document.getElementById('cleanProject');
+  if(nextProject) nextProject.value = state.activeProject;
+  if(cleanProject) cleanProject.value = state.activeProject;
+
+  const p = findDrawProject(state.activeProject);
+  if(!p || !state.activeType) return;
+  const otherTypes = (p.types || []).map(function(x){return x.type}).filter(function(t){return t !== state.activeType});
+  if(otherTypes.length === 1){
+    const nextType = document.getElementById('nextType');
+    const cleanType = document.getElementById('cleanType');
+    if(nextType) nextType.value = otherTypes[0];
+    if(cleanType) cleanType.value = otherTypes[0];
+  }
+  if(state.activeRace){
+    const nextRace=document.getElementById('nextRace');
+    const cleanRace=document.getElementById('cleanRace');
+    if(nextRace) nextRace.value=state.activeRace;
+    if(cleanRace) cleanRace.value=state.activeRace;
+  }
+}
+
+function renderArchiveProjectChoices(){
+  const root = document.getElementById('archiveProjectChoices');
+  if(!root) return;
+  const projects = state.drawOptions || [];
+  if(!projects.length){
+    root.innerHTML='<span class="muted">Belum ada projek aktif.</span>';
+    return;
+  }
+  const current = document.getElementById('archiveProject') ? document.getElementById('archiveProject').value : '';
+  root.innerHTML=projects.map(function(x){
+    return '<label class="choice-chip"><input type="radio" name="archiveProjectChoice" value="'+escAttr(x.project)+'" onchange="selectArchiveProject(this.value)"'+(current===x.project?' checked':'')+'> '+esc(x.project)+'</label>';
+  }).join('');
+}
+
+function selectArchiveProject(project){
+  document.getElementById('archiveProject').value=project;
+  document.getElementById('archiveSaveBtn').disabled=true;
+  document.getElementById('archiveReadiness').className='notice warn';
+  document.getElementById('archiveReadiness').textContent='Projek dipilih: '+project+'. Tekan Semak Kesiapsiagaan.';
+}
+
+
 /* =========================================================
    SEMAKAN PERTINDIHAN
 ========================================================= */
@@ -1417,7 +1684,8 @@ async function loadProjectFilters(){
     }
 
     root.innerHTML = d.projects.map(function(x){
-      return '<label class="checkchip"><input type="checkbox" class="project-check" value="'+escAttr(x.project)+'"> '+esc(x.project)+'</label>';
+      const checked = state.activeProject === x.project ? ' checked' : '';
+      return '<label class="checkchip"><input type="checkbox" class="project-check" value="'+escAttr(x.project)+'"'+checked+'> '+esc(x.project)+'</label>';
     }).join('');
   }catch(err){
     console.error(err);
@@ -1481,10 +1749,9 @@ async function importSuccessfulApplicants(){
   try{
     const project = document.getElementById('successProject').value.trim();
     const type = document.getElementById('successType').value.trim();
-    const session = document.getElementById('successSession').value.trim();
 
     if(!project || !type){
-      throw new Error('Masukkan projek dan jenis rumah yang telah diundi.');
+      throw new Error('Pilih projek dan jenis rumah daripada pilihan yang telah dimuat naik.');
     }
 
     const boxes = Array.from(document.querySelectorAll('#successRaceGrid .race-box'));
@@ -1492,8 +1759,12 @@ async function importSuccessfulApplicants(){
 
     for(const box of boxes){
       const race = box.dataset.race;
-      const file = box.querySelector('.success-file').files[0];
+      const fileInput = box.querySelector('.success-file');
+      if(fileInput.disabled) continue;
+      const file = fileInput.files[0];
       if(!file) continue;
+      const session = String(box.dataset.session || '').trim();
+      if(!session) throw new Error('Masa / sesi undian '+race+' belum ditetapkan di Pengurusan Data.');
 
       const parsed = await readApplicantFileSmart(file,project,type,race);
       if(!parsed.rows.length){
@@ -1537,8 +1808,11 @@ async function importSuccessfulApplicants(){
     }
 
     await loadDashboard();
+    await loadDrawOptions(true);
     await loadData('winners','winnerTable');
     await refreshWatchlist();
+    syncSemakanToActiveProject();
+    prefillNextDrawFromActive();
 
     finishMigrationProgress(
       imported.toLocaleString('ms-MY')+' Pemohon Berjaya disimpan · '+
@@ -1599,6 +1873,86 @@ async function generateCleanList(){
   }catch(err){
     toast(err.message,'bad');
   }
+}
+
+
+
+/* =========================================================
+   ARKIB
+========================================================= */
+
+async function checkArchiveReadiness(){
+  try{
+    const project=document.getElementById('archiveProject').value.trim();
+    if(!project) throw new Error('Pilih projek yang hendak diarkibkan.');
+    const d=await api({action:'getArchiveReadiness',project:project});
+    const box=document.getElementById('archiveReadiness');
+    const btn=document.getElementById('archiveSaveBtn');
+
+    if(d.ready){
+      box.className='notice good archive-ready';
+      box.innerHTML='<strong>SEDIA UNTUK ARKIB.</strong> '+esc(d.message)+' · '+Number(d.totalChecks||0)+' kuota/kaum telah disemak.';
+      btn.disabled=false;
+    }else{
+      box.className='notice warn archive-notready';
+      const issues=(d.issues||[]).map(function(x){return esc(x.JENIS+' / '+x.KAUM+' — '+x.ISU+' ('+x.PEMOHON_BERJAYA+'/'+x.UNIT_UNDIAN+')')}).join('<br>');
+      box.innerHTML='<strong>BELUM BOLEH DIARKIBKAN.</strong> '+esc(d.message)+(issues?'<br><br>'+issues:'');
+      btn.disabled=true;
+    }
+  }catch(err){toast(err.message,'bad')}
+}
+
+async function saveProjectArchive(){
+  try{
+    const project=document.getElementById('archiveProject').value.trim();
+    const note=document.getElementById('archiveNote').value.trim();
+    if(!project) throw new Error('Pilih projek.');
+    if(!confirm('Simpan snapshot lengkap '+project+' ke Arkib? Data aktif tidak akan dipadam.')) return;
+
+    openMigrationProgress('Menyimpan Projek ke Arkib',1);
+    updateMigrationProgress(25,'Menyemak tally','Memastikan semua kuota dan Pemohon Berjaya telah lengkap.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
+    const d=await api({action:'archiveProject',project:project,note:note});
+    updateMigrationProgress(85,'Menyimpan snapshot','Menyimpan pemohon, Pemohon Berjaya, senarai tidak layak dan kuota.',{filesDone:1,totalFiles:1,rowsRead:Number(d.totalRecords||0),saved:Number(d.totalRecords||0),duplicate:0});
+    await loadArchives();
+    finishMigrationProgress('Arkib '+d.archiveId+' berjaya disimpan · '+Number(d.totalRecords||0).toLocaleString('ms-MY')+' rekod snapshot.');
+    toast('Projek berjaya disimpan ke Arkib. Data aktif kekal.','good');
+  }catch(err){
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }
+}
+
+async function loadArchives(){
+  try{
+    const d=await api({action:'getArchives'});
+    state.archives=d.rows||[];
+    renderTable('archiveTable',state.archives);
+
+    const select=document.getElementById('archiveSelect');
+    if(select){
+      const current=select.value;
+      select.innerHTML='<option value="">Pilih Arkib</option>'+state.archives.map(function(r){
+        const date=formatCell('ARKIB_AT',r.ARKIB_AT);
+        return '<option value="'+escAttr(r.ARKIB_ID)+'">'+esc(r.PROJEK+' · '+date+' · '+r.ARKIB_ID)+'</option>';
+      }).join('');
+      if(state.archives.some(function(r){return r.ARKIB_ID===current})) select.value=current;
+    }
+  }catch(err){toast(err.message,'bad')}
+}
+
+async function loadArchiveDetail(){
+  try{
+    const archiveId=document.getElementById('archiveSelect').value;
+    const category=document.getElementById('archiveCategory').value;
+    if(!archiveId){
+      document.getElementById('archiveDetailSummary').textContent='Pilih snapshot arkib untuk melihat butiran.';
+      renderTable('archiveDetailTable',[]);
+      return;
+    }
+    const d=await api({action:'getArchiveDetail',archiveId:archiveId,category:category,limit:10000});
+    document.getElementById('archiveDetailSummary').textContent='JUMLAH: '+Number(d.total||0).toLocaleString('ms-MY')+' rekod · '+archiveId+(category?' · '+category:' · SEMUA REKOD');
+    renderTable('archiveDetailTable',d.rows||[]);
+  }catch(err){toast(err.message,'bad')}
 }
 
 
