@@ -473,13 +473,14 @@ th,td{padding:8px 10px}
     <p>Boleh guna beberapa fail projek serentak atau masukkan pemohon secara manual tanpa fail.</p>
 
     <div class="tabs">
-      <button class="tabbtn active" data-tab="fileTab">Upload Fail / Banyak Projek</button>
+      <button class="tabbtn active" data-tab="fileTab">Upload Projek Baharu / Banyak Projek</button>
+      <button class="tabbtn" data-tab="existingProjectTab" onclick="prepareExistingProjectUpload()">Upload Projek Sedia Ada</button>
       <button class="tabbtn" data-tab="manualTab">Input Manual</button>
     </div>
 
     <div id="fileTab" class="tabcontent active">
       <div class="notice info">
-        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem terus menyediakan 3 ruang berasingan: <strong>Melayu, Cina dan India</strong>. Upload fail Excel mengikut kaum pada ruang masing-masing, masukkan <strong>jumlah unit</strong> dan <strong>masa / sesi undian</strong> bagi setiap kaum. Maklumat pemohon utama ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
+        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem menyediakan 3 ruang: <strong>Melayu, Cina dan India</strong>. Tuan boleh <strong>upload fail dahulu tanpa dipaksa isi jumlah unit atau masa</strong>. Jumlah unit dan sesi undian boleh dilengkapkan kemudian. Maklumat utama pemohon ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
       </div>
 
       <div id="datasetList"></div>
@@ -487,6 +488,52 @@ th,td{padding:8px 10px}
       <div class="actions">
         <button class="btn gray" onclick="addDataset()">+ Tambah Projek / Jenis Lagi</button>
         <button id="importAllBtn" class="btn primary" onclick="importAllDatasets()">Import Semua Data</button>
+      </div>
+    </div>
+
+    <div id="existingProjectTab" class="tabcontent">
+      <div class="notice info">
+        <strong>UPLOAD PROJEK SEDIA ADA</strong><br>
+        Pilih projek, jenis rumah dan kaum yang <strong>sudah wujud dalam sistem</strong>, kemudian upload fail Excel tambahan. Sistem akan kaitkan projek/jenis/kaum secara automatik. <strong>Jumlah unit dan sesi undian sedia ada tidak akan diubah.</strong> Rekod yang sama akan di-skip dan hanya rekod baharu akan ditambah.
+      </div>
+
+      <div class="grid3">
+        <div class="field">
+          <label>Nama Projek Sedia Ada</label>
+          <select id="existingProjectSelect" onchange="onExistingProjectChange()">
+            <option value="">Pilih Projek</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Jenis Rumah</label>
+          <select id="existingTypeSelect" onchange="onExistingTypeChange()">
+            <option value="">Pilih Jenis Rumah</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Kaum</label>
+          <select id="existingRaceSelect" onchange="showExistingUploadInfo()">
+            <option value="">Pilih Kaum</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="existingProjectInfo" class="notice good" style="margin-top:14px">
+        Pilih projek, jenis rumah dan kaum untuk melihat maklumat sedia ada.
+      </div>
+
+      <div class="fileline" style="margin-top:14px">
+        <strong>Fail Pemohon Tambahan / Upload Semula</strong><br><br>
+        <input id="existingProjectFile" type="file" accept=".xlsx,.xls,.csv">
+      </div>
+
+      <div class="actions">
+        <button id="existingUploadBtn" class="btn green" onclick="uploadExistingProject()">Upload Projek Sedia Ada</button>
+        <button class="btn gray" onclick="resetExistingProjectUpload()">Kosongkan Pilihan</button>
+      </div>
+
+      <div class="notice warn" style="margin-top:12px">
+        <strong>Nota:</strong> Fungsi ini tidak memadam data lama. Jika fail mengandungi pemohon yang sudah ada, sistem akan mengira sebagai duplikasi dan skip rekod tersebut.
       </div>
     </div>
 
@@ -902,6 +949,7 @@ function bindTabs(){
       document.querySelectorAll('.tabcontent').forEach(function(x){x.classList.remove('active')});
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
+      if(btn.dataset.tab === 'existingProjectTab') prepareExistingProjectUpload();
     });
   });
 }
@@ -1053,6 +1101,172 @@ function renderProjects(projects){
 /* =========================================================
    PROJEK / JENIS + 3 KAUM
 ========================================================= */
+
+
+async function prepareExistingProjectUpload(){
+  try{
+    await loadDrawOptions(true);
+    renderExistingProjectSelect();
+  }catch(err){
+    toast(err.message,'bad');
+  }
+}
+
+function renderExistingProjectSelect(){
+  const el = document.getElementById('existingProjectSelect');
+  if(!el) return;
+  const current = el.value;
+  const projects = state.drawOptions || [];
+  el.innerHTML = '<option value="">Pilih Projek</option>' + projects.map(function(p){
+    return '<option value="'+escAttr(p.project)+'">'+esc(p.project)+'</option>';
+  }).join('');
+  if(current && projects.some(function(p){return p.project === current;})) el.value = current;
+  onExistingProjectChange(true);
+}
+
+function onExistingProjectChange(keepType=false){
+  const project = document.getElementById('existingProjectSelect').value;
+  const typeEl = document.getElementById('existingTypeSelect');
+  const raceEl = document.getElementById('existingRaceSelect');
+  const oldType = keepType ? typeEl.value : '';
+  const p = (state.drawOptions || []).find(function(x){return x.project === project;});
+
+  typeEl.innerHTML = '<option value="">Pilih Jenis Rumah</option>' + (p ? (p.types || []).map(function(t){
+    return '<option value="'+escAttr(t.type)+'">'+esc(t.type)+'</option>';
+  }).join('') : '');
+
+  if(oldType && p && (p.types || []).some(function(t){return t.type === oldType;})) typeEl.value = oldType;
+  raceEl.innerHTML = '<option value="">Pilih Kaum</option>';
+  onExistingTypeChange();
+}
+
+function onExistingTypeChange(){
+  const project = document.getElementById('existingProjectSelect').value;
+  const type = document.getElementById('existingTypeSelect').value;
+  const raceEl = document.getElementById('existingRaceSelect');
+  const p = (state.drawOptions || []).find(function(x){return x.project === project;});
+  const t = p ? (p.types || []).find(function(x){return x.type === type;}) : null;
+  const races = t ? (t.races || []) : [];
+  const raceOrder = ['MELAYU','CINA','INDIA'];
+
+  raceEl.innerHTML = '<option value="">Pilih Kaum</option>' + raceOrder.filter(function(r){
+    return races.some(function(x){return x.race === r;});
+  }).map(function(r){
+    const label = r.charAt(0) + r.slice(1).toLowerCase();
+    return '<option value="'+r+'">'+label+'</option>';
+  }).join('');
+
+  showExistingUploadInfo();
+}
+
+function getExistingSelectionData(){
+  const project = document.getElementById('existingProjectSelect').value;
+  const type = document.getElementById('existingTypeSelect').value;
+  const race = document.getElementById('existingRaceSelect').value;
+  const p = (state.drawOptions || []).find(function(x){return x.project === project;});
+  const t = p ? (p.types || []).find(function(x){return x.type === type;}) : null;
+  const r = t ? (t.races || []).find(function(x){return x.race === race;}) : null;
+  return {project:project,type:type,race:race,info:r};
+}
+
+function showExistingUploadInfo(){
+  const box = document.getElementById('existingProjectInfo');
+  if(!box) return;
+  const s = getExistingSelectionData();
+  if(!s.project || !s.type || !s.race || !s.info){
+    box.innerHTML = 'Pilih projek, jenis rumah dan kaum untuk melihat maklumat sedia ada.';
+    return;
+  }
+  box.innerHTML = '<strong>'+esc(s.project)+'</strong> · '+esc(s.type)+' · '+esc(s.race)+
+    '<br>Pemohon sedia ada: <strong>'+Number(s.info.applicants || 0).toLocaleString('ms-MY')+'</strong>'+
+    ' · Unit: <strong>'+Number(s.info.units || 0).toLocaleString('ms-MY')+'</strong>'+
+    ' · Sesi: <strong>'+esc(s.info.session || 'BELUM DITETAPKAN')+'</strong>';
+}
+
+function resetExistingProjectUpload(){
+  const p = document.getElementById('existingProjectSelect');
+  const t = document.getElementById('existingTypeSelect');
+  const r = document.getElementById('existingRaceSelect');
+  const f = document.getElementById('existingProjectFile');
+  if(p) p.value = '';
+  if(t) t.innerHTML = '<option value="">Pilih Jenis Rumah</option>';
+  if(r) r.innerHTML = '<option value="">Pilih Kaum</option>';
+  if(f) f.value = '';
+  showExistingUploadInfo();
+}
+
+async function uploadExistingProject(){
+  let progressOpened = false;
+  try{
+    const s = getExistingSelectionData();
+    const file = document.getElementById('existingProjectFile').files[0];
+
+    if(!s.project) throw new Error('Pilih projek sedia ada dahulu.');
+    if(!s.type) throw new Error('Pilih jenis rumah dahulu.');
+    if(!s.race) throw new Error('Pilih kaum dahulu.');
+    if(!file) throw new Error('Pilih fail Excel / CSV untuk dimuat naik.');
+
+    const parsed = await readApplicantFileSmart(file,s.project,s.type,s.race);
+    if(!parsed.rows.length) throw new Error('Tiada rekod pemohon sah dijumpai dalam fail '+file.name+'.');
+
+    if(!confirm(
+      'Upload '+parsed.rows.length.toLocaleString('ms-MY')+' rekod ke projek sedia ada?\n\n'+
+      s.project+'\n'+s.type+' · '+s.race+'\n\n'+
+      'Data unit dan sesi undian sedia ada tidak akan diubah.'
+    )) return;
+
+    openMigrationProgress('Upload Projek Sedia Ada',1);
+    progressOpened = true;
+
+    let imported = 0;
+    let duplicate = 0;
+    let invalid = Number(parsed.invalidRows || 0);
+    const rows = parsed.rows;
+    const chunkSize = 400;
+    const totalChunks = Math.ceil(rows.length/chunkSize);
+
+    for(let i=0;i<rows.length;i+=chunkSize){
+      const chunk = rows.slice(i,i+chunkSize);
+      const chunkNo = Math.floor(i/chunkSize)+1;
+      const pct = 8 + ((chunkNo-1)/Math.max(1,totalChunks))*82;
+
+      updateMigrationProgress(
+        pct,
+        'Memuat naik rekod sedia ada',
+        'Batch '+chunkNo+' / '+totalChunks+' · '+Math.min(i+chunk.length,rows.length).toLocaleString('ms-MY')+' / '+rows.length.toLocaleString('ms-MY')+' rekod',
+        {filesDone:0,totalFiles:1,rowsRead:rows.length,saved:imported,duplicate:duplicate}
+      );
+
+      const d = await api({
+        action:'importApplicants',
+        rows:chunk,
+        source:'PROJEK_SEDIA_ADA_'+s.race
+      });
+      imported += Number(d.imported || 0);
+      duplicate += Number(d.duplicates || d.skipped || 0);
+      invalid += Number(d.invalid || 0);
+    }
+
+    updateMigrationProgress(94,'Mengemas kini sistem','Membaca semula dashboard dan rekod projek...',{
+      filesDone:1,totalFiles:1,rowsRead:rows.length,saved:imported,duplicate:duplicate
+    });
+
+    await Promise.all([loadDashboard(),loadDrawOptions(true)]);
+    await loadData('applicants','applicantTable');
+    renderExistingProjectSelect();
+
+    const summary = imported.toLocaleString('ms-MY')+' rekod baharu disimpan · '+
+      duplicate.toLocaleString('ms-MY')+' duplikasi di-skip · '+
+      invalid.toLocaleString('ms-MY')+' tidak lengkap.';
+
+    finishMigrationProgress(summary);
+    toast('Upload projek sedia ada siap. '+summary,'good');
+    document.getElementById('existingProjectFile').value = '';
+  }catch(err){
+    if(progressOpened) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }
+}
 
 function addDataset(){
   state.datasetCounter++;
@@ -1221,17 +1435,16 @@ async function importAllDatasets(){
       if(!job.project){
         throw new Error('Nama Projek wajib diisi untuk Projek / Jenis '+job.card.dataset.id+'.');
       }
-      if(job.unitsText === ''){
-        throw new Error('Masukkan jumlah unit bagi '+job.race+' untuk '+job.project+' · '+job.type+'.');
-      }
-      if(!job.sessionText){
-        throw new Error('Masukkan masa / sesi undian bagi '+job.race+' untuk '+job.project+' · '+job.type+'.');
+
+      if(job.unitsText !== ''){
+        const units = Number(job.unitsText);
+        if(!Number.isInteger(units) || units < 0){
+          throw new Error('Jumlah unit '+job.race+' mesti nombor bulat 0 atau lebih.');
+        }
       }
 
-      const units = Number(job.unitsText);
-      if(!Number.isInteger(units) || units < 0){
-        throw new Error('Jumlah unit '+job.race+' mesti nombor bulat 0 atau lebih.');
-      }
+      // Upload fail tidak lagi dipaksa mempunyai jumlah unit / sesi.
+      // Kuota hanya dikemas kini jika jumlah unit diisi.
     }
 
     const fileJobs = jobs.filter(job=>!!job.file);
@@ -1315,8 +1528,9 @@ async function importAllDatasets(){
        20% - 92%
     --------------------------------------------------------- */
 
+    const quotaJobs = jobs.filter(function(job){ return job.unitsText !== ''; });
     const totalApiOps =
-      jobs.length +
+      quotaJobs.length +
       jobs.reduce((sum,job)=>sum+Number(job.chunkCount || 0),0);
 
     let completedApiOps = 0;
@@ -1327,31 +1541,33 @@ async function importAllDatasets(){
     }
 
     for(const job of jobs){
-      const units = Number(job.unitsText);
+      if(job.unitsText !== ''){
+        const units = Number(job.unitsText);
 
-      updateMigrationProgress(
-        apiPercent(),
-        'Fasa 2/3 · Menyimpan kuota',
-        job.project+' · '+job.type+' · '+job.race+' · '+units+' unit',
-        {
-          filesDone:processedFiles,
-          totalFiles:totalFiles,
-          rowsRead:totalRowsRead,
-          saved:totalImported,
-          duplicate:totalDuplicate
-        }
-      );
+        updateMigrationProgress(
+          apiPercent(),
+          'Fasa 2/3 · Menyimpan kuota',
+          job.project+' · '+job.type+' · '+job.race+' · '+units+' unit',
+          {
+            filesDone:processedFiles,
+            totalFiles:totalFiles,
+            rowsRead:totalRowsRead,
+            saved:totalImported,
+            duplicate:totalDuplicate
+          }
+        );
 
-      await api({
-        action:'setQuota',
-        project:job.project,
-        type:job.type,
-        race:job.race,
-        units:units,
-        session:job.sessionText
-      });
+        await api({
+          action:'setQuota',
+          project:job.project,
+          type:job.type,
+          race:job.race,
+          units:units,
+          session:job.sessionText || ''
+        });
 
-      completedApiOps++;
+        completedApiOps++;
+      }
 
       if(!job.file) continue;
 
