@@ -241,6 +241,36 @@ td,th{font-size:12px}
   .title h1{font-size:28px}
 }
 
+
+
+/* ===== PROGRESS MUAT SEMULA DATA SEDIA ADA ===== */
+.reload-progress-overlay{
+  display:none;position:fixed;inset:0;z-index:100050;
+  background:rgba(8,28,62,.42);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px
+}
+.reload-progress-overlay.show{display:flex}
+.reload-progress-box{
+  width:min(560px,94vw);background:#fff;border:1px solid #dbe6f4;
+  border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(7,33,75,.28)
+}
+.reload-progress-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.reload-progress-top h3{margin:0;font-size:21px;color:#0e2c58}
+.reload-progress-top p{margin:5px 0 0;font-size:12px;color:#6b7b93}
+.reload-progress-percent{font-size:30px;font-weight:800;color:#1f63ff;min-width:78px;text-align:right}
+.reload-progress-track{height:14px;background:#e9eff8;border-radius:999px;overflow:hidden;margin-bottom:14px}
+.reload-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#1f63ff,#6b8cff,#19b868);border-radius:999px;transition:width .22s ease}
+.reload-progress-stage{font-weight:800;font-size:14px;color:#183b69;margin-bottom:4px}
+.reload-progress-detail{font-size:12px;color:#718096;min-height:18px}
+.reload-progress-counts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.reload-progress-count{background:#f7faff;border:1px solid #e1e9f4;border-radius:14px;padding:11px 12px}
+.reload-progress-count span{display:block;font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:.4px}
+.reload-progress-count b{display:block;font-size:20px;color:#0e2c58;margin-top:2px}
+.reload-progress-note{margin-top:13px;padding:10px 12px;border-radius:12px;background:#eef5ff;color:#315b8f;font-size:11px}
+.reload-progress-box.error .reload-progress-percent{color:#b42335}
+.reload-progress-box.error .reload-progress-fill{background:linear-gradient(90deg,#e14b61,#b42335)}
+@media(max-width:620px){.reload-progress-counts{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -582,6 +612,27 @@ td,th{font-size:12px}
 </section>
 
 
+
+<div id="reloadProgress" class="reload-progress-overlay" aria-live="polite">
+  <div id="reloadProgressBox" class="reload-progress-box">
+    <div class="reload-progress-top">
+      <div>
+        <h3 id="reloadProgressTitle">Memuat Semula Data</h3>
+        <p id="reloadProgressSub">Mengambil semula rekod sedia ada daripada database.</p>
+      </div>
+      <div id="reloadProgressPercent" class="reload-progress-percent">0%</div>
+    </div>
+    <div class="reload-progress-track"><div id="reloadProgressFill" class="reload-progress-fill"></div></div>
+    <div id="reloadProgressStage" class="reload-progress-stage">Menyediakan sambungan...</div>
+    <div id="reloadProgressDetail" class="reload-progress-detail">Sila tunggu sehingga proses selesai.</div>
+    <div class="reload-progress-counts">
+      <div class="reload-progress-count"><span>Rekod diterima</span><b id="reloadProgressLoaded">0</b></div>
+      <div class="reload-progress-count"><span>Jumlah rekod</span><b id="reloadProgressTotal">—</b></div>
+    </div>
+    <div id="reloadProgressNote" class="reload-progress-note">Jangan tutup atau refresh halaman semasa data sedang dimuatkan.</div>
+  </div>
+</div>
+
 <div id="migrationProgress" class="progress-overlay" aria-live="polite">
   <div class="progress-modal">
     <div class="progress-head">
@@ -634,7 +685,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.9.0';
+const MIN_API_VERSION = '2.9.1';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -2059,18 +2110,155 @@ async function checkNextDrawExclusions(){
 }
 
 
+
+function reloadLabel_(dataType){
+  const labels = {
+    applicants:'Rekod Pemohon',
+    winners:'Pemohon Berjaya',
+    filtered:'Tidak Layak Undian Seterusnya',
+    watchlist:'Semakan Pemohon',
+    quotas:'Kuota Undian',
+    archives:'Arkib',
+    audit:'Laporan & Audit'
+  };
+  return labels[dataType] || 'Data Sistem';
+}
+
+function openReloadProgress(dataType){
+  const overlay=document.getElementById('reloadProgress');
+  const box=document.getElementById('reloadProgressBox');
+  box.classList.remove('error');
+  overlay.classList.add('show');
+  document.body.classList.add('migration-busy');
+  document.getElementById('reloadProgressTitle').textContent='Memuat Semula '+reloadLabel_(dataType);
+  document.getElementById('reloadProgressSub').textContent='Mengambil rekod sedia ada daripada Google Sheet / database.';
+  updateReloadProgress(3,'Menghubungi database...','Menyediakan sambungan ke Google Apps Script.',0,null);
+  document.getElementById('reloadProgressNote').textContent='Jangan tutup atau refresh halaman semasa data sedang dimuatkan.';
+}
+
+function updateReloadProgress(percent,stage,detail,loaded,total){
+  const p=Math.max(0,Math.min(100,Math.round(Number(percent||0))));
+  document.getElementById('reloadProgressPercent').textContent=p+'%';
+  document.getElementById('reloadProgressFill').style.width=p+'%';
+  if(stage!==undefined) document.getElementById('reloadProgressStage').textContent=stage;
+  if(detail!==undefined) document.getElementById('reloadProgressDetail').textContent=detail;
+  if(loaded!==undefined && loaded!==null) document.getElementById('reloadProgressLoaded').textContent=Number(loaded||0).toLocaleString('ms-MY');
+  if(total!==undefined && total!==null) document.getElementById('reloadProgressTotal').textContent=Number(total||0).toLocaleString('ms-MY');
+}
+
+function finishReloadProgress(dataType,loaded,total){
+  updateReloadProgress(100,'SIAP','Semua rekod telah dimuatkan dan paparan telah dikemas kini.',loaded,total);
+  document.getElementById('reloadProgressNote').textContent=reloadLabel_(dataType)+' selesai dimuat semula.';
+  setTimeout(closeReloadProgress,650);
+}
+
+function failReloadProgress(message){
+  const box=document.getElementById('reloadProgressBox');
+  box.classList.add('error');
+  updateReloadProgress(100,'RALAT',message||'Data tidak dapat dimuat semula.',null,null);
+  document.getElementById('reloadProgressNote').textContent='Semak sambungan API dan cuba Muat Semula sekali lagi.';
+  setTimeout(closeReloadProgress,2200);
+}
+
+function closeReloadProgress(){
+  const overlay=document.getElementById('reloadProgress');
+  if(overlay) overlay.classList.remove('show');
+  const box=document.getElementById('reloadProgressBox');
+  if(box) box.classList.remove('error');
+  document.body.classList.remove('migration-busy');
+}
+
+function isMigrationProgressOpen_(){
+  const el=document.getElementById('migrationProgress');
+  return !!(el && el.classList.contains('show'));
+}
+
+
 /* =========================================================
    LOAD DATA / CLEAN LIST
 ========================================================= */
 
-async function loadData(dataType,target){
+async function loadData(dataType,target,options={}){
   if(!state.apiUrl || !state.apiKey) return;
 
+  const useProgress = options.progress !== false && !isMigrationProgressOpen_();
+  const chunkSize = Number(options.chunkSize || 1500);
+  const allRows = [];
+  let offset = 0;
+  let total = null;
+  let hasMore = true;
+
   try{
-    const d = await api({action:'getData',dataType:dataType,limit:3000});
-    renderTable(target,d.rows || []);
+    if(useProgress) openReloadProgress(dataType);
+
+    while(hasMore){
+      if(useProgress){
+        const currentPct = total && total > 0
+          ? Math.min(90, 8 + Math.round((allRows.length / total) * 80))
+          : (allRows.length ? 35 : 8);
+        updateReloadProgress(
+          currentPct,
+          'Mengambil rekod daripada database...',
+          'Batch '+(Math.floor(offset/chunkSize)+1)+' sedang dimuatkan.',
+          allRows.length,
+          total
+        );
+      }
+
+      const d = await api({
+        action:'getData',
+        dataType:dataType,
+        limit:chunkSize,
+        offset:offset
+      });
+
+      const rows = d.rows || [];
+      if(total === null) total = Number(d.total || 0);
+      allRows.push(...rows);
+
+      offset = Number(
+        d.nextOffset !== undefined && d.nextOffset !== null
+          ? d.nextOffset
+          : (offset + rows.length)
+      );
+      hasMore = Boolean(d.hasMore) && rows.length > 0;
+
+      if(useProgress){
+        const pct = total > 0
+          ? Math.min(92, 10 + Math.round((allRows.length / total) * 82))
+          : 92;
+        updateReloadProgress(
+          pct,
+          'Data sedang diterima...',
+          allRows.length.toLocaleString('ms-MY')+' daripada '+Number(total||0).toLocaleString('ms-MY')+' rekod.',
+          allRows.length,
+          total
+        );
+      }
+    }
+
+    if(useProgress){
+      updateReloadProgress(
+        96,
+        'Menyusun paparan...',
+        'Menyediakan jadual dan numbering untuk '+allRows.length.toLocaleString('ms-MY')+' rekod.',
+        allRows.length,
+        total
+      );
+      await new Promise(function(resolve){setTimeout(resolve,60)});
+    }
+
+    renderTable(target,allRows);
+
+    if(useProgress){
+      finishReloadProgress(dataType,allRows.length,total);
+    }
+
+    return {rows:allRows,total:Number(total||allRows.length)};
   }catch(err){
+    if(useProgress) failReloadProgress(err.message);
     toast(err.message,'bad');
+    throw err;
   }
 }
 
