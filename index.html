@@ -500,6 +500,17 @@ th,td{padding:8px 10px}
 .next-process-card{border:1px solid #dce6f2;border-radius:14px;padding:10px 12px;background:#f9fbfe}.next-process-card span{display:block;font-size:10px;color:#75859b}.next-process-card b{display:block;font-size:20px;color:#163761;margin-top:3px}
 @media(max-width:850px){.race-mini-grid,.next-process-cards{grid-template-columns:1fr}.race-detail-box{padding:14px}}
 
+
+
+/* ===== V2.10.1 STABLE RELOAD + MANUAL WINNERS ===== */
+.manual-winner-box{margin-top:10px;padding:10px;border:1px solid #d8e5f4;border-radius:11px;background:#f8fbff}
+.manual-winner-box strong{display:block;font-size:11px;color:#17365e;margin-bottom:4px}
+.manual-winner-box small{display:block;font-size:10px;color:#6f819a;margin-bottom:7px;line-height:1.45}
+.success-manual-ic{width:100%;min-height:132px;resize:vertical;border:1px solid #cfdaea;border-radius:9px;padding:9px 10px;font-family:Poppins,Arial,sans-serif;font-size:12px;background:#fff;color:#17365e;outline:none}
+.success-manual-ic:focus{border-color:#2f7df6;box-shadow:0 0 0 3px rgba(47,125,246,.09)}
+.success-manual-ic:disabled{background:#eef2f7;color:#8c99aa;cursor:not-allowed}
+.manual-result{margin-top:10px}
+
 </style>
 </head>
 
@@ -763,17 +774,19 @@ th,td{padding:8px 10px}
     <div id="successLinkedInfo" class="notice good" style="display:none"></div>
 
     <div class="race-grid" id="successRaceGrid">
-      <div class="race-box disabled" data-race="MELAYU" data-session=""><h4>Melayu</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="fileline"><strong>Fail Pemohon Berjaya Melayu</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
-      <div class="race-box disabled" data-race="CINA" data-session=""><h4>Cina</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="fileline"><strong>Fail Pemohon Berjaya Cina</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
-      <div class="race-box disabled" data-race="INDIA" data-session=""><h4>India</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="fileline"><strong>Fail Pemohon Berjaya India</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
+      <div class="race-box disabled" data-race="MELAYU" data-session=""><h4>Melayu</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="manual-winner-box"><strong>Masuk Manual - No. KP Pemohon Berjaya</strong><small>1 baris = 1 No. KP. Nama dan No. Siri akan dipadankan automatik daripada Rekod Pemohon asal.</small><textarea class="success-manual-ic" placeholder="Satu No. KP setiap baris" disabled></textarea></div><div class="fileline"><strong>Pilihan kedua: Fail Pemohon Berjaya Melayu</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
+      <div class="race-box disabled" data-race="CINA" data-session=""><h4>Cina</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="manual-winner-box"><strong>Masuk Manual - No. KP Pemohon Berjaya</strong><small>1 baris = 1 No. KP. Nama dan No. Siri akan dipadankan automatik daripada Rekod Pemohon asal.</small><textarea class="success-manual-ic" placeholder="Satu No. KP setiap baris" disabled></textarea></div><div class="fileline"><strong>Pilihan kedua: Fail Pemohon Berjaya Cina</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
+      <div class="race-box disabled" data-race="INDIA" data-session=""><h4>India</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="manual-winner-box"><strong>Masuk Manual - No. KP Pemohon Berjaya</strong><small>1 baris = 1 No. KP. Nama dan No. Siri akan dipadankan automatik daripada Rekod Pemohon asal.</small><textarea class="success-manual-ic" placeholder="Satu No. KP setiap baris" disabled></textarea></div><div class="fileline"><strong>Pilihan kedua: Fail Pemohon Berjaya India</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
     </div>
 
     <div class="actions">
-      <button class="btn green" onclick="importSuccessfulApplicants()">Import Semua Pemohon Berjaya</button>
+      <button class="btn green" onclick="saveManualSuccessfulApplicants()">Simpan Manual Pemohon Berjaya</button>
+      <button class="btn primary" onclick="importSuccessfulApplicants()">Import Fail Excel Pemohon Berjaya</button>
       <button class="btn danger" onclick="deleteSuccessfulApplicants()">Padam Data Pemohon Berjaya</button>
       <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula</button>
       <button class="btn primary" onclick="downloadTablePdf('winnerTable','Pemohon Berjaya','pemohon_berjaya.pdf')">Muat Turun PDF</button>
     </div>
+    <div id="manualWinnerResult" class="notice good manual-result" style="display:none"></div>
     <div class="notice warn" style="margin-top:12px">
       <strong>Untuk testing / tersalah import:</strong> butang padam hanya membuang <strong>Pemohon Berjaya</strong> bagi Projek + Jenis + Kaum yang sedang dipilih. Senarai pemohon asal dan kuota unit tidak dipadam. Status layak/tidak layak dikira semula secara automatik.
     </div>
@@ -1023,7 +1036,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.10.0';
+const MIN_API_VERSION = '2.10.1';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1048,7 +1061,8 @@ const state = {
   workflowVisited: {},
   nextDrawBundle: null,
   winnerGroups: {MELAYU:[],CINA:[],INDIA:[]},
-  raceModalRows: []
+  raceModalRows: [],
+  reloadResume: {}
 };
 
 
@@ -1166,17 +1180,18 @@ function bindTabs(){
    API
 ========================================================= */
 
-async function api(payload){
+async function api(payload, options={}){
   if(!state.apiUrl || !state.apiKey){
     throw new Error('API belum dikonfigurasi.');
   }
 
-  const maxAttempts = 3;
+  const maxAttempts = Math.max(1,Number(options.maxAttempts || 3));
+  const timeoutMs = Math.max(5000,Number(options.timeoutMs || 90000));
   let lastError = null;
 
   for(let attempt=1; attempt<=maxAttempts; attempt++){
     const ctrl = new AbortController();
-    const timer = setTimeout(function(){ ctrl.abort(); }, 90000);
+    const timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
 
     try{
       const res = await fetch(state.apiUrl,{
@@ -1207,6 +1222,9 @@ async function api(payload){
         );
 
         if(attempt < maxAttempts){
+          if(typeof options.onRetry === 'function'){
+            try{ options.onRetry(attempt+1,maxAttempts,lastError); }catch(ignore){}
+          }
           await new Promise(resolve=>setTimeout(resolve, 700 * attempt));
           continue;
         }
@@ -1246,6 +1264,9 @@ async function api(payload){
           ' untuk action '+String(payload.action || ''),
           err
         );
+        if(typeof options.onRetry === 'function'){
+          try{ options.onRetry(attempt+1,maxAttempts,lastError); }catch(ignore){}
+        }
         await new Promise(resolve=>setTimeout(resolve, 700 * attempt));
         continue;
       }
@@ -2533,6 +2554,8 @@ function renderSuccessSessionChoices(){
     box.classList.add('disabled');
     box.dataset.session = '';
     box.querySelector('.success-file').disabled = true;
+    const manual = box.querySelector('.success-manual-ic');
+    if(manual) manual.disabled = true;
     const pill = box.querySelector('.session-pill');
     pill.textContent = 'Sesi: belum dipilih';
     pill.classList.add('missing');
@@ -2564,6 +2587,8 @@ function toggleSuccessSession(race,checked){
   box.dataset.session = session;
   box.classList.toggle('disabled',!checked);
   box.querySelector('.success-file').disabled = !checked;
+  const manual = box.querySelector('.success-manual-ic');
+  if(manual) manual.disabled = !checked;
   const pill = box.querySelector('.session-pill');
   pill.textContent = 'Sesi: '+(session || 'BELUM DITETAPKAN');
   pill.classList.toggle('missing',!session);
@@ -2918,6 +2943,110 @@ function openGenericRaceGroup(targetId,race,encodedTitle){
 /* =========================================================
    PEMOHON BERJAYA - 1 PROJEK PECAH 3 KAUM
 ========================================================= */
+
+
+function normalizeManualIc_(value){
+  return String(value || '').replace(/[^0-9]/g,'').trim();
+}
+
+function manualIcList_(textarea){
+  if(!textarea) return [];
+  const seen=new Set();
+  return String(textarea.value || '')
+    .split(/[\n,;]+/)
+    .map(normalizeManualIc_)
+    .filter(function(ic){
+      if(!ic || seen.has(ic)) return false;
+      seen.add(ic);
+      return true;
+    });
+}
+
+async function saveManualSuccessfulApplicants(){
+  try{
+    const project=document.getElementById('successProject').value.trim();
+    const type=document.getElementById('successType').value.trim();
+    if(!project || !type) throw new Error('Pilih projek dan jenis rumah yang telah selesai diundi.');
+
+    const boxes=Array.from(document.querySelectorAll('#successRaceGrid .race-box'));
+    const jobs=[];
+    boxes.forEach(function(box){
+      const manual=box.querySelector('.success-manual-ic');
+      if(!manual || manual.disabled) return;
+      const ics=manualIcList_(manual);
+      if(!ics.length) return;
+      const race=String(box.dataset.race || '').trim();
+      const session=String(box.dataset.session || '').trim();
+      if(!session) throw new Error('Masa / sesi undian '+race+' belum ditetapkan di Pengurusan Data.');
+      jobs.push({race:race,session:session,ics:ics,manual:manual});
+    });
+
+    if(!jobs.length){
+      throw new Error('Pilih kaum / sesi dan masukkan sekurang-kurangnya satu No. KP Pemohon Berjaya.');
+    }
+
+    const totalRows=jobs.reduce(function(sum,j){return sum+j.ics.length},0);
+    if(!confirm('Simpan '+totalRows.toLocaleString('ms-MY')+' Pemohon Berjaya secara manual?\n\nSistem akan padankan Nama dan No. Siri daripada Rekod Pemohon asal.')) return;
+
+    openMigrationProgress('Menyimpan Pemohon Berjaya Manual',jobs.length);
+    let imported=0, skipped=0, filtered=0, matched=0, done=0;
+    const unmatched=[];
+
+    for(const job of jobs){
+      const rows=job.ics.map(function(ic){
+        return {NO_KP:ic,PROJEK:project,JENIS:type,KAUM:job.race,SESI:job.session};
+      });
+
+      updateMigrationProgress(
+        8 + (done/jobs.length)*78,
+        'Memadankan '+job.race,
+        rows.length.toLocaleString('ms-MY')+' No. KP sedang dipadankan dengan Rekod Pemohon asal.',
+        {filesDone:done,totalFiles:jobs.length,rowsRead:totalRows,saved:imported,duplicate:skipped}
+      );
+
+      const d=await api({action:'importWinners',rows:rows,autoFilter:true});
+      imported += Number(d.imported || 0);
+      skipped += Number(d.skipped || 0);
+      filtered += Number(d.filtered || 0);
+      matched += Number(d.matchedFromApplicants || 0);
+      (d.notFound || []).forEach(function(ic){ unmatched.push({race:job.race,ic:String(ic)}); });
+      done++;
+    }
+
+    updateMigrationProgress(92,'Mengemas kini paparan...','Menyegarkan rekod Pemohon Berjaya dan tally.',{filesDone:done,totalFiles:jobs.length,rowsRead:totalRows,saved:imported,duplicate:skipped});
+
+    await Promise.all([
+      loadDashboard(),
+      loadDrawOptions(true),
+      loadData('winners','winnerTable',{progress:false,fresh:true})
+    ]);
+    prefillNextDrawFromActive();
+
+    jobs.forEach(function(job){
+      const left=unmatched.filter(function(x){return x.race===job.race}).map(function(x){return x.ic});
+      job.manual.value=left.join('\n');
+    });
+
+    const result=document.getElementById('manualWinnerResult');
+    if(result){
+      result.style.display='block';
+      if(unmatched.length){
+        const sample=unmatched.slice(0,12).map(function(x){return x.race+': '+x.ic}).join(' | ');
+        result.className='notice warn manual-result';
+        result.innerHTML='<strong>Disimpan: '+imported.toLocaleString('ms-MY')+'</strong> · Dipadankan: '+matched.toLocaleString('ms-MY')+' · Tidak ditemui: '+unmatched.length.toLocaleString('ms-MY')+'<br><small>Semak No. KP berikut: '+esc(sample)+(unmatched.length>12?' ...':'')+'</small>';
+      }else{
+        result.className='notice good manual-result';
+        result.innerHTML='<strong>SIAP.</strong> '+imported.toLocaleString('ms-MY')+' Pemohon Berjaya disimpan. Nama dan No. Siri dipadankan terus daripada Rekod Pemohon asal.';
+      }
+    }
+
+    finishMigrationProgress(imported.toLocaleString('ms-MY')+' Pemohon Berjaya disimpan · '+filtered.toLocaleString('ms-MY')+' rekod undian lain dikenal pasti tidak layak.');
+    toast('Pemohon Berjaya manual berjaya diproses.','good');
+  }catch(err){
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }
+}
 
 async function importSuccessfulApplicants(){
   try{
@@ -3295,71 +3424,71 @@ function showApplicantProjectRace(btn){
 async function loadData(dataType,target,options={}){
   if(!state.apiUrl || !state.apiKey) return;
 
-  const useProgress = options.progress !== false && !isMigrationProgressOpen_();
-  const chunkSize = Number(options.chunkSize || 500);
-  const allRows = [];
-  let offset = 0;
-  let total = null;
-  let hasMore = true;
+  const useProgress=options.progress !== false && !isMigrationProgressOpen_();
+  const chunkSize=Math.max(100,Math.min(Number(options.chunkSize || 1000),1000));
+  const cacheKey=dataType+'|'+target;
+  const checkpoint=state.reloadResume[cacheKey];
+  const canResume=options.fresh !== true && checkpoint && (Date.now()-Number(checkpoint.updatedAt || 0) < 10*60*1000);
+  const allRows=canResume ? (checkpoint.rows || []).slice() : [];
+  let offset=canResume ? Number(checkpoint.offset || 0) : 0;
+  let total=canResume && checkpoint.total !== null ? Number(checkpoint.total || 0) : null;
+  let hasMore=true;
 
   try{
-    if(useProgress) openReloadProgress(dataType);
-
-    while(hasMore){
-      if(useProgress){
-        const currentPct = total && total > 0
-          ? Math.min(90, 8 + Math.round((allRows.length / total) * 80))
-          : (allRows.length ? 35 : 8);
+    if(useProgress){
+      openReloadProgress(dataType);
+      if(canResume && allRows.length){
         updateReloadProgress(
-          currentPct,
-          'Mengambil rekod daripada database...',
-          'Batch '+(Math.floor(offset/chunkSize)+1)+' sedang dimuatkan.',
-          allRows.length,
-          total
-        );
-      }
-
-      const d = await api({
-        action:'getData',
-        dataType:dataType,
-        limit:chunkSize,
-        offset:offset
-      });
-
-      const rows = d.rows || [];
-      if(total === null) total = Number(d.total || 0);
-      allRows.push(...rows);
-
-      offset = Number(
-        d.nextOffset !== undefined && d.nextOffset !== null
-          ? d.nextOffset
-          : (offset + rows.length)
-      );
-      hasMore = Boolean(d.hasMore) && rows.length > 0;
-
-      if(useProgress){
-        const pct = total > 0
-          ? Math.min(92, 10 + Math.round((allRows.length / total) * 82))
-          : 92;
-        updateReloadProgress(
-          pct,
-          'Data sedang diterima...',
-          allRows.length.toLocaleString('ms-MY')+' daripada '+Number(total||0).toLocaleString('ms-MY')+' rekod.',
+          total ? Math.min(90,10+Math.round((allRows.length/total)*82)) : 25,
+          'Menyambung muat semula...',
+          'Sambung daripada '+allRows.length.toLocaleString('ms-MY')+' rekod yang telah diterima.',
           allRows.length,
           total
         );
       }
     }
 
+    while(hasMore){
+      const batchNo=Math.floor(offset/chunkSize)+1;
+      if(useProgress){
+        const currentPct=total && total>0 ? Math.min(90,8+Math.round((allRows.length/total)*80)) : (allRows.length?35:8);
+        updateReloadProgress(currentPct,'Mengambil rekod daripada database...','Batch '+batchNo+' sedang dimuatkan.',allRows.length,total);
+      }
+
+      const d=await api({action:'getData',dataType:dataType,limit:chunkSize,offset:offset},{
+        maxAttempts:4,
+        timeoutMs:45000,
+        onRetry:function(nextAttempt,maxAttempts){
+          if(useProgress){
+            const pct=total && total>0 ? Math.min(90,8+Math.round((allRows.length/total)*80)) : 30;
+            updateReloadProgress(pct,'Sambungan perlahan - cuba semula...','Batch '+batchNo+' · percubaan '+nextAttempt+' / '+maxAttempts+'. Rekod yang sudah diterima kekal.',allRows.length,total);
+          }
+        }
+      });
+
+      const rows=d.rows || [];
+      const incomingTotal=Number(d.total || 0);
+      if(total === null) total=incomingTotal;
+      if(canResume && total !== incomingTotal && incomingTotal){
+        delete state.reloadResume[cacheKey];
+        throw new Error('Jumlah rekod berubah semasa proses sambungan. Tekan Muat Semula sekali lagi untuk bacaan baru.');
+      }
+
+      allRows.push(...rows);
+      offset=Number(d.nextOffset !== undefined && d.nextOffset !== null ? d.nextOffset : (offset+rows.length));
+      hasMore=Boolean(d.hasMore) && rows.length>0;
+
+      state.reloadResume[cacheKey]={rows:allRows.slice(),offset:offset,total:total,updatedAt:Date.now()};
+
+      if(useProgress){
+        const pct=total>0 ? Math.min(92,10+Math.round((allRows.length/total)*82)) : 92;
+        updateReloadProgress(pct,'Data sedang diterima...',allRows.length.toLocaleString('ms-MY')+' daripada '+Number(total||0).toLocaleString('ms-MY')+' rekod.',allRows.length,total);
+      }
+    }
+
     if(useProgress){
-      updateReloadProgress(
-        96,
-        'Menyusun paparan...',
-        'Menyediakan jadual dan numbering untuk '+allRows.length.toLocaleString('ms-MY')+' rekod.',
-        allRows.length,
-        total
-      );
-      await new Promise(function(resolve){setTimeout(resolve,60)});
+      updateReloadProgress(96,'Menyusun paparan...','Menyediakan jadual dan numbering untuk '+allRows.length.toLocaleString('ms-MY')+' rekod.',allRows.length,total);
+      await new Promise(function(resolve){setTimeout(resolve,40)});
     }
 
     if(dataType==='applicants' && target==='applicantTable'){
@@ -3370,13 +3499,17 @@ async function loadData(dataType,target,options={}){
       renderTable(target,allRows);
     }
 
-    if(useProgress){
-      finishReloadProgress(dataType,allRows.length,total);
-    }
-
+    delete state.reloadResume[cacheKey];
+    if(useProgress) finishReloadProgress(dataType,allRows.length,total);
     return {rows:allRows,total:Number(total||allRows.length)};
   }catch(err){
-    if(useProgress) failReloadProgress(err.message);
+    if(allRows.length){
+      state.reloadResume[cacheKey]={rows:allRows.slice(),offset:offset,total:total,updatedAt:Date.now()};
+    }
+    if(useProgress){
+      const extra=allRows.length ? ' Tekan Muat Semula sekali lagi; sistem akan sambung daripada '+allRows.length.toLocaleString('ms-MY')+' rekod.' : '';
+      failReloadProgress((err.message || 'Muat semula gagal.')+extra);
+    }
     toast(err.message,'bad');
     throw err;
   }
