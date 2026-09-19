@@ -511,6 +511,20 @@ th,td{padding:8px 10px}
 .success-manual-ic:disabled{background:#eef2f7;color:#8c99aa;cursor:not-allowed}
 .manual-result{margin-top:10px}
 
+
+/* ===== V2.12 SPEED ENGINE + WINNER POPUP ===== */
+.winner-race-tabs{display:grid;grid-template-columns:repeat(3,minmax(150px,220px));gap:10px;margin:12px 0}
+.winner-race-tab{border:1px solid #d9e5f4;border-radius:13px;background:#fff;padding:11px 12px;text-align:left;cursor:pointer;transition:.15s ease;box-shadow:0 5px 13px rgba(31,75,145,.05)}
+.winner-race-tab:hover{transform:translateY(-1px);border-color:#6ea6ff}.winner-race-tab:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.winner-race-tab .wrt-name{display:block;font-size:12px;font-weight:900;color:#17365e}.winner-race-tab .wrt-meta{display:block;font-size:10px;color:#71839b;margin-top:4px}.winner-race-tab .wrt-count{display:block;font-size:22px;font-weight:900;color:#11345f;margin-top:6px}
+.winner-entry-overlay{display:none;position:fixed;inset:0;background:rgba(8,25,55,.6);backdrop-filter:blur(4px);z-index:100060;align-items:center;justify-content:center;padding:18px}.winner-entry-overlay.show{display:flex}
+.winner-entry-box{width:min(980px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;padding:18px;box-shadow:0 28px 80px rgba(3,20,52,.36)}
+.winner-entry-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}.winner-entry-head h3{margin:0;color:#15345f;font-size:19px}.winner-entry-head p{margin:4px 0 0;color:#72839a;font-size:11px}.winner-entry-close{border:0;background:#edf3fb;color:#24466f;border-radius:11px;width:36px;height:36px;font-size:21px;cursor:pointer}
+.winner-entry-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}.winner-entry-stat{background:#f4f8fd;border:1px solid #e0e9f4;border-radius:11px;padding:9px 10px}.winner-entry-stat span{display:block;font-size:9px;color:#71839b;text-transform:uppercase;font-weight:800}.winner-entry-stat b{display:block;font-size:20px;color:#16365f;margin-top:3px}
+.ic-editor{display:grid;grid-template-columns:46px 1fr;border:1px solid #ccdaeb;border-radius:13px;overflow:hidden;background:#fff}.ic-line-nos{background:#f1f5fa;color:#7b8da5;font:12px/28px ui-monospace,SFMono-Regular,Consolas,monospace;text-align:right;padding:10px 9px;white-space:pre;overflow:hidden;user-select:none;border-right:1px solid #dde6f0}.winner-manual-ic{border:0;outline:0;resize:vertical;min-height:252px;padding:10px 12px;font:12px/28px ui-monospace,SFMono-Regular,Consolas,monospace;color:#17365e;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#edf2f7 28px)}
+.winner-entry-result{margin-top:10px}.winner-file-toggle{margin-top:12px;border-top:1px solid #e6edf5;padding-top:12px}.winner-current-list{margin-top:12px}
+@media(max-width:760px){.winner-race-tabs,.winner-entry-stats{grid-template-columns:1fr}.ic-editor{grid-template-columns:38px 1fr}}
+
 </style>
 </head>
 
@@ -774,17 +788,10 @@ th,td{padding:8px 10px}
 
     <div id="successLinkedInfo" class="notice good" style="display:none"></div>
 
-    <div class="race-grid" id="successRaceGrid">
-      <div class="race-box disabled" data-race="MELAYU" data-session=""><h4>Melayu</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="manual-winner-box"><strong>Masuk Manual - No. KP Pemohon Berjaya</strong><small>1 baris = 1 No. KP. Nama dan No. Siri akan dipadankan automatik daripada Rekod Pemohon asal.</small><textarea class="success-manual-ic" placeholder="Satu No. KP setiap baris" disabled></textarea></div><div class="fileline"><strong>Pilihan kedua: Fail Pemohon Berjaya Melayu</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
-      <div class="race-box disabled" data-race="CINA" data-session=""><h4>Cina</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="manual-winner-box"><strong>Masuk Manual - No. KP Pemohon Berjaya</strong><small>1 baris = 1 No. KP. Nama dan No. Siri akan dipadankan automatik daripada Rekod Pemohon asal.</small><textarea class="success-manual-ic" placeholder="Satu No. KP setiap baris" disabled></textarea></div><div class="fileline"><strong>Pilihan kedua: Fail Pemohon Berjaya Cina</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
-      <div class="race-box disabled" data-race="INDIA" data-session=""><h4>India</h4><div class="session-pill missing">Sesi: belum dipilih</div><div class="manual-winner-box"><strong>Masuk Manual - No. KP Pemohon Berjaya</strong><small>1 baris = 1 No. KP. Nama dan No. Siri akan dipadankan automatik daripada Rekod Pemohon asal.</small><textarea class="success-manual-ic" placeholder="Satu No. KP setiap baris" disabled></textarea></div><div class="fileline"><strong>Pilihan kedua: Fail Pemohon Berjaya India</strong><br><br><input class="success-file" type="file" accept=".xlsx,.xls,.csv" disabled></div></div>
-    </div>
+    <div id="successRaceGrid" class="winner-race-tabs"><div class="muted">Pilih projek dan jenis rumah dahulu.</div></div>
 
     <div class="actions">
-      <button class="btn green" onclick="saveManualSuccessfulApplicants()">Simpan Manual Pemohon Berjaya</button>
-      <button class="btn primary" onclick="importSuccessfulApplicants()">Import Fail Excel Pemohon Berjaya</button>
-      <button class="btn danger" onclick="deleteSuccessfulApplicants()">Padam Data Pemohon Berjaya</button>
-      <button class="btn gray" onclick="loadData('winners','winnerTable')">Muat Semula</button>
+      <button class="btn gray" onclick="loadWinnerSummaryCards(true)">Segarkan Jumlah Pemohon Berjaya</button>
       <button class="btn primary" onclick="downloadTablePdf('winnerTable','Pemohon Berjaya','pemohon_berjaya.pdf')">Muat Turun PDF</button>
     </div>
     <div id="manualWinnerResult" class="notice good manual-result" style="display:none"></div>
@@ -1019,8 +1026,39 @@ th,td{padding:8px 10px}
   </div>
 </div>
 
+
+<div id="winnerEntryModal" class="winner-entry-overlay" onclick="if(event.target===this) closeWinnerEntryModal()">
+  <div class="winner-entry-box">
+    <div class="winner-entry-head">
+      <div><h3 id="winnerEntryTitle">Pemohon Berjaya</h3><p id="winnerEntryMeta">Pilih kaum.</p></div>
+      <button class="winner-entry-close" type="button" onclick="closeWinnerEntryModal()">×</button>
+    </div>
+    <div class="winner-entry-stats">
+      <div class="winner-entry-stat"><span>IC dimasukkan</span><b id="winnerInputCount">0</b></div>
+      <div class="winner-entry-stat"><span>IC unik</span><b id="winnerUniqueCount">0</b></div>
+      <div class="winner-entry-stat"><span>Duplikasi input</span><b id="winnerDuplicateCount">0</b></div>
+    </div>
+    <div class="notice info"><strong>Masuk Manual No. KP</strong><br>1 baris = 1 No. KP. Nama dan No. Siri dipadankan automatik daripada Rekod Pemohon asal.</div>
+    <div class="ic-editor">
+      <div id="winnerLineNumbers" class="ic-line-nos">1</div>
+      <textarea id="winnerManualIc" class="winner-manual-ic" placeholder="Contoh:\n910920015815\n041125011995" oninput="updateWinnerIcEditor()" onscroll="syncWinnerLineScroll()"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn green" type="button" onclick="saveWinnerEntryManual()">Simpan Pemohon Berjaya</button>
+      <button class="btn gray" type="button" onclick="clearWinnerEntryInput()">Kosongkan Input</button>
+      <button class="btn danger" type="button" onclick="deleteWinnerEntryScope()">Padam Data Kaum Ini</button>
+    </div>
+    <div id="winnerEntryResult" class="winner-entry-result notice good" style="display:none"></div>
+    <div class="winner-file-toggle">
+      <strong style="font-size:11px;color:#17365e">Pilihan kedua: fail Excel/CSV</strong>
+      <div class="actions"><input id="winnerEntryFile" type="file" accept=".xlsx,.xls,.csv"><button class="btn primary" type="button" onclick="importWinnerEntryFile()">Import Fail</button></div>
+    </div>
+    <div class="winner-current-list"><div class="table-total"><strong id="winnerCurrentLabel">Rekod sedia ada: 0</strong></div><div id="winnerCurrentTable" class="tablewrap"></div></div>
+  </div>
+</div>
+
 <div id="toast"></div>
-<div class="footer">STU-RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
+<div class="footer">Sistem Tapisan Undian RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
 
 </main>
 </div>
@@ -1037,9 +1075,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.11.1';
+const MIN_API_VERSION = '2.12.0';
 
-const UI_VERSION = '2.11.1';
+const UI_VERSION = '2.12.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1067,18 +1105,18 @@ const state = {
   raceModalRows: [],
   reloadResume: {},
   dashboardData: null,
-  applicantScopeCache: {}
+  applicantScopeCache: {},
+  winnerEntry: null,
+  winnerDrafts: {},
+  bootstrapLoaded: false
 };
 
 
 window.addEventListener('DOMContentLoaded', async function(){
   bindNav();
   bindTabs();
-
-  // API dan API Key ditanam terus dalam source. Tiada input manual diperlukan.
   state.apiUrl = DEFAULT_API_URL;
   state.apiKey = DEFAULT_API_KEY;
-
   addDataset();
   addDataset();
   renderManualPreview();
@@ -1086,11 +1124,7 @@ window.addEventListener('DOMContentLoaded', async function(){
   if(state.apiUrl && state.apiKey){
     const apiOk = await testApi(false);
     if(apiOk){
-      await loadDashboard();
-      await Promise.all([
-        loadProjectFilters(),
-        loadDrawOptions(true)
-      ]);
+      await loadBootstrap(true);
       state.loadedPages.dashboard = true;
     }else{
       toast('API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.', 'bad');
@@ -1100,23 +1134,21 @@ window.addEventListener('DOMContentLoaded', async function(){
 
 async function loadPageData(page, force=false){
   if(state.busy) return;
-  const done = !!state.loadedPages[page];
+  const done=!!state.loadedPages[page];
   if(done && !force) return;
-
-  state.busy = true;
+  state.busy=true;
   try{
-    if(page === 'dashboard') await loadDashboard();
-    if(page === 'pemohon') await ensureApplicantOverview();
-    if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(false); }
-    if(page === 'pemenang') { await loadDrawOptions(); await loadData('winners','winnerTable'); }
-    if(page === 'ditapis') { prefillNextDrawFromActive(); }
-    if(page === 'bersih') { prefillNextDrawFromActive(); }
-    if(page === 'audit') await loadData('audit','auditTable');
-    if(page === 'arkib') { await loadDrawOptions(); await loadArchives(); renderArchiveProjectChoices(); }
-    state.loadedPages[page] = true;
-  }finally{
-    state.busy = false;
-  }
+    if(!state.bootstrapLoaded) await loadBootstrap(true);
+    if(page==='dashboard') renderDashboardFromState_();
+    if(page==='pemohon') await ensureApplicantOverview();
+    if(page==='watchlist'){ await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(false); }
+    if(page==='pemenang'){ renderSuccessProjectChoices(); renderWinnerSummaryFromBootstrap_(); }
+    if(page==='ditapis') prefillNextDrawFromActive();
+    if(page==='bersih') prefillNextDrawFromActive();
+    if(page==='audit') await loadData('audit','auditTable');
+    if(page==='arkib'){ renderArchiveProjectChoices(); await loadArchives(); }
+    state.loadedPages[page]=true;
+  }finally{state.busy=false;}
 }
 
 
@@ -1332,31 +1364,42 @@ function setApiStatus(ok,text){
    DASHBOARD
 ========================================================= */
 
-async function loadDashboard(){
-  if(!state.apiUrl || !state.apiKey) return;
+async function loadBootstrap(force=false){
+  if(state.bootstrapLoaded && !force){renderDashboardFromState_();return state.dashboardData;}
+  const d=await api({action:'bootstrapFast'},{maxAttempts:2,timeoutMs:60000});
+  state.dashboardData=d.dashboard || {summary:{},projects:{},quotaTally:[]};
+  state.drawOptions=d.drawOptions || [];
+  state.bootstrapLoaded=true;
+  renderDashboardFromState_();
+  renderSuccessProjectChoices();
+  renderArchiveProjectChoices();
+  renderWinnerSummaryFromBootstrap_();
+  await loadProjectFilters();
+  return state.dashboardData;
+}
 
-  try{
-    const d = await api({action:'dashboard'});
-    const s = d.summary || {};
-    state.dashboardData = d;
+function renderDashboardFromState_(){
+  const d=state.dashboardData || {summary:{},projects:{},quotaTally:[]};
+  const s=d.summary || {};
+  document.getElementById('mProjects').textContent=s.projects || 0;
+  document.getElementById('mApplicants').textContent=s.applicants || 0;
+  document.getElementById('mSameProject').textContent=s.sameProject || 0;
+  document.getElementById('mCrossProject').textContent=s.crossProject || 0;
+  const units=s.unitQuota || {};
+  document.getElementById('mMelayu').textContent=units.MELAYU || 0;
+  document.getElementById('mCina').textContent=units.CINA || 0;
+  document.getElementById('mIndia').textContent=units.INDIA || 0;
+  document.getElementById('mWinners').textContent=s.winners || 0;
+  document.getElementById('mFiltered').textContent=s.filtered || 0;
+  renderProjects(d.projects || {});
+  renderTable('quotaTallyTable',d.quotaTally || []);
+  renderApplicantSummaryFromDashboard(d.projects || {},s);
+}
 
-    document.getElementById('mProjects').textContent = s.projects || 0;
-    document.getElementById('mApplicants').textContent = s.applicants || 0;
-    document.getElementById('mSameProject').textContent = s.sameProject || 0;
-    document.getElementById('mCrossProject').textContent = s.crossProject || 0;
-    const units = s.unitQuota || {};
-    document.getElementById('mMelayu').textContent = units.MELAYU || 0;
-    document.getElementById('mCina').textContent = units.CINA || 0;
-    document.getElementById('mIndia').textContent = units.INDIA || 0;
-    document.getElementById('mWinners').textContent = s.winners || 0;
-    document.getElementById('mFiltered').textContent = s.filtered || 0;
-
-    renderProjects(d.projects || {});
-    renderTable('quotaTallyTable',d.quotaTally || []);
-    renderApplicantSummaryFromDashboard(d.projects || {}, s);
-  }catch(err){
-    toast(err.message,'bad');
-  }
+async function loadDashboard(force=false){
+  if(force || !state.bootstrapLoaded) return loadBootstrap(true);
+  renderDashboardFromState_();
+  return state.dashboardData;
 }
 
 function renderProjects(projects){
@@ -1392,7 +1435,7 @@ function renderProjects(projects){
 
 async function prepareExistingProjectUpload(){
   try{
-    await loadDrawOptions(true);
+    if(!state.bootstrapLoaded) await loadBootstrap(true);
     renderExistingProjectSelect();
   }catch(err){
     toast(err.message,'bad');
@@ -1545,7 +1588,7 @@ async function uploadExistingProject(){
       filesDone:1,totalFiles:1,rowsRead:rows.length,saved:imported,duplicate:duplicate
     });
 
-    await Promise.all([loadDashboard(),loadDrawOptions(true)]);
+    await loadBootstrap(true);
     renderExistingProjectSelect();
 
     const summary = imported.toLocaleString('ms-MY')+' rekod baharu disimpan · '+
@@ -1963,8 +2006,7 @@ async function importAllDatasets(){
       }
     );
 
-    await loadDashboard();
-    await loadDrawOptions(true);
+    await loadBootstrap(true);
 
     updateMigrationProgress(
       97,
@@ -2068,8 +2110,7 @@ async function saveManualRows(){
     renderManualPreview();
 
     invalidateApplicantCache_();
-    await loadDashboard();
-    await loadProjectFilters();
+    await loadBootstrap(true);
   }catch(err){
     toast(err.message,'bad');
   }
@@ -2465,8 +2506,7 @@ async function deleteSelectedData(){
     toast('Data dipadam: '+Number(d.total || 0)+' rekod berkaitan.','good');
 
     invalidateApplicantCache_();
-    await loadDashboard();
-    await loadProjectFilters();
+    await loadBootstrap(true);
   }catch(err){
     toast(err.message,'bad');
   }
@@ -2484,8 +2524,7 @@ async function resetAllTestData(){
     toast('Semua data operasi ujian telah dipadam. Audit Trail dikekalkan.','good');
 
     invalidateApplicantCache_();
-    await loadDashboard();
-    await loadProjectFilters();
+    await loadBootstrap(true);
   }catch(err){
     toast(err.message,'bad');
   }
@@ -2497,22 +2536,10 @@ async function resetAllTestData(){
 ========================================================= */
 
 async function loadDrawOptions(force=false){
-  if(state.drawOptions.length && !force){
-    renderSuccessProjectChoices();
-    renderArchiveProjectChoices();
-    return state.drawOptions;
-  }
-
-  try{
-    const d = await api({action:'getDrawOptions'});
-    state.drawOptions = d.projects || [];
-    renderSuccessProjectChoices();
-    renderArchiveProjectChoices();
-    return state.drawOptions;
-  }catch(err){
-    console.error(err);
-    return [];
-  }
+  if(force || !state.bootstrapLoaded) await loadBootstrap(true);
+  renderSuccessProjectChoices();
+  renderArchiveProjectChoices();
+  return state.drawOptions || [];
 }
 
 function findDrawProject(project){
@@ -2576,55 +2603,36 @@ function selectSuccessType(type){
 }
 
 function renderSuccessSessionChoices(){
-  const root = document.getElementById('successSessionChoices');
-  if(!root) return;
-  const t = findDrawType(state.activeProject,state.activeType);
-
-  document.querySelectorAll('#successRaceGrid .race-box').forEach(function(box){
-    box.classList.add('disabled');
-    box.dataset.session = '';
-    box.querySelector('.success-file').disabled = true;
-    const manual = box.querySelector('.success-manual-ic');
-    if(manual) manual.disabled = true;
-    const pill = box.querySelector('.session-pill');
-    pill.textContent = 'Sesi: belum dipilih';
-    pill.classList.add('missing');
-  });
-
+  const root=document.getElementById('successSessionChoices');
+  const grid=document.getElementById('successRaceGrid');
+  if(!root || !grid) return;
+  const t=findDrawType(state.activeProject,state.activeType);
   if(!t){
-    root.innerHTML = '<span class="muted">Pilih jenis rumah dahulu.</span>';
+    root.innerHTML='<span class="muted">Pilih jenis rumah dahulu.</span>';
+    grid.innerHTML='<div class="muted">Pilih projek dan jenis rumah dahulu.</div>';
     document.getElementById('successLinkedInfo').style.display='none';
     return;
   }
-
-  const races = t.races || [];
-  root.innerHTML = races.map(function(r){
-    const label = r.race+' · '+(r.session || 'MASA BELUM DITETAPKAN')+' · '+Number(r.units||0)+' UNIT';
-    return '<label class="choice-chip"><input type="checkbox" class="success-session-check" value="'+escAttr(r.race)+'" onchange="toggleSuccessSession(this.value,this.checked)" data-session="'+escAttr(r.session||'')+'"> '+esc(label)+'</label>';
+  const races=t.races || [];
+  root.innerHTML=races.map(function(r){
+    return '<span class="choice-chip"><strong>'+esc(r.race)+'</strong> · '+esc(r.session || 'MASA BELUM DITETAPKAN')+' · '+Number(r.units||0)+' UNIT</span>';
   }).join('') || '<span class="muted">Tiada kuota / sesi ditemui.</span>';
 
-  const info = document.getElementById('successLinkedInfo');
+  grid.innerHTML=['MELAYU','CINA','INDIA'].map(function(race){
+    const r=races.find(function(x){return x.race===race;});
+    const disabled=!r ? ' disabled' : '';
+    const session=r ? (r.session || 'BELUM DITETAPKAN') : 'TIADA SESI';
+    const count=r ? Number(r.winners || 0) : 0;
+    return '<button type="button" class="winner-race-tab"'+disabled+' onclick="openWinnerEntryModal(\''+race+'\')"><span class="wrt-name">'+race.charAt(0)+race.slice(1).toLowerCase()+'</span><span class="wrt-meta">Sesi: '+esc(session)+' · '+Number(r?r.units:0)+' unit</span><span class="wrt-count">'+count.toLocaleString('ms-MY')+' berjaya</span></button>';
+  }).join('');
+
+  const info=document.getElementById('successLinkedInfo');
   info.style.display='block';
-  info.innerHTML = '<span class="linked-badge">TERKAIT AUTOMATIK</span> '+esc(state.activeProject)+' · '+esc(state.activeType)+' kini turut digunakan sebagai projek aktif dalam <strong>Semakan Pemohon</strong>.';
+  info.innerHTML='<span class="linked-badge">TERKAIT AUTOMATIK</span> '+esc(state.activeProject)+' · '+esc(state.activeType)+' dipilih. Tekan kotak kaum untuk masukkan No. KP.';
 }
 
-function toggleSuccessSession(race,checked){
-  const t = findDrawType(state.activeProject,state.activeType);
-  const r = t ? (t.races || []).find(function(x){return x.race===race}) : null;
-  const box = document.querySelector('#successRaceGrid .race-box[data-race="'+race+'"]');
-  if(!box) return;
-  const session = r ? String(r.session || '') : '';
-  box.dataset.session = session;
-  box.classList.toggle('disabled',!checked);
-  box.querySelector('.success-file').disabled = !checked;
-  const manual = box.querySelector('.success-manual-ic');
-  if(manual) manual.disabled = !checked;
-  const pill = box.querySelector('.session-pill');
-  pill.textContent = 'Sesi: '+(session || 'BELUM DITETAPKAN');
-  pill.classList.toggle('missing',!session);
-  if(checked) state.activeRace = race;
-  else if(state.activeRace === race) state.activeRace = '';
-  prefillNextDrawFromActive();
+function renderWinnerSummaryFromBootstrap_(){
+  if(state.activeProject && state.activeType) renderSuccessSessionChoices();
 }
 
 function syncSemakanToActiveProject(){
@@ -2736,8 +2744,7 @@ async function refreshWatchlist(){
   try{
     const d = await api({action:'rebuildWatchlist'});
     toast('Semakan semula siap. Projek sama: '+d.sameProjectCount+' · Antara projek: '+d.crossProjectCount+'.','good');
-    await loadDashboard();
-    await loadProjectFilters();
+    await loadBootstrap(true);
     await runOverlapSearch();
   }catch(err){
     toast(err.message,'bad');
@@ -3055,11 +3062,8 @@ async function saveManualSuccessfulApplicants(){
 
     updateMigrationProgress(92,'Mengemas kini paparan...','Menyegarkan rekod Pemohon Berjaya dan tally.',{filesDone:done,totalFiles:jobs.length,rowsRead:totalRows,saved:imported,duplicate:skipped});
 
-    await Promise.all([
-      loadDashboard(),
-      loadDrawOptions(true),
-      loadData('winners','winnerTable',{progress:false,fresh:true})
-    ]);
+    await loadBootstrap(true);
+    await loadData('winners','winnerTable',{progress:false,fresh:true});
     prefillNextDrawFromActive();
 
     jobs.forEach(function(job){
@@ -3150,8 +3154,7 @@ async function importSuccessfulApplicants(){
       done++;
     }
 
-    await loadDashboard();
-    await loadDrawOptions(true);
+    await loadBootstrap(true);
     await loadData('winners','winnerTable');
     await refreshWatchlist();
     syncSemakanToActiveProject();
@@ -3198,15 +3201,110 @@ async function deleteSuccessfulApplicants(){
 
     toast('Pemohon Berjaya dipadam: '+Number(d.deleted || 0).toLocaleString('ms-MY')+' rekod. Status tapisan telah dikira semula.','good');
 
-    await Promise.all([
-      loadData('winners','winnerTable',{progress:false}),
-      loadDashboard(),
-      loadDrawOptions(true)
-    ]);
+    await loadBootstrap(true);
+    await loadData('winners','winnerTable',{progress:false});
     await refreshWatchlist();
   }catch(err){
     toast(err.message,'bad');
   }
+}
+
+function openWinnerEntryModal(race){
+  const t=findDrawType(state.activeProject,state.activeType);
+  const r=t ? (t.races || []).find(function(x){return x.race===race;}) : null;
+  if(!r){toast('Tiada sesi '+race+' untuk jenis rumah ini.','bad');return;}
+  state.activeRace=race;
+  state.winnerEntry={project:state.activeProject,type:state.activeType,race:race,session:String(r.session||'')};
+  document.getElementById('winnerEntryTitle').textContent='Pemohon Berjaya · '+race.charAt(0)+race.slice(1).toLowerCase();
+  document.getElementById('winnerEntryMeta').textContent=state.activeProject+' · '+state.activeType+' · Sesi '+(r.session||'BELUM DITETAPKAN');
+  document.getElementById('winnerManualIc').value=state.winnerDrafts[race] || '';
+  document.getElementById('winnerEntryResult').style.display='none';
+  document.getElementById('winnerEntryFile').value='';
+  updateWinnerIcEditor();
+  document.getElementById('winnerEntryModal').classList.add('show');
+  document.body.classList.add('migration-busy');
+  loadWinnerEntryCurrent();
+}
+function closeWinnerEntryModal(){
+  const ta=document.getElementById('winnerManualIc');
+  if(state.winnerEntry && ta) state.winnerDrafts[state.winnerEntry.race]=ta.value;
+  document.getElementById('winnerEntryModal').classList.remove('show');
+  document.body.classList.remove('migration-busy');
+}
+function winnerInputStats_(){
+  const raw=String(document.getElementById('winnerManualIc').value || '').split(/\n/);
+  const valid=raw.map(normalizeManualIc_).filter(Boolean);
+  const unique=Array.from(new Set(valid));
+  return {lines:raw,valid:valid,unique:unique,duplicates:Math.max(0,valid.length-unique.length)};
+}
+function updateWinnerIcEditor(){
+  const s=winnerInputStats_();
+  const count=Math.max(1,s.lines.length);
+  document.getElementById('winnerLineNumbers').textContent=Array.from({length:count},function(_,i){return i+1;}).join('\n');
+  document.getElementById('winnerInputCount').textContent=s.valid.length.toLocaleString('ms-MY');
+  document.getElementById('winnerUniqueCount').textContent=s.unique.length.toLocaleString('ms-MY');
+  document.getElementById('winnerDuplicateCount').textContent=s.duplicates.toLocaleString('ms-MY');
+  if(state.winnerEntry) state.winnerDrafts[state.winnerEntry.race]=document.getElementById('winnerManualIc').value;
+}
+function syncWinnerLineScroll(){document.getElementById('winnerLineNumbers').scrollTop=document.getElementById('winnerManualIc').scrollTop;}
+function clearWinnerEntryInput(){document.getElementById('winnerManualIc').value='';updateWinnerIcEditor();}
+async function loadWinnerEntryCurrent(){
+  if(!state.winnerEntry) return;
+  try{
+    const d=await api({action:'getWinnerScope',project:state.winnerEntry.project,type:state.winnerEntry.type,race:state.winnerEntry.race},{maxAttempts:2,timeoutMs:30000});
+    document.getElementById('winnerCurrentLabel').textContent='Rekod sedia ada: '+Number(d.total||0).toLocaleString('ms-MY');
+    renderTable('winnerCurrentTable',d.rows || []);
+  }catch(err){document.getElementById('winnerCurrentTable').innerHTML='<div class="muted" style="padding:12px">'+esc(err.message)+'</div>';}
+}
+async function saveWinnerEntryManual(){
+  if(!state.winnerEntry) return;
+  const s=winnerInputStats_();
+  if(!s.unique.length){toast('Masukkan sekurang-kurangnya satu No. KP.','bad');return;}
+  if(!state.winnerEntry.session){toast('Masa / sesi undian belum ditetapkan.','bad');return;}
+  if(!confirm('Simpan '+s.unique.length.toLocaleString('ms-MY')+' Pemohon Berjaya '+state.winnerEntry.race+'?')) return;
+  try{
+    openMigrationProgress('Menyimpan Pemohon Berjaya',1);
+    updateMigrationProgress(20,'Memadankan No. KP...','Sistem membaca Rekod Pemohon sekali sahaja.',{filesDone:0,totalFiles:1,rowsRead:s.unique.length,saved:0,duplicate:s.duplicates});
+    const rows=s.unique.map(function(ic){return {NO_KP:ic,PROJEK:state.winnerEntry.project,JENIS:state.winnerEntry.type,KAUM:state.winnerEntry.race,SESI:state.winnerEntry.session};});
+    const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:2,timeoutMs:70000});
+    updateMigrationProgress(86,'Mengemas kini tally...','Menyegarkan ringkasan sekali sahaja.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
+    await loadBootstrap(true);
+    const notFound=(d.notFound || []).map(String);
+    document.getElementById('winnerManualIc').value=notFound.join('\n');
+    updateWinnerIcEditor();
+    const result=document.getElementById('winnerEntryResult'); result.style.display='block';
+    if(notFound.length){result.className='winner-entry-result notice warn';result.innerHTML='<strong>Disimpan '+Number(d.imported||0).toLocaleString('ms-MY')+'</strong> · Tidak ditemui '+notFound.length.toLocaleString('ms-MY')+'. IC yang tidak ditemui dikekalkan dalam kotak input.';}
+    else{result.className='winner-entry-result notice good';result.innerHTML='<strong>SIAP.</strong> '+Number(d.imported||0).toLocaleString('ms-MY')+' Pemohon Berjaya disimpan.';}
+    finishMigrationProgress(Number(d.imported||0).toLocaleString('ms-MY')+' Pemohon Berjaya disimpan · '+Number(d.filtered||0).toLocaleString('ms-MY')+' rekod lain ditapis.');
+    await loadWinnerEntryCurrent();
+    renderSuccessSessionChoices();
+  }catch(err){if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);toast(err.message,'bad');}
+}
+async function importWinnerEntryFile(){
+  if(!state.winnerEntry) return;
+  const file=document.getElementById('winnerEntryFile').files[0];
+  if(!file){toast('Pilih fail Excel/CSV dahulu.','bad');return;}
+  try{
+    const parsed=await readWinnerFileSmart(file,state.winnerEntry.project,state.winnerEntry.type,state.winnerEntry.race);
+    const rows=(parsed.rows || []).map(function(r){return {...r,SESI:state.winnerEntry.session};});
+    if(!rows.length) throw new Error('Tiada rekod sah dalam fail.');
+    const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:2,timeoutMs:70000});
+    await loadBootstrap(true); await loadWinnerEntryCurrent(); renderSuccessSessionChoices();
+    toast('Fail diproses: '+Number(d.imported||0)+' disimpan.','good');
+  }catch(err){toast(err.message,'bad');}
+}
+async function deleteWinnerEntryScope(){
+  if(!state.winnerEntry) return;
+  if(!confirm('Padam Pemohon Berjaya '+state.winnerEntry.race+' untuk '+state.winnerEntry.type+'?')) return;
+  try{
+    const d=await api({action:'deleteWinnersScope',project:state.winnerEntry.project,type:state.winnerEntry.type,race:state.winnerEntry.race,session:state.winnerEntry.session});
+    await loadBootstrap(true); await loadWinnerEntryCurrent(); renderSuccessSessionChoices();
+    toast('Dipadam: '+Number(d.deleted||0)+' rekod.','good');
+  }catch(err){toast(err.message,'bad');}
+}
+function loadWinnerSummaryCards(force=false){
+  if(force) return loadBootstrap(true).then(function(){renderSuccessSessionChoices();});
+  renderSuccessSessionChoices();
 }
 
 function openNextDrawProgress(title){
@@ -3445,8 +3543,7 @@ async function ensureApplicantOverview(){
 async function refreshApplicantOverview(){
   try{
     invalidateApplicantCache_();
-    await loadDashboard();
-    await loadProjectFilters();
+    await loadBootstrap(true);
     toast('Tally Rekod Pemohon telah disegarkan.','good');
   }catch(err){
     toast(err.message,'bad');
@@ -3463,41 +3560,22 @@ function compactApplicantRowsToObjects_(d){
 }
 
 async function fetchApplicantScopeCompact_(project,race){
-  try{
-    // Fast path: satu payload padat. Kebiasaannya cukup untuk beberapa ribu rekod.
-    return await api({action:'getApplicantCompact',project:project,race:race,limit:10000,offset:0},{
-      maxAttempts:1,
-      timeoutMs:35000
-    });
-  }catch(firstErr){
-    // Fallback: jika rangkaian / Apps Script tidak selesa dengan payload besar,
-    // ambil dalam batch padat. Ini hanya berlaku untuk kotak yang ditekan.
-    let offset=0;
-    let total=null;
-    let columns=null;
-    let all=[];
-    let hasMore=true;
-    let batch=0;
-    while(hasMore){
-      batch++;
-      const d=await api({action:'getApplicantCompact',project:project,race:race,limit:1000,offset:offset},{
-        maxAttempts:3,
-        timeoutMs:40000,
-        onRetry:function(nextAttempt,maxAttempts){
-          const pct=total ? Math.min(88,18+Math.round((all.length/total)*68)) : 38;
-          updateReloadProgress(pct,'Sambungan perlahan - cuba semula...','Batch '+batch+' · percubaan '+nextAttempt+' / '+maxAttempts+'.',all.length,total);
-        }
-      });
-      columns=columns || d.columns;
-      total=total===null ? Number(d.total || 0) : total;
-      all=all.concat(d.rows || []);
-      offset=Number(d.nextOffset || all.length);
-      hasMore=Boolean(d.hasMore) && (d.rows || []).length>0;
-      const pct=total ? Math.min(90,20+Math.round((all.length/total)*68)) : 85;
-      updateReloadProgress(pct,'Menerima senarai secara batch...','Batch '+batch+' · '+all.length.toLocaleString('ms-MY')+' / '+Number(total||0).toLocaleString('ms-MY')+' rekod.',all.length,total);
-    }
-    return {ok:true,columns:columns || ['NO_KP','NAMA','NO_SIRI','PROJEK','JENIS','KAUM','STATUS'],rows:all,total:Number(total||all.length),offset:0,nextOffset:all.length,hasMore:false};
+  let scanOffset=0,totalSource=null,columns=null,all=[],hasMore=true,batch=0;
+  while(hasMore){
+    batch++;
+    const d=await api({action:'getApplicantScopeChunk',project:project,race:race,scanOffset:scanOffset,scanLimit:1500},{maxAttempts:3,timeoutMs:45000,onRetry:function(next,max){
+      const pct=totalSource ? Math.min(88,18+Math.round((scanOffset/totalSource)*68)) : 28;
+      updateReloadProgress(pct,'Sambungan perlahan - cuba semula...','Bahagian '+batch+' · percubaan '+next+' / '+max+'.',all.length,totalSource);
+    }});
+    columns=columns || d.columns;
+    totalSource=totalSource===null ? Number(d.totalSourceRows || 0) : totalSource;
+    all=all.concat(d.rows || []);
+    scanOffset=Number(d.nextScanOffset || scanOffset);
+    hasMore=Boolean(d.hasMore);
+    const pct=totalSource ? Math.min(90,18+Math.round((scanOffset/totalSource)*70)) : 90;
+    updateReloadProgress(pct,'Menapis rekod dalam database...','Bahagian '+batch+' · '+scanOffset.toLocaleString('ms-MY')+' / '+Number(totalSource||0).toLocaleString('ms-MY')+' baris diperiksa · '+all.length.toLocaleString('ms-MY')+' padanan.',all.length,null);
   }
+  return {ok:true,columns:columns || ['NO_KP','NAMA','NO_SIRI','PROJEK','JENIS','KAUM','STATUS'],rows:all,total:all.length};
 }
 
 async function showApplicantScopePopup(projectKey,race){
