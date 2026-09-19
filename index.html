@@ -488,6 +488,15 @@ th,td{padding:8px 10px}
 .project-tally-card{border:1px solid #dce6f3;border-radius:16px;padding:14px;background:#fbfdff}
 .project-tally-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
 .project-tally-head strong{font-size:13px;color:#17365e}.project-tally-head span{font-size:11px;color:#728198;font-weight:700}
+.applicant-type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin-top:10px}
+.applicant-type-card{border:1px solid #dce6f3;border-radius:14px;padding:12px;background:#fff;box-shadow:0 4px 12px rgba(31,75,145,.04)}
+.applicant-type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:2px}
+.applicant-type-head strong{font-size:13px;color:#12365f}.applicant-type-head span{font-size:10px;font-weight:800;color:#667b98;background:#eef4fc;border-radius:999px;padding:4px 8px;white-space:nowrap}
+.applicant-type-full{font-size:9.5px;color:#7a8aa1;margin:0 0 9px;line-height:1.35}
+.applicant-type-card .race-mini-grid{grid-template-columns:repeat(3,minmax(92px,1fr));gap:7px}
+.applicant-type-card .race-mini-card{min-height:84px;padding:10px 11px}
+.applicant-type-card .race-mini-card .race-number{font-size:23px}
+@media(max-width:800px){.applicant-type-grid{grid-template-columns:1fr}.applicant-type-card .race-mini-grid{grid-template-columns:repeat(3,minmax(80px,1fr))}}
 .project-grand-total{border:1px solid #cfe0f6;background:linear-gradient(135deg,#edf5ff,#f9fcff);border-radius:18px;padding:14px;margin:12px 0 16px}
 .project-grand-total h3{margin:0 0 6px;font-size:15px;color:#14345f}.project-grand-total p{margin:0;color:#6e7f98;font-size:11px}
 .race-detail-overlay{display:none;position:fixed;inset:0;background:rgba(8,25,55,.58);backdrop-filter:blur(4px);z-index:100020;align-items:center;justify-content:center;padding:20px}
@@ -1075,9 +1084,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.12.0';
+const MIN_API_VERSION = '2.12.1';
 
-const UI_VERSION = '2.12.0';
+const UI_VERSION = '2.12.1';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -3492,13 +3501,30 @@ function aggregateApplicantProjectCounts_(projects){
   return out;
 }
 
+function applicantTypeCounts_(typeData){
+  const sums={MELAYU:0,CINA:0,INDIA:0,JUMLAH:0};
+  const races=typeData || {};
+  ['MELAYU','CINA','INDIA'].forEach(function(race){
+    const n=Number((races[race] && races[race].total) || 0);
+    sums[race]=n;
+    sums.JUMLAH+=n;
+  });
+  return sums;
+}
+
+function applicantShortTypeLabel_(type){
+  const text=String(type || '').trim();
+  const m=text.match(/(?:^|\s)([A-Z]\d?)$/i);
+  if(m) return 'Jenis '+m[1].toUpperCase();
+  return text || 'Jenis Rumah';
+}
+
 function renderApplicantSummaryFromDashboard(projects,summary){
   const root=document.getElementById('applicantGroupCards');
   const table=document.getElementById('applicantTable');
   if(!root || !table) return;
 
-  const grouped=aggregateApplicantProjectCounts_(projects || {});
-  const names=Object.keys(grouped).sort(function(a,b){return a.localeCompare(b,'ms')});
+  const projectNames=Object.keys(projects || {}).sort(function(a,b){return a.localeCompare(b,'ms')});
   const races=(summary && summary.races) || {};
   const grand={
     MELAYU:Number(races.MELAYU || 0),
@@ -3507,29 +3533,47 @@ function renderApplicantSummaryFromDashboard(projects,summary){
   };
   const grandTotal=grand.MELAYU+grand.CINA+grand.INDIA;
 
-  if(!names.length && !grandTotal){
+  if(!projectNames.length && !grandTotal){
     root.innerHTML='<div class="muted">Tiada rekod pemohon.</div>';
     table.innerHTML='<div style="padding:16px" class="muted">Tiada rekod.</div>';
     return;
   }
 
-  function cards(project,counts,isGrand){
-    const key=isGrand?'__ALL__':encodeURIComponent(project).replace(/'/g,'%27');
+  function cards(project,type,counts,isGrand){
+    const projectKey=isGrand?'__ALL__':encodeURIComponent(project).replace(/'/g,'%27');
+    const typeKey=isGrand?'':encodeURIComponent(type || '').replace(/'/g,'%27');
     function one(race,label,cls){
       const n=Number(counts[race] || 0);
-      return '<button type="button" class="race-mini-card '+cls+'" onclick="showApplicantScopePopup(\''+key+'\',\''+race+'\')"><span class="race-label">'+label+'</span><span class="race-number">'+n.toLocaleString('ms-MY')+'</span><span class="race-hint">Tekan untuk lihat senarai</span></button>';
+      return '<button type="button" class="race-mini-card '+cls+'" onclick="showApplicantScopePopup(\''+projectKey+'\',\''+typeKey+'\',\''+race+'\')"><span class="race-label">'+label+'</span><span class="race-number">'+n.toLocaleString('ms-MY')+'</span><span class="race-hint">Tekan untuk lihat senarai</span></button>';
     }
     return '<div class="race-mini-grid">'+one('MELAYU','Melayu','melayu')+one('CINA','Cina','cina')+one('INDIA','India','india')+'</div>';
   }
 
-  let html='<div class="project-grand-total"><h3>Jumlah Keseluruhan Semua Projek</h3><p>Jumlah terus daripada database. Tidak perlu menunggu semua rekod dimuatkan ke browser.</p>'+cards('',grand,true)+'</div>';
-  html+='<div class="project-tally-wrap">'+names.map(function(project){
-    const g=grouped[project];
-    return '<div class="project-tally-card"><div class="project-tally-head"><strong>'+esc(project)+'</strong><span>JUMLAH '+Number(g.JUMLAH||0).toLocaleString('ms-MY')+' REKOD</span></div>'+cards(project,g,false)+'</div>';
+  let html='<div class="project-grand-total"><h3>Jumlah Keseluruhan Semua Projek</h3><p>Jumlah keseluruhan untuk semakan pantas. Pecahan terperinci di bawah disusun mengikut Projek → Jenis Rumah → Kaum.</p>'+cards('','',grand,true)+'</div>';
+
+  html+='<div class="project-tally-wrap">'+projectNames.map(function(project){
+    const types=projects[project] || {};
+    const typeNames=Object.keys(types).sort(function(a,b){return a.localeCompare(b,'ms')});
+    let projectTotal=0;
+    const typeHtml=typeNames.map(function(type){
+      const counts=applicantTypeCounts_(types[type]);
+      projectTotal+=counts.JUMLAH;
+      const shortLabel=applicantShortTypeLabel_(type);
+      return '<div class="applicant-type-card">'+
+        '<div class="applicant-type-head"><strong>'+esc(shortLabel)+'</strong><span>JUMLAH '+counts.JUMLAH.toLocaleString('ms-MY')+'</span></div>'+
+        '<div class="applicant-type-full">'+esc(type)+'</div>'+
+        cards(project,type,counts,false)+
+      '</div>';
+    }).join('');
+
+    return '<div class="project-tally-card">'+
+      '<div class="project-tally-head"><strong>'+esc(project)+'</strong><span>JUMLAH '+projectTotal.toLocaleString('ms-MY')+' REKOD</span></div>'+
+      '<div class="applicant-type-grid">'+typeHtml+'</div>'+
+    '</div>';
   }).join('')+'</div>';
 
   root.innerHTML=html;
-  table.innerHTML='<div class="table-total"><strong>Jumlah keseluruhan: '+grandTotal.toLocaleString('ms-MY')+' rekod</strong></div><div style="padding:14px" class="muted">Tekan kotak Projek + Kaum. Sistem hanya memuat senarai yang dipilih dan menyimpannya dalam cache sesi ini.</div>';
+  table.innerHTML='<div class="table-total"><strong>Jumlah keseluruhan: '+grandTotal.toLocaleString('ms-MY')+' rekod</strong></div><div style="padding:14px" class="muted">Tekan kotak Kaum di bawah Jenis C / Jenis D. Sistem hanya memuat senarai Projek + Jenis + Kaum yang dipilih dan menyimpannya dalam cache sesi.</div>';
 }
 
 async function ensureApplicantOverview(){
@@ -3559,11 +3603,11 @@ function compactApplicantRowsToObjects_(d){
   });
 }
 
-async function fetchApplicantScopeCompact_(project,race){
+async function fetchApplicantScopeCompact_(project,type,race){
   let scanOffset=0,totalSource=null,columns=null,all=[],hasMore=true,batch=0;
   while(hasMore){
     batch++;
-    const d=await api({action:'getApplicantScopeChunk',project:project,race:race,scanOffset:scanOffset,scanLimit:1500},{maxAttempts:3,timeoutMs:45000,onRetry:function(next,max){
+    const d=await api({action:'getApplicantScopeChunk',project:project,type:type,race:race,scanOffset:scanOffset,scanLimit:1500},{maxAttempts:3,timeoutMs:45000,onRetry:function(next,max){
       const pct=totalSource ? Math.min(88,18+Math.round((scanOffset/totalSource)*68)) : 28;
       updateReloadProgress(pct,'Sambungan perlahan - cuba semula...','Bahagian '+batch+' · percubaan '+next+' / '+max+'.',all.length,totalSource);
     }});
@@ -3578,30 +3622,32 @@ async function fetchApplicantScopeCompact_(project,race){
   return {ok:true,columns:columns || ['NO_KP','NAMA','NO_SIRI','PROJEK','JENIS','KAUM','STATUS'],rows:all,total:all.length};
 }
 
-async function showApplicantScopePopup(projectKey,race){
+async function showApplicantScopePopup(projectKey,typeKey,race){
   const project=projectKey==='__ALL__' ? '' : decodeURIComponent(projectKey || '');
+  const type=typeKey ? decodeURIComponent(typeKey) : '';
   race=String(race || '').toUpperCase();
-  const cacheKey=(project || '*')+'|'+race;
+  const cacheKey=(project || '*')+'|'+(type || '*')+'|'+race;
   const cached=state.applicantScopeCache[cacheKey];
+  const scopeTitle=[project || 'Semua Projek',type ? applicantShortTypeLabel_(type) : '',race].filter(Boolean).join(' · ');
 
   if(cached){
-    openRaceDetailModal('Rekod Pemohon · '+(project || 'Semua Projek')+' · '+race,cached,cached.length.toLocaleString('ms-MY')+' rekod · cache sesi');
+    openRaceDetailModal('Rekod Pemohon · '+scopeTitle,cached,cached.length.toLocaleString('ms-MY')+' rekod · cache sesi');
     return;
   }
 
   try{
     openReloadProgress('applicants');
-    updateReloadProgress(18,'Membuka senarai '+race+'...','Database sedang menapis '+(project || 'semua projek')+' sahaja.',0,null);
+    updateReloadProgress(18,'Membuka senarai '+race+'...','Database sedang menapis '+[project || 'semua projek',type || 'semua jenis'].join(' · ')+'.',0,null);
 
-    const d=await fetchApplicantScopeCompact_(project,race);
+    const d=await fetchApplicantScopeCompact_(project,type,race);
     const rows=compactApplicantRowsToObjects_(d);
     state.applicantScopeCache[cacheKey]=rows;
     updateReloadProgress(92,'Menyediakan popup...',rows.length.toLocaleString('ms-MY')+' rekod diterima.',rows.length,Number(d.total||rows.length));
     finishReloadProgress('applicants',rows.length,Number(d.total||rows.length));
 
     setTimeout(function(){
-      openRaceDetailModal('Rekod Pemohon · '+(project || 'Semua Projek')+' · '+race,rows,rows.length.toLocaleString('ms-MY')+' rekod');
-    },700);
+      openRaceDetailModal('Rekod Pemohon · '+scopeTitle,rows,rows.length.toLocaleString('ms-MY')+' rekod');
+    },450);
   }catch(err){
     failReloadProgress(err.message || 'Senarai tidak dapat dimuatkan.');
     toast(err.message,'bad');
@@ -3611,14 +3657,17 @@ async function showApplicantScopePopup(projectKey,race){
 function downloadApplicantTallyPdf(){
   const d=state.dashboardData;
   if(!d){toast('Tally belum dimuatkan. Tekan Segarkan Tally dahulu.','bad');return}
-  const grouped=aggregateApplicantProjectCounts_(d.projects || {});
-  const rows=Object.keys(grouped).sort(function(a,b){return a.localeCompare(b,'ms')}).map(function(project){
-    const g=grouped[project];
-    return {PROJEK:project,MELAYU:g.MELAYU,CINA:g.CINA,INDIA:g.INDIA,JUMLAH:g.JUMLAH};
+  const rows=[];
+  Object.keys(d.projects || {}).sort(function(a,b){return a.localeCompare(b,'ms')}).forEach(function(project){
+    const types=d.projects[project] || {};
+    Object.keys(types).sort(function(a,b){return a.localeCompare(b,'ms')}).forEach(function(type){
+      const g=applicantTypeCounts_(types[type]);
+      rows.push({PROJEK:project,JENIS:type,MELAYU:g.MELAYU,CINA:g.CINA,INDIA:g.INDIA,JUMLAH:g.JUMLAH});
+    });
   });
   if(!rows.length){toast('Tiada data tally untuk PDF.','bad');return}
   state.lastTables.applicantTallyPdf=rows;
-  downloadTablePdf('applicantTallyPdf','Tally Rekod Pemohon Mengikut Projek & Kaum','tally_rekod_pemohon.pdf');
+  downloadTablePdf('applicantTallyPdf','Tally Rekod Pemohon Mengikut Projek, Jenis & Kaum','tally_rekod_pemohon_projek_jenis_kaum.pdf');
 }
 
 function renderApplicantProjectRace(rows){
