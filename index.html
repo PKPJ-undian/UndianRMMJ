@@ -1037,7 +1037,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.11.0';
+const MIN_API_VERSION = '2.11.1';
+
+const UI_VERSION = '2.11.1';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1297,7 +1299,7 @@ async function testApi(show=true){
       );
     }
 
-    setApiStatus(true,(data.app || 'STU-RMMJ')+' '+version);
+    setApiStatus(true,(data.app || 'STU-RMMJ')+' '+version+' · UI '+UI_VERSION);
     if(show) toast('Sambungan Google Apps Script berjaya.','good');
     return true;
   }catch(err){
@@ -3869,7 +3871,8 @@ async function loadArchiveDetail(){
 ========================================================= */
 
 function renderTable(targetId,rows,allowHtml=false){
-  state.lastTables[targetId] = rows || [];
+  rows=(rows || []).map(sanitizeSerialRowClient);
+  state.lastTables[targetId] = rows;
   const root = document.getElementById(targetId);
 
   if(!rows || !rows.length){
@@ -3891,27 +3894,74 @@ function renderTable(targetId,rows,allowHtml=false){
 }
 
 
+function canonicalFieldNameClient(key){
+  return String(key == null ? '' : key)
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g,'_')
+    .replace(/^_+|_+$/g,'');
+}
+
+function isSerialFieldClient(key){
+  const k=canonicalFieldNameClient(key);
+  return k==='NO_SIRI' || k==='NO_SIRI_TERLIBAT' || k.includes('NO_SIRI');
+}
+
 function normalizeSerialDisplayClient(v){
   if(v===null || v===undefined || v==='') return '';
   let text=String(v).trim();
-  text=text.replace(/\b(\d{1,2})\/(\d{1,2})\/2001(?:\s*,?\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:PG|PTG|AM|PM)?)?/gi,function(_,a,b){return String(Number(a))+' | '+String(Number(b))});
-  text=text.replace(/\b2001-(\d{2})-(\d{2})(?:T[^|,;]*)?/gi,function(_,m,d){return String(Number(d))+' | '+String(Number(m))});
-  return text.replace(/\s*\|\s*/g,' | ').trim();
+
+  // Corak locale BM/MY yang pernah ditukar oleh Excel/Google Sheets.
+  // Contoh: 1/4/2001, 12:00:00 PG -> 1 | 4
+  text=text.replace(
+    /(?:^|\b)(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*2001(?:\s*,?\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:PG|PTG|AM|PM)?)?(?=$|\s|[,;|])/gi,
+    function(_,a,b){
+      return [Number(a),Number(b)].sort(function(x,y){return x-y}).join(' | ');
+    }
+  );
+
+  // Corak ISO daripada Apps Script / JSON.
+  text=text.replace(
+    /(?:^|\b)2001-(\d{2})-(\d{2})(?:T[^|,;\s]*)?/gi,
+    function(_,m,d){
+      return [Number(m),Number(d)].sort(function(x,y){return x-y}).join(' | ');
+    }
+  );
+
+  return text
+    .replace(/\s*\|\s*/g,' | ')
+    .replace(/(?:\s*\|\s*){2,}/g,' | ')
+    .trim();
 }
 
 function sanitizeSerialRowClient(row){
   const out={...row};
   Object.keys(out).forEach(function(k){
-    if(String(k).toUpperCase().includes('NO_SIRI')) out[k]=normalizeSerialDisplayClient(out[k]);
+    if(isSerialFieldClient(k)) out[k]=normalizeSerialDisplayClient(out[k]);
   });
   return out;
 }
 
 function formatCell(key,val){
   let text = val == null ? '' : String(val);
-  if(String(key).toUpperCase().includes('NO_SIRI')) text = normalizeSerialDisplayClient(text);
+  const canonicalKey=canonicalFieldNameClient(key);
 
-  if(key.includes('AT') || key === 'TIMESTAMP') text = formatDate(text);
+  if(isSerialFieldClient(key)){
+    text = normalizeSerialDisplayClient(text);
+  }
+
+  // Hanya medan masa/tarikh sebenar. Jangan guna includes('AT') kerana
+  // NO_SIRI_TERLIBAT juga berakhir dengan huruf "AT".
+  if(
+    canonicalKey === 'TIMESTAMP' ||
+    canonicalKey === 'UPDATED_AT' ||
+    canonicalKey === 'IMPORTED_AT' ||
+    canonicalKey === 'WINNER_AT' ||
+    canonicalKey === 'FILTERED_AT' ||
+    canonicalKey === 'ARKIB_AT'
+  ){
+    text = formatDate(text);
+  }
 
   const u = text.toUpperCase();
   if(u === 'TIDAK LAYAK') return '<span class="badge red">TIDAK LAYAK</span>';
