@@ -675,12 +675,13 @@ th,td{padding:8px 10px}
     <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
       <div>
         <h2>Rekod Pemohon</h2>
-        <p>Semua pemohon yang telah disimpan melalui fail atau input manual.</p>
+        <p>Ringkasan Projek + Kaum dibaca daripada dashboard sahaja. Senarai nama hanya dimuatkan apabila kotak kaum ditekan.</p>
       </div>
-      <div class="actions"><button class="btn gray" onclick="loadData('applicants','applicantTable')">Muat Semula Rekod</button><button class="btn primary" onclick="downloadTablePdf('applicantTable','Rekod Pemohon','rekod_pemohon.pdf')">Muat Turun PDF</button></div>
+      <div class="actions"><button class="btn gray" onclick="refreshApplicantOverview()">Segarkan Tally</button><button class="btn primary" onclick="downloadApplicantTallyPdf()">Muat Turun PDF Tally</button></div>
     </div>
+    <div class="notice info" style="margin-top:10px"><strong>MOD LAJU:</strong> sistem tidak lagi memuat semua ribuan rekod setiap kali tab dibuka. Jumlah keseluruhan datang terus daripada database; butiran nama dimuat sekali mengikut Projek + Kaum apabila diperlukan.</div>
     <div id="applicantGroupCards" class="applicant-group-area">
-      <div class="muted">Muat semula rekod untuk paparkan kotak projek dan kaum.</div>
+      <div class="muted">Tally Projek + Kaum akan dipaparkan daripada dashboard.</div>
     </div>
     <div id="applicantTable" class="tablewrap"><div style="padding:16px" class="muted">Pilih kotak projek / kaum untuk melihat senarai nama.</div></div>
   </div>
@@ -1036,7 +1037,7 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.10.1';
+const MIN_API_VERSION = '2.11.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1062,7 +1063,9 @@ const state = {
   nextDrawBundle: null,
   winnerGroups: {MELAYU:[],CINA:[],INDIA:[]},
   raceModalRows: [],
-  reloadResume: {}
+  reloadResume: {},
+  dashboardData: null,
+  applicantScopeCache: {}
 };
 
 
@@ -1081,8 +1084,8 @@ window.addEventListener('DOMContentLoaded', async function(){
   if(state.apiUrl && state.apiKey){
     const apiOk = await testApi(false);
     if(apiOk){
+      await loadDashboard();
       await Promise.all([
-        loadDashboard(),
         loadProjectFilters(),
         loadDrawOptions(true)
       ]);
@@ -1101,7 +1104,7 @@ async function loadPageData(page, force=false){
   state.busy = true;
   try{
     if(page === 'dashboard') await loadDashboard();
-    if(page === 'pemohon') await loadData('applicants','applicantTable');
+    if(page === 'pemohon') await ensureApplicantOverview();
     if(page === 'watchlist') { await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(false); }
     if(page === 'pemenang') { await loadDrawOptions(); await loadData('winners','winnerTable'); }
     if(page === 'ditapis') { prefillNextDrawFromActive(); }
@@ -1333,6 +1336,7 @@ async function loadDashboard(){
   try{
     const d = await api({action:'dashboard'});
     const s = d.summary || {};
+    state.dashboardData = d;
 
     document.getElementById('mProjects').textContent = s.projects || 0;
     document.getElementById('mApplicants').textContent = s.applicants || 0;
@@ -1347,6 +1351,7 @@ async function loadDashboard(){
 
     renderProjects(d.projects || {});
     renderTable('quotaTallyTable',d.quotaTally || []);
+    renderApplicantSummaryFromDashboard(d.projects || {}, s);
   }catch(err){
     toast(err.message,'bad');
   }
@@ -1520,19 +1525,25 @@ async function uploadExistingProject(){
       const d = await api({
         action:'importApplicants',
         rows:chunk,
-        source:'PROJEK_SEDIA_ADA_'+s.race
+        source:'PROJEK_SEDIA_ADA_'+s.race,
+        rebuildWatchlist:false
       });
       imported += Number(d.imported || 0);
       duplicate += Number(d.duplicates || d.skipped || 0);
       invalid += Number(d.invalid || 0);
     }
 
-    updateMigrationProgress(94,'Mengemas kini sistem','Membaca semula dashboard dan rekod projek...',{
+    updateMigrationProgress(91,'Mengemas kini semakan','Membina semula Semakan Pemohon sekali sahaja...',{
+      filesDone:1,totalFiles:1,rowsRead:rows.length,saved:imported,duplicate:duplicate
+    });
+    await api({action:'rebuildWatchlist'});
+    invalidateApplicantCache_();
+
+    updateMigrationProgress(95,'Mengemas kini sistem','Membaca semula dashboard dan rekod projek...',{
       filesDone:1,totalFiles:1,rowsRead:rows.length,saved:imported,duplicate:duplicate
     });
 
     await Promise.all([loadDashboard(),loadDrawOptions(true)]);
-    await loadData('applicants','applicantTable');
     renderExistingProjectSelect();
 
     const summary = imported.toLocaleString('ms-MY')+' rekod baharu disimpan · '+
@@ -1875,7 +1886,8 @@ async function importAllDatasets(){
         const d = await api({
           action:'importApplicants',
           rows:chunk,
-          source:'FAIL_'+job.race
+          source:'FAIL_'+job.race,
+          rebuildWatchlist:false
         });
 
         totalImported += Number(d.imported || 0);
@@ -1920,9 +1932,26 @@ async function importAllDatasets(){
     --------------------------------------------------------- */
 
     updateMigrationProgress(
-      94,
+      92,
+      'Fasa 3/3 · Membina Semakan Pemohon',
+      'Semua fail telah disimpan. Watchlist dibina semula sekali sahaja...',
+      {
+        filesDone:processedFiles,
+        totalFiles:totalFiles,
+        rowsRead:totalRowsRead,
+        saved:totalImported,
+        duplicate:totalDuplicate
+      }
+    );
+
+    const rebuilt=await api({action:'rebuildWatchlist'});
+    lastCross=Number(rebuilt.crossProjectCount || 0);
+    invalidateApplicantCache_();
+
+    updateMigrationProgress(
+      95,
       'Fasa 3/3 · Mengemas kini dashboard',
-      'Membaca semula rekod daripada database...',
+      'Membaca ringkasan database sahaja...',
       {
         filesDone:processedFiles,
         totalFiles:totalFiles,
@@ -1949,7 +1978,6 @@ async function importAllDatasets(){
     );
 
     await loadProjectFilters();
-    await loadData('applicants','applicantTable');
 
     const summary =
       processedFiles+' fail selesai · '+
@@ -2037,9 +2065,9 @@ async function saveManualRows(){
     state.manualRows = [];
     renderManualPreview();
 
+    invalidateApplicantCache_();
     await loadDashboard();
     await loadProjectFilters();
-    await loadData('applicants','applicantTable');
   }catch(err){
     toast(err.message,'bad');
   }
@@ -2434,9 +2462,9 @@ async function deleteSelectedData(){
     const d = await api({action:'deleteDataScope',project:project,type:type,race:race});
     toast('Data dipadam: '+Number(d.total || 0)+' rekod berkaitan.','good');
 
+    invalidateApplicantCache_();
     await loadDashboard();
     await loadProjectFilters();
-    await loadData('applicants','applicantTable');
   }catch(err){
     toast(err.message,'bad');
   }
@@ -2453,9 +2481,9 @@ async function resetAllTestData(){
     const d = await api({action:'resetTestData',confirm:answer});
     toast('Semua data operasi ujian telah dipadam. Audit Trail dikekalkan.','good');
 
+    invalidateApplicantCache_();
     await loadDashboard();
     await loadProjectFilters();
-    await loadData('applicants','applicantTable');
   }catch(err){
     toast(err.message,'bad');
   }
@@ -2660,17 +2688,27 @@ function selectArchiveProject(project){
 
 async function loadProjectFilters(){
   try{
-    const d = await api({action:'getProjects'});
-    const root = document.getElementById('projectFilters');
+    let projectNames=[];
+    if(state.dashboardData && state.dashboardData.projects){
+      projectNames=Object.keys(state.dashboardData.projects).sort(function(a,b){return a.localeCompare(b,'ms')});
+    }
 
-    if(!d.projects || !d.projects.length){
+    if(!projectNames.length){
+      const d = await api({action:'getProjects'});
+      projectNames=(d.projects || []).map(function(x){return x.project}).filter(Boolean);
+    }
+
+    const root = document.getElementById('projectFilters');
+    if(!root) return;
+
+    if(!projectNames.length){
       root.innerHTML = '<span class="muted">Belum ada projek.</span>';
       return;
     }
 
-    root.innerHTML = d.projects.map(function(x){
-      const checked = state.activeProject === x.project ? ' checked' : '';
-      return '<label class="checkchip"><input type="checkbox" class="project-check" value="'+escAttr(x.project)+'"'+checked+'> '+esc(x.project)+'</label>';
+    root.innerHTML = projectNames.map(function(project){
+      const checked = state.activeProject === project ? ' checked' : '';
+      return '<label class="checkchip"><input type="checkbox" class="project-check" value="'+escAttr(project)+'"'+checked+'> '+esc(project)+'</label>';
     }).join('');
   }catch(err){
     console.error(err);
@@ -3326,6 +3364,181 @@ function normalizeApplicantRace_(value){
   if(x.indexOf('CINA')!==-1 || x.indexOf('CHINESE')!==-1) return 'CINA';
   if(x.indexOf('INDIA')!==-1 || x.indexOf('INDIAN')!==-1) return 'INDIA';
   return 'LAIN';
+}
+
+
+function invalidateApplicantCache_(){
+  state.applicantScopeCache={};
+  state.applicantAllRows=[];
+  state.applicantProjectGroups={};
+  state.lastTables.applicantTable=[];
+}
+
+function aggregateApplicantProjectCounts_(projects){
+  const out={};
+  Object.keys(projects || {}).forEach(function(project){
+    const sums={MELAYU:0,CINA:0,INDIA:0,JUMLAH:0};
+    const types=projects[project] || {};
+    Object.keys(types).forEach(function(type){
+      const races=types[type] || {};
+      ['MELAYU','CINA','INDIA'].forEach(function(race){
+        const n=Number((races[race] && races[race].total) || 0);
+        sums[race]+=n;
+        sums.JUMLAH+=n;
+      });
+    });
+    out[project]=sums;
+  });
+  return out;
+}
+
+function renderApplicantSummaryFromDashboard(projects,summary){
+  const root=document.getElementById('applicantGroupCards');
+  const table=document.getElementById('applicantTable');
+  if(!root || !table) return;
+
+  const grouped=aggregateApplicantProjectCounts_(projects || {});
+  const names=Object.keys(grouped).sort(function(a,b){return a.localeCompare(b,'ms')});
+  const races=(summary && summary.races) || {};
+  const grand={
+    MELAYU:Number(races.MELAYU || 0),
+    CINA:Number(races.CINA || 0),
+    INDIA:Number(races.INDIA || 0)
+  };
+  const grandTotal=grand.MELAYU+grand.CINA+grand.INDIA;
+
+  if(!names.length && !grandTotal){
+    root.innerHTML='<div class="muted">Tiada rekod pemohon.</div>';
+    table.innerHTML='<div style="padding:16px" class="muted">Tiada rekod.</div>';
+    return;
+  }
+
+  function cards(project,counts,isGrand){
+    const key=isGrand?'__ALL__':encodeURIComponent(project).replace(/'/g,'%27');
+    function one(race,label,cls){
+      const n=Number(counts[race] || 0);
+      return '<button type="button" class="race-mini-card '+cls+'" onclick="showApplicantScopePopup(\''+key+'\',\''+race+'\')"><span class="race-label">'+label+'</span><span class="race-number">'+n.toLocaleString('ms-MY')+'</span><span class="race-hint">Tekan untuk lihat senarai</span></button>';
+    }
+    return '<div class="race-mini-grid">'+one('MELAYU','Melayu','melayu')+one('CINA','Cina','cina')+one('INDIA','India','india')+'</div>';
+  }
+
+  let html='<div class="project-grand-total"><h3>Jumlah Keseluruhan Semua Projek</h3><p>Jumlah terus daripada database. Tidak perlu menunggu semua rekod dimuatkan ke browser.</p>'+cards('',grand,true)+'</div>';
+  html+='<div class="project-tally-wrap">'+names.map(function(project){
+    const g=grouped[project];
+    return '<div class="project-tally-card"><div class="project-tally-head"><strong>'+esc(project)+'</strong><span>JUMLAH '+Number(g.JUMLAH||0).toLocaleString('ms-MY')+' REKOD</span></div>'+cards(project,g,false)+'</div>';
+  }).join('')+'</div>';
+
+  root.innerHTML=html;
+  table.innerHTML='<div class="table-total"><strong>Jumlah keseluruhan: '+grandTotal.toLocaleString('ms-MY')+' rekod</strong></div><div style="padding:14px" class="muted">Tekan kotak Projek + Kaum. Sistem hanya memuat senarai yang dipilih dan menyimpannya dalam cache sesi ini.</div>';
+}
+
+async function ensureApplicantOverview(){
+  if(state.dashboardData){
+    renderApplicantSummaryFromDashboard(state.dashboardData.projects || {}, state.dashboardData.summary || {});
+    return;
+  }
+  await loadDashboard();
+}
+
+async function refreshApplicantOverview(){
+  try{
+    invalidateApplicantCache_();
+    await loadDashboard();
+    await loadProjectFilters();
+    toast('Tally Rekod Pemohon telah disegarkan.','good');
+  }catch(err){
+    toast(err.message,'bad');
+  }
+}
+
+function compactApplicantRowsToObjects_(d){
+  const columns=d.columns || ['NO_KP','NAMA','NO_SIRI','PROJEK','JENIS','KAUM','STATUS'];
+  return (d.rows || []).map(function(row){
+    const obj={};
+    columns.forEach(function(h,i){obj[h]=row[i]===undefined?'':row[i]});
+    return sanitizeSerialRowClient(obj);
+  });
+}
+
+async function fetchApplicantScopeCompact_(project,race){
+  try{
+    // Fast path: satu payload padat. Kebiasaannya cukup untuk beberapa ribu rekod.
+    return await api({action:'getApplicantCompact',project:project,race:race,limit:10000,offset:0},{
+      maxAttempts:1,
+      timeoutMs:35000
+    });
+  }catch(firstErr){
+    // Fallback: jika rangkaian / Apps Script tidak selesa dengan payload besar,
+    // ambil dalam batch padat. Ini hanya berlaku untuk kotak yang ditekan.
+    let offset=0;
+    let total=null;
+    let columns=null;
+    let all=[];
+    let hasMore=true;
+    let batch=0;
+    while(hasMore){
+      batch++;
+      const d=await api({action:'getApplicantCompact',project:project,race:race,limit:1000,offset:offset},{
+        maxAttempts:3,
+        timeoutMs:40000,
+        onRetry:function(nextAttempt,maxAttempts){
+          const pct=total ? Math.min(88,18+Math.round((all.length/total)*68)) : 38;
+          updateReloadProgress(pct,'Sambungan perlahan - cuba semula...','Batch '+batch+' · percubaan '+nextAttempt+' / '+maxAttempts+'.',all.length,total);
+        }
+      });
+      columns=columns || d.columns;
+      total=total===null ? Number(d.total || 0) : total;
+      all=all.concat(d.rows || []);
+      offset=Number(d.nextOffset || all.length);
+      hasMore=Boolean(d.hasMore) && (d.rows || []).length>0;
+      const pct=total ? Math.min(90,20+Math.round((all.length/total)*68)) : 85;
+      updateReloadProgress(pct,'Menerima senarai secara batch...','Batch '+batch+' · '+all.length.toLocaleString('ms-MY')+' / '+Number(total||0).toLocaleString('ms-MY')+' rekod.',all.length,total);
+    }
+    return {ok:true,columns:columns || ['NO_KP','NAMA','NO_SIRI','PROJEK','JENIS','KAUM','STATUS'],rows:all,total:Number(total||all.length),offset:0,nextOffset:all.length,hasMore:false};
+  }
+}
+
+async function showApplicantScopePopup(projectKey,race){
+  const project=projectKey==='__ALL__' ? '' : decodeURIComponent(projectKey || '');
+  race=String(race || '').toUpperCase();
+  const cacheKey=(project || '*')+'|'+race;
+  const cached=state.applicantScopeCache[cacheKey];
+
+  if(cached){
+    openRaceDetailModal('Rekod Pemohon · '+(project || 'Semua Projek')+' · '+race,cached,cached.length.toLocaleString('ms-MY')+' rekod · cache sesi');
+    return;
+  }
+
+  try{
+    openReloadProgress('applicants');
+    updateReloadProgress(18,'Membuka senarai '+race+'...','Database sedang menapis '+(project || 'semua projek')+' sahaja.',0,null);
+
+    const d=await fetchApplicantScopeCompact_(project,race);
+    const rows=compactApplicantRowsToObjects_(d);
+    state.applicantScopeCache[cacheKey]=rows;
+    updateReloadProgress(92,'Menyediakan popup...',rows.length.toLocaleString('ms-MY')+' rekod diterima.',rows.length,Number(d.total||rows.length));
+    finishReloadProgress('applicants',rows.length,Number(d.total||rows.length));
+
+    setTimeout(function(){
+      openRaceDetailModal('Rekod Pemohon · '+(project || 'Semua Projek')+' · '+race,rows,rows.length.toLocaleString('ms-MY')+' rekod');
+    },700);
+  }catch(err){
+    failReloadProgress(err.message || 'Senarai tidak dapat dimuatkan.');
+    toast(err.message,'bad');
+  }
+}
+
+function downloadApplicantTallyPdf(){
+  const d=state.dashboardData;
+  if(!d){toast('Tally belum dimuatkan. Tekan Segarkan Tally dahulu.','bad');return}
+  const grouped=aggregateApplicantProjectCounts_(d.projects || {});
+  const rows=Object.keys(grouped).sort(function(a,b){return a.localeCompare(b,'ms')}).map(function(project){
+    const g=grouped[project];
+    return {PROJEK:project,MELAYU:g.MELAYU,CINA:g.CINA,INDIA:g.INDIA,JUMLAH:g.JUMLAH};
+  });
+  if(!rows.length){toast('Tiada data tally untuk PDF.','bad');return}
+  state.lastTables.applicantTallyPdf=rows;
+  downloadTablePdf('applicantTallyPdf','Tally Rekod Pemohon Mengikut Projek & Kaum','tally_rekod_pemohon.pdf');
 }
 
 function renderApplicantProjectRace(rows){
