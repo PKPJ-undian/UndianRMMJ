@@ -534,6 +534,36 @@ th,td{padding:8px 10px}
 .winner-entry-result{margin-top:10px}.winner-file-toggle{margin-top:12px;border-top:1px solid #e6edf5;padding-top:12px}.winner-current-list{margin-top:12px}
 @media(max-width:760px){.winner-race-tabs,.winner-entry-stats{grid-template-columns:1fr}.ic-editor{grid-template-columns:38px 1fr}}
 
+
+
+/* ===== V2.12.2 COMPACT PROJECT POPUP + INFO ICON + MODAL CONTROLS ===== */
+.project-entry-overlay,.info-popup-overlay{display:none;position:fixed;inset:0;background:rgba(8,25,55,.58);backdrop-filter:blur(4px);z-index:100050;align-items:center;justify-content:center;padding:18px}
+.project-entry-overlay.show,.info-popup-overlay.show{display:flex}
+.project-entry-box,.info-popup-box{width:min(1180px,96vw);max-height:90vh;background:#fff;border:1px solid #dce6f3;border-radius:22px;box-shadow:0 28px 80px rgba(3,20,52,.34);display:flex;flex-direction:column;overflow:hidden}
+.project-entry-head,.info-popup-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #e6edf6;background:#fbfdff}
+.project-entry-head h3,.info-popup-head h3{margin:0;font-size:19px;color:#15345f}.project-entry-head p,.info-popup-head p{margin:3px 0 0;font-size:11px;color:#71819a}
+.modal-head-actions{display:flex;align-items:center;gap:7px}
+.modal-icon-btn{width:36px;height:36px;border:0;border-radius:11px;background:#edf3fb;color:#24466f;font-size:18px;font-weight:800;cursor:pointer;display:grid;place-items:center}
+.modal-icon-btn:hover{background:#dfeaff;color:#0f5fd7}
+.project-entry-body{padding:16px 18px;overflow:auto}.project-entry-footer{padding:12px 18px 16px;border-top:1px solid #e6edf6;background:#fbfdff;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.info-popup-body{padding:18px;overflow:auto;color:#23446e;font-size:13px;line-height:1.6}
+.info-popup-body strong{color:#123d78}
+.info-collapsed-source{display:none!important}
+.info-icon-wrap{display:inline-flex;align-items:center;margin:6px 0}
+.info-icon-btn{width:30px;height:30px;border-radius:50%;border:1px solid #bcd7ff;background:#eaf4ff;color:#1478ff;font-family:Georgia,serif;font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 5px 13px rgba(20,120,255,.12)}
+.info-icon-btn:hover{background:#1478ff;color:#fff}
+.project-launch-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid #dce7f4;background:#f8fbff;border-radius:14px}
+.project-launch-copy strong{display:block;font-size:13px;color:#17365e}.project-launch-copy small{display:block;margin-top:3px;color:#71819a;font-size:10px}
+.modal-maximized,.race-detail-box.modal-maximized,.winner-entry-box.modal-maximized,.project-entry-box.modal-maximized,.info-popup-box.modal-maximized{width:calc(100vw - 18px)!important;height:calc(100vh - 18px)!important;max-width:none!important;max-height:none!important;border-radius:16px!important}
+.modal-maximized .race-detail-body{flex:1;min-height:0}.winner-entry-box.modal-maximized{overflow:auto}
+.delete-keyword{font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+@media(max-width:700px){.project-entry-overlay,.info-popup-overlay{padding:8px}.project-entry-box,.info-popup-box{width:100%;max-height:96vh;border-radius:16px}}
+
+
+.popup-tool-float{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.reload-progress-box,.progress-modal{position:relative}
+.popup-tool-float .modal-icon-btn{width:32px;height:32px;font-size:16px;background:rgba(237,243,251,.96)}
+
 </style>
 </head>
 
@@ -609,14 +639,11 @@ th,td{padding:8px 10px}
 
     <div id="fileTab" class="tabcontent active">
       <div class="notice info">
-        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem menyediakan 3 ruang: <strong>Melayu, Cina dan India</strong>. Tuan boleh <strong>upload fail dahulu tanpa dipaksa isi jumlah unit atau masa</strong>. Jumlah unit dan sesi undian boleh dilengkapkan kemudian. Maklumat utama pemohon ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
+        <strong>INFO FORMAT DATA</strong><br>Untuk setiap <strong>projek / jenis rumah</strong>, sistem menyediakan 3 ruang: <strong>Melayu, Cina dan India</strong>. Tuan boleh upload fail dahulu dan lengkapkan jumlah unit / sesi kemudian. Maklumat utama pemohon ialah <strong>No. Siri, Nama Pemohon dan No. KP</strong>.
       </div>
-
-      <div id="datasetList"></div>
-
-      <div class="actions">
-        <button class="btn gray" onclick="addDataset()">+ Tambah Projek / Jenis Lagi</button>
-        <button id="importAllBtn" class="btn primary" onclick="importAllDatasets()">Import Semua Data</button>
+      <div class="project-launch-bar">
+        <div class="project-launch-copy"><strong>Tambah / Import Projek</strong><small>Borang projek dibuka dalam popup supaya Rekod Pemohon kekal di bahagian atas dan paparan lebih kemas.</small></div>
+        <button class="btn primary" type="button" onclick="openProjectDataModal()">+ Tambah Projek</button>
       </div>
     </div>
 
@@ -698,11 +725,11 @@ th,td{padding:8px 10px}
     <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
       <div>
         <h2>Rekod Pemohon</h2>
-        <p>Ringkasan Projek + Kaum dibaca daripada dashboard sahaja. Senarai nama hanya dimuatkan apabila kotak kaum ditekan.</p>
+        <p>Ringkasan Projek + Jenis Rumah + Kaum dibaca daripada dashboard sahaja. Senarai nama hanya dimuatkan apabila kotak kaum ditekan.</p>
       </div>
       <div class="actions"><button class="btn gray" onclick="refreshApplicantOverview()">Segarkan Tally</button><button class="btn primary" onclick="downloadApplicantTallyPdf()">Muat Turun PDF Tally</button></div>
     </div>
-    <div class="notice info" style="margin-top:10px"><strong>MOD LAJU:</strong> sistem tidak lagi memuat semua ribuan rekod setiap kali tab dibuka. Jumlah keseluruhan datang terus daripada database; butiran nama dimuat sekali mengikut Projek + Kaum apabila diperlukan.</div>
+    <div class="notice info" style="margin-top:10px"><strong>MOD LAJU:</strong> sistem tidak lagi memuat semua ribuan rekod setiap kali tab dibuka. Jumlah keseluruhan datang terus daripada database; butiran nama dimuat sekali mengikut Projek + Jenis + Kaum apabila diperlukan.</div>
     <div id="applicantGroupCards" class="applicant-group-area">
       <div class="muted">Tally Projek + Kaum akan dipaparkan daripada dashboard.</div>
     </div>
@@ -712,10 +739,11 @@ th,td{padding:8px 10px}
   <div class="panel danger-zone">
     <h2>Padam Data / Reset Ujian</h2>
     <p>Untuk data percubaan, tuan boleh padam satu projek/jenis/kaum sahaja atau reset semua data operasi. CONFIG dan Audit Trail dikekalkan.</p>
-    <div class="grid3">
-      <div class="field"><label>Projek untuk dipadam</label><input id="deleteProject" placeholder="Contoh: TAMAN MAWAR"></div>
-      <div class="field"><label>Jenis Rumah (kosong = semua jenis)</label><input id="deleteType" placeholder="Contoh: JENIS A"></div>
-      <div class="field"><label>Kaum (kosong = semua kaum)</label><select id="deleteRace"><option value="">Semua Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
+    <div class="grid4">
+      <div class="field"><label>Projek Aktif</label><select id="deleteProject" onchange="onDeleteProjectChange()"><option value="">Pilih Projek Aktif</option></select></div>
+      <div class="field"><label>Jenis Rumah</label><select id="deleteType"><option value="">Semua Jenis Rumah</option></select></div>
+      <div class="field"><label>Kaum</label><select id="deleteRace"><option value="">Semua Kaum</option><option value="MELAYU">Melayu</option><option value="CINA">Cina</option><option value="INDIA">India</option></select></div>
+      <div class="field"><label>Kata Kunci Pengesahan</label><input id="deleteKeyword" class="delete-keyword" placeholder="Taip DELETE" autocomplete="off"></div>
     </div>
     <div class="actions">
       <button class="btn danger" onclick="deleteSelectedData()">Padam Data Dipilih</button>
@@ -919,7 +947,7 @@ th,td{padding:8px 10px}
 
 
 <div id="overlapProgress" class="reload-progress-overlay" aria-live="polite">
-  <div id="overlapProgressBox" class="reload-progress-box">
+  <div id="overlapProgressBox" class="reload-progress-box"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('overlapProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('overlapProgress','overlapProgressBox')">×</button></div>
     <div class="reload-progress-top">
       <div>
         <h3 id="overlapProgressTitle">Menyemak Pertindihan Pemohon</h3>
@@ -939,7 +967,7 @@ th,td{padding:8px 10px}
 </div>
 
 <div id="reloadProgress" class="reload-progress-overlay" aria-live="polite">
-  <div id="reloadProgressBox" class="reload-progress-box">
+  <div id="reloadProgressBox" class="reload-progress-box"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('reloadProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('reloadProgress','reloadProgressBox')">×</button></div>
     <div class="reload-progress-top">
       <div>
         <h3 id="reloadProgressTitle">Memuat Semula Data</h3>
@@ -959,7 +987,7 @@ th,td{padding:8px 10px}
 </div>
 
 <div id="migrationProgress" class="progress-overlay" aria-live="polite">
-  <div class="progress-modal">
+  <div id="migrationProgressBox" class="progress-modal"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('migrationProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('migrationProgress','migrationProgressBox')">×</button></div>
     <div class="progress-head">
       <div>
         <h3 id="progressTitle">Memproses Data</h3>
@@ -1000,7 +1028,7 @@ th,td{padding:8px 10px}
 
 
 <div id="nextDrawProgress" class="reload-progress-overlay" aria-live="polite">
-  <div id="nextDrawProgressBox" class="reload-progress-box">
+  <div id="nextDrawProgressBox" class="reload-progress-box"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('nextDrawProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('nextDrawProgress','nextDrawProgressBox')">×</button></div>
     <div class="reload-progress-top">
       <div>
         <h3 id="nextDrawProgressTitle">Memproses Undian Seterusnya</h3>
@@ -1020,11 +1048,33 @@ th,td{padding:8px 10px}
   </div>
 </div>
 
+
+<div id="projectDataModal" class="project-entry-overlay" onclick="if(event.target===this) closeProjectDataModal()">
+  <div id="projectDataModalBox" class="project-entry-box">
+    <div class="project-entry-head">
+      <div><h3>Tambah Projek / Jenis Rumah</h3><p>Masukkan projek dan fail pemohon mengikut kaum. Boleh tambah lebih daripada satu Projek / Jenis sebelum import.</p></div>
+      <div class="modal-head-actions"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('projectDataModalBox',this)">□</button><button class="modal-icon-btn" type="button" title="Tutup" onclick="closeProjectDataModal()">×</button></div>
+    </div>
+    <div class="project-entry-body"><div id="datasetList"></div><div class="actions"><button class="btn gray" type="button" onclick="addDataset()">+ Tambah Projek / Jenis Lagi</button></div></div>
+    <div class="project-entry-footer"><button class="btn gray" type="button" onclick="closeProjectDataModal()">Keluar</button><button id="importAllBtn" class="btn primary" type="button" onclick="importAllDatasets()">Import Semua Data</button></div>
+  </div>
+</div>
+
+<div id="infoPopupModal" class="info-popup-overlay" onclick="if(event.target===this) closeInfoPopup()">
+  <div id="infoPopupBox" class="info-popup-box">
+    <div class="info-popup-head">
+      <div><h3>Maklumat</h3><p>Keterangan ringkas sistem</p></div>
+      <div class="modal-head-actions"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('infoPopupBox',this)">□</button><button class="modal-icon-btn" type="button" title="Tutup" onclick="closeInfoPopup()">×</button></div>
+    </div>
+    <div id="infoPopupBody" class="info-popup-body"></div>
+  </div>
+</div>
+
 <div id="raceDetailModal" class="race-detail-overlay" onclick="if(event.target===this) closeRaceDetailModal()">
-  <div class="race-detail-box">
+  <div id="raceDetailBox" class="race-detail-box">
     <div class="race-detail-head">
       <div><h3 id="raceDetailTitle">Senarai Mengikut Kaum</h3><p id="raceDetailSub">0 rekod</p></div>
-      <button class="race-detail-close" type="button" onclick="closeRaceDetailModal()">×</button>
+      <div class="modal-head-actions"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('raceDetailBox',this)">□</button><button class="race-detail-close" type="button" onclick="closeRaceDetailModal()">×</button></div>
     </div>
     <div id="raceDetailTable" class="race-detail-body tablewrap"></div>
     <div class="race-detail-actions">
@@ -1037,10 +1087,10 @@ th,td{padding:8px 10px}
 
 
 <div id="winnerEntryModal" class="winner-entry-overlay" onclick="if(event.target===this) closeWinnerEntryModal()">
-  <div class="winner-entry-box">
+  <div id="winnerEntryBox" class="winner-entry-box">
     <div class="winner-entry-head">
       <div><h3 id="winnerEntryTitle">Pemohon Berjaya</h3><p id="winnerEntryMeta">Pilih kaum.</p></div>
-      <button class="winner-entry-close" type="button" onclick="closeWinnerEntryModal()">×</button>
+      <div class="modal-head-actions"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('winnerEntryBox',this)">□</button><button class="winner-entry-close" type="button" onclick="closeWinnerEntryModal()">×</button></div>
     </div>
     <div class="winner-entry-stats">
       <div class="winner-entry-stat"><span>IC dimasukkan</span><b id="winnerInputCount">0</b></div>
@@ -1086,7 +1136,7 @@ const DEFAULT_API_KEY =
 
 const MIN_API_VERSION = '2.12.1';
 
-const UI_VERSION = '2.12.1';
+const UI_VERSION = '2.12.2';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1126,9 +1176,9 @@ window.addEventListener('DOMContentLoaded', async function(){
   bindTabs();
   state.apiUrl = DEFAULT_API_URL;
   state.apiKey = DEFAULT_API_KEY;
-  addDataset();
-  addDataset();
   renderManualPreview();
+  setupInfoIcons();
+  bindGlobalModalKeys();
 
   if(state.apiUrl && state.apiKey){
     const apiOk = await testApi(false);
@@ -1383,6 +1433,7 @@ async function loadBootstrap(force=false){
   renderSuccessProjectChoices();
   renderArchiveProjectChoices();
   renderWinnerSummaryFromBootstrap_();
+  renderDeleteProjectOptions();
   await loadProjectFilters();
   return state.dashboardData;
 }
@@ -2040,6 +2091,7 @@ async function importAllDatasets(){
       lastCross.toLocaleString('ms-MY')+' pertindihan antara projek.';
 
     finishMigrationProgress(summary);
+    closeProjectDataModal();
 
     toast('Migrasi siap sepenuhnya. '+summary,'good');
 
@@ -2496,6 +2548,99 @@ function getFirst(obj,aliases){
 
 
 
+
+/* =========================================================
+   UI V2.12.2 - POPUP / INFO / DELETE PROJECT LIST
+========================================================= */
+
+function openProjectDataModal(){
+  const modal=document.getElementById('projectDataModal');
+  const list=document.getElementById('datasetList');
+  if(list && !list.querySelector('.dataset-card')) addDataset();
+  modal.classList.add('show');
+  document.body.classList.add('migration-busy');
+}
+function closeProjectDataModal(){
+  const modal=document.getElementById('projectDataModal');
+  const box=document.getElementById('projectDataModalBox');
+  if(modal) modal.classList.remove('show');
+  if(box) box.classList.remove('modal-maximized');
+  document.body.classList.remove('migration-busy');
+}
+function toggleModalMaximize(boxId,btn){
+  const box=document.getElementById(boxId);
+  if(!box) return;
+  const on=box.classList.toggle('modal-maximized');
+  if(btn){btn.textContent=on?'❐':'□';btn.title=on?'Pulihkan saiz':'Maximize';}
+}
+function closePassiveOverlay(overlayId,boxId){
+  const overlay=document.getElementById(overlayId);
+  const box=document.getElementById(boxId);
+  if(overlay) overlay.classList.remove('show');
+  if(box) box.classList.remove('modal-maximized');
+  document.body.classList.remove('migration-busy');
+}
+function setupInfoIcons(){
+  let n=0;
+  document.querySelectorAll('.notice.info').forEach(function(notice){
+    if(notice.dataset.infoCollapsed==='1') return;
+    notice.dataset.infoCollapsed='1';
+    if(!notice.id){n++;notice.id='autoInfoNotice'+n;}
+    const wrap=document.createElement('span');
+    wrap.className='info-icon-wrap';
+    wrap.innerHTML='<button type="button" class="info-icon-btn" title="Lihat maklumat" aria-label="Lihat maklumat" onclick="openInfoPopup(\''+notice.id+'\')">i</button>';
+    notice.parentNode.insertBefore(wrap,notice);
+    notice.classList.add('info-collapsed-source');
+  });
+}
+function openInfoPopup(sourceId){
+  const src=document.getElementById(sourceId);
+  if(!src) return;
+  document.getElementById('infoPopupBody').innerHTML=src.innerHTML;
+  document.getElementById('infoPopupModal').classList.add('show');
+  document.body.classList.add('migration-busy');
+}
+function closeInfoPopup(){
+  const modal=document.getElementById('infoPopupModal');
+  const box=document.getElementById('infoPopupBox');
+  if(modal) modal.classList.remove('show');
+  if(box) box.classList.remove('modal-maximized');
+  document.body.classList.remove('migration-busy');
+}
+function bindGlobalModalKeys(){
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape') return;
+    if(document.getElementById('infoPopupModal')?.classList.contains('show')){closeInfoPopup();return;}
+    if(document.getElementById('projectDataModal')?.classList.contains('show')){closeProjectDataModal();return;}
+    if(document.getElementById('winnerEntryModal')?.classList.contains('show')){closeWinnerEntryModal();return;}
+    if(document.getElementById('raceDetailModal')?.classList.contains('show')){closeRaceDetailModal();return;}
+    if(document.getElementById('migrationProgress')?.classList.contains('show')){closePassiveOverlay('migrationProgress','migrationProgressBox');return;}
+    if(document.getElementById('reloadProgress')?.classList.contains('show')){closePassiveOverlay('reloadProgress','reloadProgressBox');return;}
+    if(document.getElementById('overlapProgress')?.classList.contains('show')){closePassiveOverlay('overlapProgress','overlapProgressBox');return;}
+    if(document.getElementById('nextDrawProgress')?.classList.contains('show')){closePassiveOverlay('nextDrawProgress','nextDrawProgressBox');return;}
+    hideWorkflowStepPopup();
+  });
+}
+function renderDeleteProjectOptions(){
+  const projectEl=document.getElementById('deleteProject');
+  if(!projectEl) return;
+  const current=projectEl.value;
+  const projects=state.drawOptions || [];
+  projectEl.innerHTML='<option value="">Pilih Projek Aktif</option>'+projects.map(function(p){return '<option value="'+escAttr(p.project)+'">'+esc(p.project)+'</option>';}).join('');
+  if(current && projects.some(function(p){return p.project===current;})) projectEl.value=current;
+  onDeleteProjectChange();
+}
+function onDeleteProjectChange(){
+  const project=document.getElementById('deleteProject')?.value || '';
+  const typeEl=document.getElementById('deleteType');
+  if(!typeEl) return;
+  const old=typeEl.value;
+  const p=(state.drawOptions || []).find(function(x){return x.project===project;});
+  const types=p ? (p.types || []) : [];
+  typeEl.innerHTML='<option value="">Semua Jenis Rumah</option>'+types.map(function(t){return '<option value="'+escAttr(t.type)+'">'+esc(t.type)+'</option>';}).join('');
+  if(old && types.some(function(t){return t.type===old;})) typeEl.value=old;
+}
+
 /* =========================================================
    PADAM / RESET DATA UJIAN
 ========================================================= */
@@ -2505,15 +2650,18 @@ async function deleteSelectedData(){
     const project = document.getElementById('deleteProject').value.trim();
     const type = document.getElementById('deleteType').value.trim();
     const race = document.getElementById('deleteRace').value.trim();
+    const keyword = document.getElementById('deleteKeyword').value.trim().toUpperCase();
 
-    if(!project) throw new Error('Masukkan projek yang hendak dipadam.');
+    if(!project) throw new Error('Pilih projek aktif yang hendak dipadam.');
+    if(keyword !== 'DELETE') throw new Error('Taip kata kunci DELETE untuk mengesahkan pemadaman.');
 
-    const scope = project + (type ? ' · '+type : '') + (race ? ' · '+race : ' · SEMUA KAUM');
-    if(!confirm('PADAM data untuk '+scope+'? Rekod pemohon, pemenang, tapisan dan jumlah unit yang sepadan akan dipadam.')) return;
+    const scope = project + (type ? ' · '+type : ' · SEMUA JENIS') + (race ? ' · '+race : ' · SEMUA KAUM');
+    if(!confirm('PADAM data untuk '+scope+'?\n\nRekod pemohon, Pemohon Berjaya, tapisan dan kuota yang sepadan akan dipadam.')) return;
 
     const d = await api({action:'deleteDataScope',project:project,type:type,race:race});
     toast('Data dipadam: '+Number(d.total || 0)+' rekod berkaitan.','good');
 
+    document.getElementById('deleteKeyword').value='';
     invalidateApplicantCache_();
     await loadBootstrap(true);
   }catch(err){
@@ -2964,7 +3112,9 @@ function openRaceDetailModal(title,rows,sub){
 }
 function closeRaceDetailModal(){
   const modal=document.getElementById('raceDetailModal');
+  const box=document.getElementById('raceDetailBox');
   if(modal) modal.classList.remove('show');
+  if(box) box.classList.remove('modal-maximized');
   document.body.classList.remove('migration-busy');
 }
 function groupRowsByRaceClient(rows){
