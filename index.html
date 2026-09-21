@@ -590,10 +590,14 @@ th,td{padding:8px 10px}
 }
 
 
-/* ===== V2.13.0 BRANDING + ARCHIVE FLOW ===== */
+/* ===== V2.13.2 WINNER SAVE/DELETE PROGRESS + LOGO BLEND ===== */
+.progress-overlay,.reload-progress-overlay{z-index:100500!important}
+.logo-pkpj-img{background:transparent!important;box-shadow:none!important}
+
+/* ===== V2.13.1 BRANDING + ARCHIVE FLOW ===== */
 .sidebar{background:#15317e!important}
 .brandwrap{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:8px 8px 10px!important;gap:8px!important}
-.logo-pkpj-img{width:76px!important;height:66px!important;object-fit:contain!important;background:#15317e!important;border-radius:0!important}
+.logo-pkpj-img{width:76px!important;height:66px!important;object-fit:contain!important;background:transparent!important;border-radius:0!important;box-shadow:none!important}
 .brand-title{font-size:13px!important;line-height:1.28!important;color:#fff!important;max-width:190px!important;text-align:center!important}
 .archive-complete-box{width:min(620px,94vw)}
 .archive-complete-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
@@ -608,7 +612,7 @@ th,td{padding:8px 10px}
 
 <aside class="sidebar">
   <div class="brandwrap">
-    <img class="logo-pkpj-img" src="data:image/png;base64,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" alt="Logo PKPJ">
+    <img class="logo-pkpj-img" src="data:image/png;base64,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" alt="Logo PKPJ">
     <div class="brand-title">Sistem Tapisan Undian RMMJ</div>
   </div>
 
@@ -1157,7 +1161,7 @@ th,td{padding:8px 10px}
       <textarea id="winnerManualIc" class="winner-manual-ic" placeholder="Contoh:\n910920015815\n041125011995" oninput="updateWinnerIcEditor()" onscroll="syncWinnerLineScroll()"></textarea>
     </div>
     <div class="actions">
-      <button class="btn green" type="button" onclick="saveWinnerEntryManual()">Simpan Pemohon Berjaya</button>
+      <button id="winnerSaveBtn" class="btn green" type="button" onclick="saveWinnerEntryManual()">Simpan Pemohon Berjaya</button>
       <button class="btn gray" type="button" onclick="clearWinnerEntryInput()">Kosongkan Input</button>
       <button class="btn danger" type="button" onclick="deleteWinnerEntryScope()">Padam Data Kaum Ini</button>
     </div>
@@ -1207,7 +1211,7 @@ const DEFAULT_API_KEY =
 
 const MIN_API_VERSION = '2.13.0';
 
-const UI_VERSION = '2.13.0';
+const UI_VERSION = '2.13.2';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -3516,23 +3520,54 @@ async function saveWinnerEntryManual(){
   if(!s.unique.length){toast('Masukkan sekurang-kurangnya satu No. KP.','bad');return;}
   if(!state.winnerEntry.session){toast('Masa / sesi undian belum ditetapkan.','bad');return;}
   if(!confirm('Simpan '+s.unique.length.toLocaleString('ms-MY')+' Pemohon Berjaya '+state.winnerEntry.race+'?')) return;
+
+  const saveBtn=document.getElementById('winnerSaveBtn');
+  let progressTimer=null;
+  const raceLabel=state.winnerEntry.race.charAt(0)+state.winnerEntry.race.slice(1).toLowerCase();
+
   try{
-    openMigrationProgress('Menyimpan Pemohon Berjaya',1);
-    updateMigrationProgress(20,'Memadankan No. KP...','Sistem membaca Rekod Pemohon sekali sahaja.',{filesDone:0,totalFiles:1,rowsRead:s.unique.length,saved:0,duplicate:s.duplicates});
+    if(saveBtn) saveBtn.disabled=true;
+    openMigrationProgress('Menyimpan Pemohon Berjaya · '+raceLabel,1);
+    document.getElementById('progressSubtitle').textContent='Kemajuan simpanan '+raceLabel+' dipaparkan sehingga proses benar-benar selesai.';
+
+    updateMigrationProgress(8,'Menyediakan rekod...','Menyemak '+s.unique.length.toLocaleString('ms-MY')+' No. KP unik sebelum dihantar ke database.',{filesDone:0,totalFiles:1,rowsRead:s.unique.length,saved:0,duplicate:s.duplicates});
     const rows=s.unique.map(function(ic){return {NO_KP:ic,PROJEK:state.winnerEntry.project,JENIS:state.winnerEntry.type,KAUM:state.winnerEntry.race,SESI:state.winnerEntry.session};});
+
+    updateMigrationProgress(18,'Memadankan No. KP...','Sistem membaca Rekod Pemohon dan membuat cross-check.',{filesDone:0,totalFiles:1,rowsRead:s.unique.length,saved:0,duplicate:s.duplicates});
+
+    let stagedPct=18;
+    progressTimer=setInterval(function(){
+      if(stagedPct>=76) return;
+      stagedPct=Math.min(76,stagedPct+(stagedPct<46?4:2));
+      updateMigrationProgress(stagedPct,'Menyimpan & cross-check...','Sedang memadankan '+raceLabel+', menyimpan Pemohon Berjaya dan menapis rekod undian seterusnya.',{filesDone:0,totalFiles:1,rowsRead:s.unique.length,saved:0,duplicate:s.duplicates});
+    },500);
+
     const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:2,timeoutMs:70000});
-    updateMigrationProgress(86,'Mengemas kini tally...','Menyegarkan ringkasan sekali sahaja.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
+    if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
+
+    updateMigrationProgress(84,'Simpanan diterima...','Database telah memberi respons. Menyediakan tally terkini.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
+    updateMigrationProgress(91,'Mengemas kini tally...','Menyegarkan jumlah Pemohon Berjaya dan status projek.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
     await loadBootstrap(true);
+
+    updateMigrationProgress(96,'Menyediakan keputusan...','Mengemas kini senarai '+raceLabel+' pada paparan.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
     const notFound=(d.notFound || []).map(String);
     document.getElementById('winnerManualIc').value=notFound.join('\n');
     updateWinnerIcEditor();
     const result=document.getElementById('winnerEntryResult'); result.style.display='block';
     if(notFound.length){result.className='winner-entry-result notice warn';result.innerHTML='<strong>Disimpan '+Number(d.imported||0).toLocaleString('ms-MY')+'</strong> · Tidak ditemui '+notFound.length.toLocaleString('ms-MY')+'. IC yang tidak ditemui dikekalkan dalam kotak input.';}
     else{result.className='winner-entry-result notice good';result.innerHTML='<strong>SIAP.</strong> '+Number(d.imported||0).toLocaleString('ms-MY')+' Pemohon Berjaya disimpan.';}
-    finishMigrationProgress(Number(d.imported||0).toLocaleString('ms-MY')+' Pemohon Berjaya disimpan · '+Number(d.filtered||0).toLocaleString('ms-MY')+' rekod lain ditapis.');
+
+    finishMigrationProgress(Number(d.imported||0).toLocaleString('ms-MY')+' Pemohon Berjaya '+raceLabel+' disimpan · '+Number(d.filtered||0).toLocaleString('ms-MY')+' rekod lain ditapis.');
     await loadWinnerEntryCurrent();
     renderSuccessSessionChoices();
-  }catch(err){if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);toast(err.message,'bad');}
+  }catch(err){
+    if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }finally{
+    if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
+    if(saveBtn) saveBtn.disabled=false;
+  }
 }
 async function importWinnerEntryFile(){
   if(!state.winnerEntry) return;
@@ -3549,12 +3584,45 @@ async function importWinnerEntryFile(){
 }
 async function deleteWinnerEntryScope(){
   if(!state.winnerEntry) return;
-  if(!confirm('Padam Pemohon Berjaya '+state.winnerEntry.race+' untuk '+state.winnerEntry.type+'?')) return;
+  const entry={...state.winnerEntry};
+  const raceLabel=entry.race.charAt(0)+entry.race.slice(1).toLowerCase();
+  if(!confirm('Padam Pemohon Berjaya '+entry.race+' untuk '+entry.type+'?')) return;
+
+  let progressTimer=null;
   try{
-    const d=await api({action:'deleteWinnersScope',project:state.winnerEntry.project,type:state.winnerEntry.type,race:state.winnerEntry.race,session:state.winnerEntry.session});
-    await loadBootstrap(true); await loadWinnerEntryCurrent(); renderSuccessSessionChoices();
-    toast('Dipadam: '+Number(d.deleted||0)+' rekod.','good');
-  }catch(err){toast(err.message,'bad');}
+    openMigrationProgress('Memadam Pemohon Berjaya · '+raceLabel,1);
+    document.getElementById('progressSubtitle').textContent='Kemajuan pemadaman '+raceLabel+' dipaparkan sehingga database dan tally selesai dikemas kini.';
+    updateMigrationProgress(8,'Menyediakan pemadaman...','Mengesahkan Projek, Jenis Rumah, Kaum dan sesi undian.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
+    updateMigrationProgress(18,'Mencari rekod kaum...','Sistem sedang mengenal pasti Pemohon Berjaya '+raceLabel+' yang akan dipadam.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
+
+    let stagedPct=18;
+    progressTimer=setInterval(function(){
+      if(stagedPct>=72) return;
+      stagedPct=Math.min(72,stagedPct+(stagedPct<42?4:2));
+      updateMigrationProgress(stagedPct,'Memadam rekod...','Database sedang memadam rekod Pemohon Berjaya '+raceLabel+' dan mengira semula status berkaitan.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
+    },500);
+
+    const d=await api({action:'deleteWinnersScope',project:entry.project,type:entry.type,race:entry.race,session:entry.session},{maxAttempts:2,timeoutMs:70000});
+    if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
+
+    const deleted=Number(d.deleted||0);
+    updateMigrationProgress(82,'Rekod telah dipadam...','Sebanyak '+deleted.toLocaleString('ms-MY')+' rekod dipadam. Mengemas kini tally projek.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
+    updateMigrationProgress(90,'Mengemas kini dashboard...','Membaca semula jumlah Pemohon Berjaya, kuota dan status projek.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
+    await loadBootstrap(true);
+
+    updateMigrationProgress(96,'Mengemas kini senarai kaum...','Menyediakan paparan terkini '+raceLabel+'.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
+    await loadWinnerEntryCurrent();
+    renderSuccessSessionChoices();
+
+    finishMigrationProgress(deleted.toLocaleString('ms-MY')+' rekod Pemohon Berjaya '+raceLabel+' telah dipadam dan tally dikemas kini.');
+    toast('Dipadam: '+deleted.toLocaleString('ms-MY')+' rekod.','good');
+  }catch(err){
+    if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }finally{
+    if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
+  }
 }
 function loadWinnerSummaryCards(force=false){
   if(force) return loadBootstrap(true).then(function(){renderSuccessSessionChoices();});
