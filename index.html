@@ -589,6 +589,17 @@ th,td{padding:8px 10px}
   .workflow-nav{display:flex;overflow-x:auto;overflow-y:hidden;padding-bottom:6px}.workflow-nav button{min-width:170px}
 }
 
+
+/* ===== V2.13.0 BRANDING + ARCHIVE FLOW ===== */
+.sidebar{background:#15317e!important}
+.brandwrap{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:8px 8px 10px!important;gap:8px!important}
+.logo-pkpj-img{width:76px!important;height:66px!important;object-fit:contain!important;background:#15317e!important;border-radius:0!important}
+.brand-title{font-size:13px!important;line-height:1.28!important;color:#fff!important;max-width:190px!important;text-align:center!important}
+.archive-complete-box{width:min(620px,94vw)}
+.archive-complete-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.archive-restore-note{font-size:11px;color:#6f7f96;margin-top:8px;line-height:1.5}
+@media(max-width:900px){.logo-pkpj-img{width:58px!important;height:52px!important}.brand-title{text-align:left!important}}
+
 </style>
 </head>
 
@@ -598,7 +609,7 @@ th,td{padding:8px 10px}
 <aside class="sidebar">
   <div class="brandwrap">
     <img class="logo-pkpj-img" src="data:image/png;base64,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" alt="Logo PKPJ">
-    <div class="brand-agency">PKPJ</div><div class="brand-title">Sistem Tapisan Undian RMMJ</div>
+    <div class="brand-title">Sistem Tapisan Undian RMMJ</div>
   </div>
 
   <div class="nav workflow-nav">
@@ -958,7 +969,7 @@ th,td{padding:8px 10px}
       <div class="field"><label>Pilih Snapshot Arkib</label><select id="archiveSelect" class="archive-select" onchange="loadArchiveDetail()"><option value="">Pilih Arkib</option></select></div>
       <div class="field"><label>Jenis Rekod</label><select id="archiveCategory" onchange="loadArchiveDetail()"><option value="">Semua Rekod</option><option value="PEMOHON">Pemohon</option><option value="PEMOHON BERJAYA">Pemohon Berjaya</option><option value="TIDAK LAYAK">Tidak Layak</option><option value="KUOTA">Kuota / Sesi</option></select></div>
     </div>
-    <div class="actions"><button class="btn primary" onclick="downloadTablePdf('archiveDetailTable','Butiran Arkib Projek','butiran_arkib_projek.pdf')">Muat Turun PDF</button></div>
+    <div class="actions"><button class="btn primary" onclick="downloadTablePdf('archiveDetailTable','Butiran Arkib Projek','butiran_arkib_projek.pdf')">Muat Turun PDF</button><button class="btn green" onclick="restoreSelectedArchive()">Panggil Semula Projek</button></div><div class="archive-restore-note">Panggil Semula akan memulihkan snapshot ke data aktif. Jika projek sama masih aktif, data aktif projek itu akan diganti dengan snapshot arkib untuk elak duplikasi.</div>
     <div id="archiveDetailSummary" class="notice info">Pilih snapshot arkib untuk melihat butiran.</div>
     <div id="archiveDetailTable" class="tablewrap"></div>
   </div>
@@ -987,7 +998,7 @@ th,td{padding:8px 10px}
 </div>
 
 <div id="reloadProgress" class="reload-progress-overlay" aria-live="polite">
-  <div id="reloadProgressBox" class="reload-progress-box"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('reloadProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('reloadProgress','reloadProgressBox')">×</button></div>
+  <div id="reloadProgressBox" class="reload-progress-box">
     <div class="reload-progress-top">
       <div>
         <h3 id="reloadProgressTitle">Memuat Semula Data</h3>
@@ -1007,7 +1018,7 @@ th,td{padding:8px 10px}
 </div>
 
 <div id="migrationProgress" class="progress-overlay" aria-live="polite">
-  <div id="migrationProgressBox" class="progress-modal"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('migrationProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('migrationProgress','migrationProgressBox')">×</button></div>
+  <div id="migrationProgressBox" class="progress-modal">
     <div class="progress-head">
       <div>
         <h3 id="progressTitle">Memproses Data</h3>
@@ -1048,7 +1059,7 @@ th,td{padding:8px 10px}
 
 
 <div id="nextDrawProgress" class="reload-progress-overlay" aria-live="polite">
-  <div id="nextDrawProgressBox" class="reload-progress-box"><div class="popup-tool-float"><button class="modal-icon-btn" type="button" title="Maximize" onclick="toggleModalMaximize('nextDrawProgressBox',this)">□</button><button class="modal-icon-btn" type="button" title="Keluar paparan" onclick="closePassiveOverlay('nextDrawProgress','nextDrawProgressBox')">×</button></div>
+  <div id="nextDrawProgressBox" class="reload-progress-box">
     <div class="reload-progress-top">
       <div>
         <h3 id="nextDrawProgressTitle">Memproses Undian Seterusnya</h3>
@@ -1159,6 +1170,23 @@ th,td{padding:8px 10px}
   </div>
 </div>
 
+
+<div id="archiveCompleteModal" class="info-popup-overlay" onclick="if(event.target===this) closeArchiveCompleteModal()">
+  <div id="archiveCompleteBox" class="info-popup-box archive-complete-box">
+    <div class="info-popup-head">
+      <div><h3>Arkib Berjaya Disimpan</h3><p id="archiveCompleteMeta">Snapshot projek telah selamat disimpan.</p></div>
+      <button class="modal-icon-btn" type="button" title="Tutup" onclick="closeArchiveCompleteModal()">×</button>
+    </div>
+    <div class="info-popup-body">
+      <div class="notice good" id="archiveCompleteMessage">Data arkib selamat. Pilih sama ada mahu kekalkan data aktif atau kosongkan projek ini daripada operasi semasa.</div>
+      <div class="archive-complete-actions">
+        <button class="btn gray" type="button" onclick="closeArchiveCompleteModal()">Biarkan Data Aktif</button>
+        <button class="btn danger" type="button" onclick="clearArchivedActiveProject()">Kosongkan Data Aktif Projek Ini</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 <div class="footer">Sistem Tapisan Undian RMMJ ialah sistem sokongan tapisan dan tidak menggantikan modul undian dalam Sistem Perumahan PKPJ.</div>
 
@@ -1177,9 +1205,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.12.1';
+const MIN_API_VERSION = '2.13.0';
 
-const UI_VERSION = '2.12.3';
+const UI_VERSION = '2.13.0';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1210,7 +1238,8 @@ const state = {
   applicantScopeCache: {},
   winnerEntry: null,
   winnerDrafts: {},
-  bootstrapLoaded: false
+  bootstrapLoaded: false,
+  lastArchivedProject: null
 };
 
 
@@ -1224,12 +1253,13 @@ window.addEventListener('DOMContentLoaded', async function(){
   bindGlobalModalKeys();
 
   if(state.apiUrl && state.apiKey){
-    const apiOk = await testApi(false);
-    if(apiOk){
+    try{
       await loadBootstrap(true);
       state.loadedPages.dashboard = true;
-    }else{
-      toast('API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.', 'bad');
+    }catch(err){
+      console.error(err);
+      setApiStatus(false,'API / backend tidak dapat disambungkan');
+      toast(err.message || 'API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.','bad');
     }
   }
 });
@@ -1324,7 +1354,10 @@ async function api(payload, options={}){
     throw new Error('API belum dikonfigurasi.');
   }
 
-  const maxAttempts = Math.max(1,Number(options.maxAttempts || 3));
+  const actionName=String(payload.action || '');
+  const noAutoRetryActions=new Set(['archiveProject']);
+  const defaultAttempts=noAutoRetryActions.has(actionName) ? 1 : 3;
+  const maxAttempts = Math.max(1,Number(options.maxAttempts || defaultAttempts));
   const timeoutMs = Math.max(5000,Number(options.timeoutMs || 90000));
   let lastError = null;
 
@@ -1468,7 +1501,12 @@ function setApiStatus(ok,text){
 
 async function loadBootstrap(force=false){
   if(state.bootstrapLoaded && !force){renderDashboardFromState_();return state.dashboardData;}
-  const d=await api({action:'bootstrapFast'},{maxAttempts:2,timeoutMs:60000});
+  const d=await api({action:'bootstrapFast'},{maxAttempts:3,timeoutMs:75000});
+  const version=String(d.version || '0.0.0');
+  if(compareVersions(version,MIN_API_VERSION)<0){
+    throw new Error('Backend Google Apps Script masih versi '+version+'. Sistem perlukan sekurang-kurangnya versi '+MIN_API_VERSION+'.');
+  }
+  setApiStatus(true,(d.app || 'STU-RMMJ')+' '+version+' · UI '+UI_VERSION);
   state.dashboardData=d.dashboard || {summary:{},projects:{},quotaTally:[]};
   state.drawOptions=d.drawOptions || [];
   state.bootstrapLoaded=true;
@@ -2670,12 +2708,10 @@ function bindGlobalModalKeys(){
     if(e.key!=='Escape') return;
     if(document.getElementById('infoPopupModal')?.classList.contains('show')){closeInfoPopup();return;}
     if(document.getElementById('deleteDataModal')?.classList.contains('show')){closeDeleteDataModal();return;}
+    if(document.getElementById('archiveCompleteModal')?.classList.contains('show')){closeArchiveCompleteModal();return;}
     if(document.getElementById('projectDataModal')?.classList.contains('show')){closeProjectDataModal();return;}
     if(document.getElementById('winnerEntryModal')?.classList.contains('show')){closeWinnerEntryModal();return;}
     if(document.getElementById('raceDetailModal')?.classList.contains('show')){closeRaceDetailModal();return;}
-    if(document.getElementById('migrationProgress')?.classList.contains('show')){closePassiveOverlay('migrationProgress','migrationProgressBox');return;}
-    if(document.getElementById('reloadProgress')?.classList.contains('show')){closePassiveOverlay('reloadProgress','reloadProgressBox');return;}
-    if(document.getElementById('nextDrawProgress')?.classList.contains('show')){closePassiveOverlay('nextDrawProgress','nextDrawProgressBox');return;}
     hideWorkflowStepPopup();
   });
 }
@@ -4153,15 +4189,80 @@ async function saveProjectArchive(){
     const project=document.getElementById('archiveProject').value.trim();
     const note=document.getElementById('archiveNote').value.trim();
     if(!project) throw new Error('Pilih projek.');
-    if(!confirm('Simpan snapshot lengkap '+project+' ke Arkib? Data aktif tidak akan dipadam.')) return;
+    if(!confirm('Simpan snapshot lengkap '+project+' ke Arkib?')) return;
 
     openMigrationProgress('Menyimpan Projek ke Arkib',1);
     updateMigrationProgress(25,'Menyemak tally','Memastikan semua kuota dan Pemohon Berjaya telah lengkap.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
-    const d=await api({action:'archiveProject',project:project,note:note});
+    const d=await api({action:'archiveProject',project:project,note:note},{maxAttempts:1,timeoutMs:120000});
     updateMigrationProgress(85,'Menyimpan snapshot','Menyimpan pemohon, Pemohon Berjaya, senarai tidak layak dan kuota.',{filesDone:1,totalFiles:1,rowsRead:Number(d.totalRecords||0),saved:Number(d.totalRecords||0),duplicate:0});
     await loadArchives();
     finishMigrationProgress('Arkib '+d.archiveId+' berjaya disimpan · '+Number(d.totalRecords||0).toLocaleString('ms-MY')+' rekod snapshot.');
-    toast('Projek berjaya disimpan ke Arkib. Data aktif kekal.','good');
+    state.lastArchivedProject={archiveId:d.archiveId,project:d.project || project,totalRecords:Number(d.totalRecords||0)};
+    setTimeout(function(){closeMigrationProgress();showArchiveCompleteModal();},350);
+    toast('Projek berjaya disimpan ke Arkib.','good');
+  }catch(err){
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }
+}
+
+function showArchiveCompleteModal(){
+  const x=state.lastArchivedProject;
+  if(!x) return;
+  document.getElementById('archiveCompleteMeta').textContent=x.project+' · '+x.archiveId;
+  document.getElementById('archiveCompleteMessage').innerHTML='<strong>Snapshot selamat.</strong> '+Number(x.totalRecords||0).toLocaleString('ms-MY')+' rekod telah disimpan. Jika data aktif dikosongkan, snapshot ini masih boleh dipanggil semula pada bila-bila masa.';
+  document.getElementById('archiveCompleteModal').classList.add('show');
+  document.body.classList.add('migration-busy');
+}
+function closeArchiveCompleteModal(){
+  document.getElementById('archiveCompleteModal')?.classList.remove('show');
+  document.body.classList.remove('migration-busy');
+}
+async function clearArchivedActiveProject(){
+  const x=state.lastArchivedProject;
+  if(!x) return;
+  if(!confirm('Kosongkan semua data aktif untuk '+x.project+'? Snapshot arkib '+x.archiveId+' akan kekal selamat.')) return;
+  try{
+    closeArchiveCompleteModal();
+    openMigrationProgress('Mengosongkan Data Aktif Projek',1);
+    updateMigrationProgress(35,'Memadam data aktif','Arkib kekal selamat. Hanya data operasi projek sedang dikosongkan.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
+    const d=await api({action:'clearArchivedProject',archiveId:x.archiveId,project:x.project,confirm:'ARKIB_SELESAI'},{maxAttempts:2,timeoutMs:120000});
+    invalidateApplicantCache_();
+    state.bootstrapLoaded=false;
+    await loadBootstrap(true);
+    await loadArchives();
+    updateMigrationProgress(95,'Mengemas kini sistem','Dashboard dan senarai projek telah dikemas kini.',{filesDone:1,totalFiles:1,rowsRead:Number(d.total||0),saved:0,duplicate:0});
+    finishMigrationProgress('Data aktif '+x.project+' telah dikosongkan. Arkib '+x.archiveId+' kekal selamat.');
+    setTimeout(function(){closeMigrationProgress();},600);
+    toast('Data aktif projek telah dikosongkan. Arkib kekal selamat.','good');
+  }catch(err){
+    if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
+    toast(err.message,'bad');
+  }
+}
+
+async function restoreSelectedArchive(){
+  const archiveId=document.getElementById('archiveSelect').value;
+  if(!archiveId){toast('Pilih snapshot arkib dahulu.','bad');return;}
+  return restoreArchiveById(archiveId);
+}
+
+async function restoreArchiveById(archiveId){
+  const row=(state.archives || []).find(function(r){return String(r.ARKIB_ID||'')===String(archiveId||'');});
+  const project=row ? row.PROJEK : 'projek ini';
+  if(!confirm('Panggil semula '+project+' daripada arkib? Jika projek sama masih aktif, data aktif projek itu akan DIGANTI dengan snapshot ini.')) return;
+  try{
+    openMigrationProgress('Memanggil Semula Projek',1);
+    updateMigrationProgress(30,'Membaca snapshot','Mengambil Pemohon, Pemohon Berjaya dan Kuota daripada arkib.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
+    const d=await api({action:'restoreArchive',archiveId:archiveId,mode:'replace'},{maxAttempts:2,timeoutMs:150000});
+    updateMigrationProgress(78,'Membina semula status','Mengira semula BERJAYA, TIDAK LAYAK dan Semakan Pemohon.',{filesDone:1,totalFiles:1,rowsRead:Number(d.applicants||0),saved:Number(d.applicants||0)+Number(d.winners||0),duplicate:0});
+    invalidateApplicantCache_();
+    state.bootstrapLoaded=false;
+    await loadBootstrap(true);
+    await loadArchives();
+    finishMigrationProgress('Projek '+d.project+' berjaya dipanggil semula · '+Number(d.applicants||0).toLocaleString('ms-MY')+' pemohon · '+Number(d.winners||0).toLocaleString('ms-MY')+' berjaya.');
+    setTimeout(function(){closeMigrationProgress();},650);
+    toast('Projek berjaya dipanggil semula ke data aktif.','good');
   }catch(err){
     if(document.getElementById('migrationProgress').classList.contains('show')) failMigrationProgress(err.message);
     toast(err.message,'bad');
@@ -4172,7 +4273,10 @@ async function loadArchives(){
   try{
     const d=await api({action:'getArchives'});
     state.archives=d.rows||[];
-    renderTable('archiveTable',state.archives);
+    const archiveRows=state.archives.map(function(r){
+      return {...r,TINDAKAN:'<button class="btn green small" type="button" onclick="restoreArchiveById(\''+escAttr(String(r.ARKIB_ID||''))+'\')">Panggil Semula</button>'};
+    });
+    renderTable('archiveTable',archiveRows,true);
 
     const select=document.getElementById('archiveSelect');
     if(select){
