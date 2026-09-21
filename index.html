@@ -590,7 +590,7 @@ th,td{padding:8px 10px}
 }
 
 
-/* ===== V2.13.2 WINNER SAVE/DELETE PROGRESS + LOGO BLEND ===== */
+/* ===== V2.13.3 WINNER SAVE/DELETE PROGRESS + LOGO BLEND ===== */
 .progress-overlay,.reload-progress-overlay{z-index:100500!important}
 .logo-pkpj-img{background:transparent!important;box-shadow:none!important}
 
@@ -1209,9 +1209,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.13.0';
+const MIN_API_VERSION = '2.13.3';
 
-const UI_VERSION = '2.13.2';
+const UI_VERSION = '2.13.3';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1243,6 +1243,7 @@ const state = {
   winnerEntry: null,
   winnerDrafts: {},
   bootstrapLoaded: false,
+  summaryDirty: false,
   lastArchivedProject: null
 };
 
@@ -1274,7 +1275,8 @@ async function loadPageData(page, force=false){
   if(done && !force) return;
   state.busy=true;
   try{
-    if(!state.bootstrapLoaded) await loadBootstrap(true);
+    const needsFreshSummary = state.summaryDirty && (page==='dashboard' || page==='pemohon');
+    if(!state.bootstrapLoaded || needsFreshSummary) await loadBootstrap(true);
     if(page==='dashboard') renderDashboardFromState_();
     if(page==='pemohon') await ensureApplicantOverview();
     if(page==='watchlist'){ await loadProjectFilters(); syncSemakanToActiveProject(); await runOverlapSearch(false); }
@@ -1359,10 +1361,17 @@ async function api(payload, options={}){
   }
 
   const actionName=String(payload.action || '');
-  const noAutoRetryActions=new Set(['archiveProject']);
-  const defaultAttempts=noAutoRetryActions.has(actionName) ? 1 : 3;
+  // Jangan auto-retry operasi MENULIS. Abort di browser tidak menghentikan
+  // Apps Script di server; retry boleh menyebabkan request kedua menunggu lock
+  // sedangkan request pertama masih berjalan.
+  const noAutoRetryActions=new Set([
+    'importApplicants','rebuildWatchlist','importWinners','runFilter','setQuota',
+    'archiveProject','clearArchivedProject','restoreArchive','deleteWinnersScope',
+    'deleteDataScope','resetTestData'
+  ]);
+  const defaultAttempts=noAutoRetryActions.has(actionName) ? 1 : 2;
   const maxAttempts = Math.max(1,Number(options.maxAttempts || defaultAttempts));
-  const timeoutMs = Math.max(5000,Number(options.timeoutMs || 90000));
+  const timeoutMs = Math.max(5000,Number(options.timeoutMs || 60000));
   let lastError = null;
 
   for(let attempt=1; attempt<=maxAttempts; attempt++){
@@ -1505,7 +1514,7 @@ function setApiStatus(ok,text){
 
 async function loadBootstrap(force=false){
   if(state.bootstrapLoaded && !force){renderDashboardFromState_();return state.dashboardData;}
-  const d=await api({action:'bootstrapFast'},{maxAttempts:3,timeoutMs:75000});
+  const d=await api({action:'bootstrapFast'},{maxAttempts:2,timeoutMs:60000});
   const version=String(d.version || '0.0.0');
   if(compareVersions(version,MIN_API_VERSION)<0){
     throw new Error('Backend Google Apps Script masih versi '+version+'. Sistem perlukan sekurang-kurangnya versi '+MIN_API_VERSION+'.');
@@ -1514,6 +1523,7 @@ async function loadBootstrap(force=false){
   state.dashboardData=d.dashboard || {summary:{},projects:{},quotaTally:[]};
   state.drawOptions=d.drawOptions || [];
   state.bootstrapLoaded=true;
+  state.summaryDirty=false;
   renderDashboardFromState_();
   renderSuccessProjectChoices();
   renderArchiveProjectChoices();
@@ -3506,14 +3516,40 @@ function updateWinnerIcEditor(){
 }
 function syncWinnerLineScroll(){document.getElementById('winnerLineNumbers').scrollTop=document.getElementById('winnerManualIc').scrollTop;}
 function clearWinnerEntryInput(){document.getElementById('winnerManualIc').value='';updateWinnerIcEditor();}
+
+function syncWinnerCountLocal_(project,type,race,count){
+  const t=findDrawType(project,type);
+  if(!t) return;
+  const r=(t.races || []).find(function(x){return x.race===race;});
+  if(r) r.winners=Math.max(0,Number(count||0));
+}
+
+function markWinnerMutationDirty_(){
+  // Data server sudah betul. Ringkasan berat akan dibaca semula hanya apabila
+  // pengguna kembali ke Dashboard / Rekod Pemohon, bukan selepas setiap klik Simpan/Padam.
+  state.summaryDirty=true;
+  state.loadedPages.dashboard=false;
+  state.loadedPages.pemohon=false;
+  state.loadedPages.arkib=false;
+  state.loadedPages.ditapis=false;
+  state.loadedPages.bersih=false;
+  if(state.applicantScopeCache) state.applicantScopeCache={};
+}
+
 async function loadWinnerEntryCurrent(){
-  if(!state.winnerEntry) return;
+  if(!state.winnerEntry) return null;
   try{
     const d=await api({action:'getWinnerScope',project:state.winnerEntry.project,type:state.winnerEntry.type,race:state.winnerEntry.race},{maxAttempts:2,timeoutMs:30000});
     document.getElementById('winnerCurrentLabel').textContent='Rekod sedia ada: '+Number(d.total||0).toLocaleString('ms-MY');
     renderTable('winnerCurrentTable',d.rows || []);
-  }catch(err){document.getElementById('winnerCurrentTable').innerHTML='<div class="muted" style="padding:12px">'+esc(err.message)+'</div>';}
+    syncWinnerCountLocal_(state.winnerEntry.project,state.winnerEntry.type,state.winnerEntry.race,Number(d.total||0));
+    return d;
+  }catch(err){
+    document.getElementById('winnerCurrentTable').innerHTML='<div class="muted" style="padding:12px">'+esc(err.message)+'</div>';
+    return null;
+  }
 }
+
 async function saveWinnerEntryManual(){
   if(!state.winnerEntry) return;
   const s=winnerInputStats_();
@@ -3542,14 +3578,13 @@ async function saveWinnerEntryManual(){
       updateMigrationProgress(stagedPct,'Menyimpan & cross-check...','Sedang memadankan '+raceLabel+', menyimpan Pemohon Berjaya dan menapis rekod undian seterusnya.',{filesDone:0,totalFiles:1,rowsRead:s.unique.length,saved:0,duplicate:s.duplicates});
     },500);
 
-    const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:2,timeoutMs:70000});
+    const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:1,timeoutMs:60000});
     if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
 
-    updateMigrationProgress(84,'Simpanan diterima...','Database telah memberi respons. Menyediakan tally terkini.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
-    updateMigrationProgress(91,'Mengemas kini tally...','Menyegarkan jumlah Pemohon Berjaya dan status projek.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
-    await loadBootstrap(true);
+    updateMigrationProgress(84,'Simpanan diterima...','Database telah memberi respons. Mengemas kini senarai kaum sahaja.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
+    markWinnerMutationDirty_();
 
-    updateMigrationProgress(96,'Menyediakan keputusan...','Mengemas kini senarai '+raceLabel+' pada paparan.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
+    updateMigrationProgress(93,'Menyediakan keputusan...','Mengambil senarai '+raceLabel+' sahaja tanpa memuat semula seluruh database.',{filesDone:1,totalFiles:1,rowsRead:s.unique.length,saved:Number(d.imported||0),duplicate:Number(d.skipped||0)});
     const notFound=(d.notFound || []).map(String);
     document.getElementById('winnerManualIc').value=notFound.join('\n');
     updateWinnerIcEditor();
@@ -3577,8 +3612,10 @@ async function importWinnerEntryFile(){
     const parsed=await readWinnerFileSmart(file,state.winnerEntry.project,state.winnerEntry.type,state.winnerEntry.race);
     const rows=(parsed.rows || []).map(function(r){return {...r,SESI:state.winnerEntry.session};});
     if(!rows.length) throw new Error('Tiada rekod sah dalam fail.');
-    const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:2,timeoutMs:70000});
-    await loadBootstrap(true); await loadWinnerEntryCurrent(); renderSuccessSessionChoices();
+    const d=await api({action:'importWinners',rows:rows,autoFilter:true},{maxAttempts:1,timeoutMs:60000});
+    markWinnerMutationDirty_();
+    await loadWinnerEntryCurrent();
+    renderSuccessSessionChoices();
     toast('Fail diproses: '+Number(d.imported||0)+' disimpan.','good');
   }catch(err){toast(err.message,'bad');}
 }
@@ -3602,15 +3639,14 @@ async function deleteWinnerEntryScope(){
       updateMigrationProgress(stagedPct,'Memadam rekod...','Database sedang memadam rekod Pemohon Berjaya '+raceLabel+' dan mengira semula status berkaitan.',{filesDone:0,totalFiles:1,rowsRead:0,saved:0,duplicate:0});
     },500);
 
-    const d=await api({action:'deleteWinnersScope',project:entry.project,type:entry.type,race:entry.race,session:entry.session},{maxAttempts:2,timeoutMs:70000});
+    const d=await api({action:'deleteWinnersScope',project:entry.project,type:entry.type,race:entry.race,session:entry.session},{maxAttempts:1,timeoutMs:60000});
     if(progressTimer){clearInterval(progressTimer);progressTimer=null;}
 
     const deleted=Number(d.deleted||0);
-    updateMigrationProgress(82,'Rekod telah dipadam...','Sebanyak '+deleted.toLocaleString('ms-MY')+' rekod dipadam. Mengemas kini tally projek.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
-    updateMigrationProgress(90,'Mengemas kini dashboard...','Membaca semula jumlah Pemohon Berjaya, kuota dan status projek.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
-    await loadBootstrap(true);
+    updateMigrationProgress(84,'Rekod telah dipadam...','Sebanyak '+deleted.toLocaleString('ms-MY')+' rekod dipadam. Kesan projek telah dikira semula di server.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
+    markWinnerMutationDirty_();
 
-    updateMigrationProgress(96,'Mengemas kini senarai kaum...','Menyediakan paparan terkini '+raceLabel+'.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
+    updateMigrationProgress(94,'Mengemas kini senarai kaum...','Mengambil senarai '+raceLabel+' sahaja tanpa reload seluruh database.',{filesDone:1,totalFiles:1,rowsRead:deleted,saved:0,duplicate:0});
     await loadWinnerEntryCurrent();
     renderSuccessSessionChoices();
 
