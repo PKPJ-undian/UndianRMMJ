@@ -1206,9 +1206,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.13.5';
+const MIN_API_VERSION = '2.13.6';
 
-const UI_VERSION = '2.13.5';
+const UI_VERSION = '2.13.7';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -3125,9 +3125,9 @@ function finishOverlapProgress(total){
 function failOverlapProgress(message){
   const box=document.getElementById('overlapProgressBox');
   if(box) box.classList.add('error');
-  updateOverlapProgress(100,'RALAT',message||'Semakan pertindihan tidak dapat diselesaikan.');
+  updateOverlapProgress(92,'RALAT',message||'Semakan pertindihan tidak dapat diselesaikan.');
   const note=document.getElementById('overlapProgressNote');
-  if(note) note.textContent='Sila semak sambungan API dan cuba semula.';
+  if(note) note.textContent='Semakan tidak lengkap. Sistem tidak mengubah data asal. Cuba semula jika sambungan Google Apps Script terganggu.';
   setTimeout(closeOverlapProgress,2200);
 }
 
@@ -3184,6 +3184,14 @@ async function runOverlapSearch(showProgress=true){
       mode:mode,
       projects:projects,
       search:search
+    },{
+      maxAttempts:2,
+      timeoutMs:30000,
+      onRetry:function(next,max){
+        if(showProgress){
+          updateOverlapProgress(72,'Sambungan sementara terganggu...','Mencuba semula semakan secara automatik ('+next+' / '+max+').');
+        }
+      }
     });
 
     if(timer){ clearInterval(timer); timer=null; }
@@ -3219,11 +3227,11 @@ function renderOverlapByRace(rows,modeText){
   rows.forEach(function(r){ groups[overlapRaceKey(r)].push(r); });
   state.overlapGroups=groups;
   state.overlapActiveRace='SEMUA';
-  state.lastTables.overlapTable=rows;
+  state.lastTables.overlapTable=prepareOverlapDisplayRows_(rows);
 
   document.getElementById('overlapSummary').innerHTML =
     '<strong>Jumlah: '+rows.length.toLocaleString('ms-MY')+' rekod '+esc(modeText)+' ditemui.</strong> '+
-    'Tekan kotak kaum untuk buka senarai nama dalam popup.';
+    'Tekan kotak kaum untuk buka senarai nama dalam popup. No. Siri dipisahkan terus pada tajuk kolum mengikut Jenis Rumah.';
 
   const root=document.getElementById('overlapTable');
   if(!rows.length){
@@ -3247,14 +3255,91 @@ function renderOverlapByRace(rows,modeText){
     (groups.SEMAK.length ? '<div class="notice warn" style="margin:8px 0 0">'+groups.SEMAK.length.toLocaleString('ms-MY')+' rekod mempunyai kaum bercampur / belum dikenal pasti. Gunakan carian Nama / No. KP untuk semakan khusus.</div>' : '');
 }
 
+function overlapTypeCode_(type){
+  const t=String(type || '').trim().toUpperCase();
+  if(!t) return 'JENIS';
+  let m=t.match(/(?:^|\s)([A-Z]\d?)$/);
+  if(!m) m=t.match(/\b(?:JENIS|RMMJ)\s*([A-Z]\d?)\b/);
+  if(m) return m[1];
+  const compact=t.replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  return compact.slice(-12) || 'JENIS';
+}
+
+function overlapSerialParts_(row){
+  const detail=String(row && row.NO_SIRI_TERLIBAT || '').trim();
+  if(!detail) return [];
+  return detail.split(/\s+\|\s+/).map(function(part){
+    const pos=part.lastIndexOf(':');
+    if(pos<0) return null;
+    const prefix=part.slice(0,pos).trim();
+    const serial=part.slice(pos+1).trim();
+    let project='';
+    let type=prefix;
+    const slash=prefix.lastIndexOf(' / ');
+    if(slash>=0){
+      project=prefix.slice(0,slash).trim();
+      type=prefix.slice(slash+3).trim();
+    }
+    return {project:project,type:type,code:overlapTypeCode_(type),serial:serial};
+  }).filter(Boolean);
+}
+
+function prepareOverlapDisplayRows_(rows){
+  rows=(rows || []).map(sanitizeSerialRowClient);
+  const codes=[];
+  const codeLabels={};
+
+  rows.forEach(function(row){
+    overlapSerialParts_(row).forEach(function(p){
+      if(codes.indexOf(p.code)===-1) codes.push(p.code);
+      if(!codeLabels[p.code]) codeLabels[p.code]=p.type;
+    });
+  });
+
+  codes.sort(function(a,b){return a.localeCompare(b,'ms',{numeric:true});});
+
+  return rows.map(function(row){
+    const serialMap={};
+    const mode=String(row.MOD_SEMAKAN || '').toUpperCase();
+    overlapSerialParts_(row).forEach(function(p){
+      const key=p.code;
+      let value=p.serial || '-';
+      if(mode==='ANTARA_PROJEK' && p.project){
+        value=p.project+': '+value;
+      }
+      if(serialMap[key]) serialMap[key]+=' | '+value;
+      else serialMap[key]=value;
+    });
+
+    const out={};
+    if(row.PADANAN_ID!==undefined) out.PADANAN_ID=row.PADANAN_ID;
+    if(row.MOD_SEMAKAN!==undefined) out.MOD_SEMAKAN=row.MOD_SEMAKAN;
+    if(row.NO_KP!==undefined) out.NO_KP=row.NO_KP;
+    if(row.NAMA!==undefined) out.NAMA=row.NAMA;
+
+    codes.forEach(function(code){
+      out['NO_SIRI_'+code]=serialMap[code] || '-';
+    });
+
+    if(row.PROJEK_TERLIBAT!==undefined) out.PROJEK_TERLIBAT=row.PROJEK_TERLIBAT;
+    if(row.JUMLAH_PROJEK!==undefined) out.JUMLAH_PROJEK=row.JUMLAH_PROJEK;
+    if(row.JUMLAH_JENIS!==undefined) out.JUMLAH_JENIS=row.JUMLAH_JENIS;
+    if(row.STATUS!==undefined) out.STATUS=row.STATUS;
+    if(row.UPDATED_AT!==undefined) out.UPDATED_AT=row.UPDATED_AT;
+    if(row.KAUM_TERLIBAT!==undefined) out.KAUM_TERLIBAT=row.KAUM_TERLIBAT;
+    return out;
+  });
+}
+
 function showOverlapRace(race){
   const groups=state.overlapGroups || {};
-  const data=(groups[race] || []).map(sanitizeSerialRowClient);
+  const raw=(groups[race] || []).map(sanitizeSerialRowClient);
+  const data=prepareOverlapDisplayRows_(raw);
   state.overlapActiveRace=race;
   document.querySelectorAll('.overlap-race-card[data-race]').forEach(function(card){card.classList.toggle('active',card.dataset.race===race)});
   state.lastTables.overlapTable=data;
   const labels={SEMUA:'Semua Kaum',MELAYU:'Melayu',CINA:'Cina',INDIA:'India',SEMAK:'Perlu Semak Kaum'};
-  openRaceDetailModal('Semakan Pertindihan · '+(labels[race]||race),data,data.length.toLocaleString('ms-MY')+' rekod bertindih');
+  openRaceDetailModal('Semakan Pertindihan · '+(labels[race]||race),data,data.length.toLocaleString('ms-MY')+' rekod bertindih · No. Siri dipecahkan ikut Jenis Rumah');
 }
 
 
