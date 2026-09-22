@@ -601,6 +601,20 @@ th,td{padding:8px 10px}
 .archive-restore-note{font-size:11px;color:#6f7f96;margin-top:8px;line-height:1.5}
 @media(max-width:900px){.logo-pkpj-img{width:58px!important;height:52px!important}.brand-title{text-align:left!important}}
 
+
+/* ===== V2.13.8 HEALTH-FIRST + BACKGROUND BOOTSTRAP ===== */
+.data-load-banner{display:none;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:11px 14px;border-radius:14px;border:1px solid #dbe5f2;background:#f7faff;color:#315b8f;font-size:12px}
+.data-load-banner.show{display:flex}
+.data-load-banner.loading{background:#eef5ff;border-color:#cfe0ff;color:#275a98}
+.data-load-banner.cache{background:#fff8e8;border-color:#f3dfac;color:#76591c}
+.data-load-banner.warn{background:#fff1f2;border-color:#f4c8cf;color:#9f2d3d}
+.data-load-banner.ready{background:#edf9f2;border-color:#c9ead7;color:#25734a}
+.data-load-banner .dlb-copy{display:flex;align-items:center;gap:9px;min-width:0}
+.data-load-banner .dlb-dot{width:9px;height:9px;border-radius:999px;background:currentColor;flex:0 0 auto}
+.data-load-banner .dlb-text{line-height:1.45}
+.data-load-banner .dlb-action{border:0;border-radius:10px;padding:7px 11px;font:inherit;font-weight:700;cursor:pointer;background:#fff;color:inherit;box-shadow:0 1px 4px rgba(12,46,92,.12)}
+@media(max-width:720px){.data-load-banner{align-items:flex-start;flex-direction:column}.data-load-banner .dlb-action{width:100%}}
+
 </style>
 </head>
 
@@ -636,6 +650,10 @@ th,td{padding:8px 10px}
 </div>
 
 <section id="dashboard" class="page active">
+  <div id="dataLoadBanner" class="data-load-banner" aria-live="polite">
+    <div class="dlb-copy"><span class="dlb-dot"></span><span id="dataLoadBannerText" class="dlb-text">Ringkasan data sedang dimuatkan...</span></div>
+    <button id="dataLoadRetryBtn" class="dlb-action" type="button" onclick="retryBackgroundBootstrap_()" style="display:none">Cuba Muat Semula Data</button>
+  </div>
   <div class="cards">
     <div class="card blue"><div class="label">Jumlah Projek</div><div class="metric" id="mProjects">0</div></div>
     <div class="card green"><div class="label">Jumlah Pemohon</div><div class="metric" id="mApplicants">0</div></div>
@@ -1208,7 +1226,7 @@ const DEFAULT_API_KEY =
 
 const MIN_API_VERSION = '2.13.6';
 
-const UI_VERSION = '2.13.7';
+const UI_VERSION = '2.13.8';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1243,6 +1261,10 @@ const state = {
   applicantSummaryReady: false,
   applicantSummaryLoading: false,
   summaryDirty: false,
+  apiHealthy: false,
+  backendVersion: '',
+  backgroundBootstrapPromise: null,
+  runtimeSnapshotAt: 0,
   lastArchivedProject: null
 };
 
@@ -1256,17 +1278,30 @@ window.addEventListener('DOMContentLoaded', async function(){
   setupInfoIcons();
   bindGlobalModalKeys();
 
+  // Papar snapshot terakhir serta-merta jika ada. Ini tidak membuat sebarang API call.
+  const hasCache=restoreRuntimeSnapshot_();
+  if(hasCache){
+    state.loadedPages.dashboard=true;
+    setDataLoadBanner_('cache','Memaparkan ringkasan terakhir sementara sistem menyemak data terkini.',false);
+  }else{
+    setDataLoadBanner_('loading','Menyemak sambungan API...',false);
+  }
+
   if(state.apiUrl && state.apiKey){
     try{
-      await loadBootstrap(true);
-      state.loadedPages.dashboard = true;
-      // Ringkasan projek/kaum dimuat SELEPAS UI sudah boleh digunakan.
-      // Ia tidak lagi menyekat pembukaan sistem.
-      setTimeout(function(){ hydrateApplicantSummary(false); },250);
+      // HEALTH dahulu: endpoint paling ringan. Kegagalan bootstrap tidak lagi dianggap API mati.
+      await checkApiHealthFirst_();
+      state.loadedPages.dashboard=true;
+      setDataLoadBanner_('loading',hasCache ? 'API aktif. Menyemak data terkini di belakang...' : 'API aktif. Ringkasan data sedang dimuatkan...',false);
+
+      // Jangan await. UI dan sidebar sudah boleh digunakan ketika bootstrap berjalan.
+      refreshBootstrapInBackground_();
     }catch(err){
       console.error(err);
-      setApiStatus(false,'API / backend tidak dapat disambungkan');
-      toast(err.message || 'API tidak dapat disambungkan. Semak deployment Google Apps Script /exec.','bad');
+      state.apiHealthy=false;
+      setApiStatus(false,hasCache ? 'API belum dapat dicapai · paparan cache' : 'API belum dapat dicapai');
+      setDataLoadBanner_('warn',hasCache ? 'API belum dapat dicapai. Data terakhir masih dipaparkan dan tidak diubah.' : 'API belum dapat dicapai. Tekan Cuba Muat Semula Data selepas semak deployment /exec.',true);
+      toast('Sambungan API belum berjaya. Sistem tidak menganggap data rosak; cuba semula sambungan.','bad');
     }
   }
 });
@@ -1465,7 +1500,7 @@ async function api(payload, options={}){
 
 async function testApi(show=true){
   try{
-    const data = await api({action:'health'});
+    const data = await api({action:'health'},{maxAttempts:1,timeoutMs:8000});
     const version = String(data.version || '0.0.0');
 
     if(compareVersions(version, MIN_API_VERSION) < 0){
@@ -1476,6 +1511,8 @@ async function testApi(show=true){
       );
     }
 
+    state.apiHealthy=true;
+    state.backendVersion=version;
     setApiStatus(true,(data.app || 'STU-RMMJ')+' '+version+' · UI '+UI_VERSION);
     if(show) toast('Sambungan Google Apps Script berjaya.','good');
     return true;
@@ -1505,18 +1542,136 @@ function setApiStatus(ok,text){
   el.textContent = ok ? 'API aktif · '+text : text;
 }
 
+
+const RUNTIME_SNAPSHOT_KEY='STU_RMMJ_RUNTIME_SNAPSHOT_V2138';
+const RUNTIME_SNAPSHOT_MAX_AGE=12*60*60*1000;
+
+function setDataLoadBanner_(kind,message,showRetry){
+  const root=document.getElementById('dataLoadBanner');
+  const text=document.getElementById('dataLoadBannerText');
+  const retry=document.getElementById('dataLoadRetryBtn');
+  if(!root || !text || !retry) return;
+  root.className='data-load-banner show '+String(kind || 'loading');
+  text.textContent=String(message || '');
+  retry.style.display=showRetry ? 'inline-block' : 'none';
+}
+
+function hideDataLoadBanner_(){
+  const root=document.getElementById('dataLoadBanner');
+  if(root) root.classList.remove('show');
+}
+
+function saveRuntimeSnapshot_(){
+  try{
+    if(!state.dashboardData || !Array.isArray(state.drawOptions)) return;
+    const payload={
+      savedAt:Date.now(),
+      backendVersion:state.backendVersion || '',
+      dashboardData:state.dashboardData,
+      drawOptions:state.drawOptions,
+      applicantSummaryReady:Boolean(state.applicantSummaryReady)
+    };
+    localStorage.setItem(RUNTIME_SNAPSHOT_KEY,JSON.stringify(payload));
+    state.runtimeSnapshotAt=payload.savedAt;
+  }catch(err){
+    console.debug('Snapshot cache tidak disimpan:',err);
+  }
+}
+
+function restoreRuntimeSnapshot_(){
+  try{
+    const raw=localStorage.getItem(RUNTIME_SNAPSHOT_KEY);
+    if(!raw) return false;
+    const snap=JSON.parse(raw);
+    const age=Date.now()-Number(snap.savedAt || 0);
+    if(!snap.dashboardData || age<0 || age>RUNTIME_SNAPSHOT_MAX_AGE){
+      localStorage.removeItem(RUNTIME_SNAPSHOT_KEY);
+      return false;
+    }
+    state.dashboardData=snap.dashboardData;
+    state.drawOptions=Array.isArray(snap.drawOptions)?snap.drawOptions:[];
+    state.bootstrapLoaded=true;
+    state.applicantSummaryReady=Boolean(snap.applicantSummaryReady);
+    state.runtimeSnapshotAt=Number(snap.savedAt || 0);
+    renderDashboardFromState_();
+    renderSuccessProjectChoices();
+    renderArchiveProjectChoices();
+    renderWinnerSummaryFromBootstrap_();
+    renderDeleteProjectOptions();
+    loadProjectFilters();
+    return true;
+  }catch(err){
+    try{localStorage.removeItem(RUNTIME_SNAPSHOT_KEY)}catch(ignore){}
+    return false;
+  }
+}
+
+async function checkApiHealthFirst_(){
+  setApiStatus(false,'Menyambung API...');
+  const data=await api({action:'health'},{maxAttempts:1,timeoutMs:8000});
+  const version=String(data.version || '0.0.0');
+  if(compareVersions(version,MIN_API_VERSION)<0){
+    throw new Error('Backend Google Apps Script masih versi '+version+'. Sistem perlukan sekurang-kurangnya versi '+MIN_API_VERSION+'.');
+  }
+  state.apiHealthy=true;
+  state.backendVersion=version;
+  setApiStatus(true,(data.app || 'STU-RMMJ')+' '+version+' · UI '+UI_VERSION);
+  return data;
+}
+
+function refreshBootstrapInBackground_(){
+  if(state.backgroundBootstrapPromise) return state.backgroundBootstrapPromise;
+
+  setDataLoadBanner_('loading','API aktif. Ringkasan data sedang dimuatkan di belakang...',false);
+  state.backgroundBootstrapPromise=(async function(){
+    try{
+      await loadBootstrap(true,{timeoutMs:30000,background:true});
+      saveRuntimeSnapshot_();
+      setDataLoadBanner_('ready','Ringkasan data terkini berjaya dimuatkan.',false);
+      setTimeout(hideDataLoadBanner_,1400);
+
+      // Ringkasan pemohon lebih berat; buat selepas bootstrap tanpa menyekat UI.
+      setTimeout(function(){hydrateApplicantSummary(false);},150);
+      return true;
+    }catch(err){
+      console.warn('Background bootstrap belum berjaya:',err);
+      setDataLoadBanner_('warn','API aktif, tetapi ringkasan data belum dapat dimuatkan. Data sedia ada tidak diubah.',true);
+      return false;
+    }finally{
+      state.backgroundBootstrapPromise=null;
+    }
+  })();
+  return state.backgroundBootstrapPromise;
+}
+
+async function retryBackgroundBootstrap_(){
+  setDataLoadBanner_('loading','Menyemak semula sambungan API...',false);
+  try{
+    await checkApiHealthFirst_();
+    return await refreshBootstrapInBackground_();
+  }catch(err){
+    state.apiHealthy=false;
+    setApiStatus(false,state.dashboardData ? 'API belum dapat dicapai · paparan cache' : 'API belum dapat dicapai');
+    setDataLoadBanner_('warn','Sambungan API masih belum berjaya. Semak deployment Google Apps Script /exec dan cuba lagi.',true);
+    toast(err.message || 'Sambungan API belum berjaya.','bad');
+    return false;
+  }
+}
+
 /* =========================================================
    DASHBOARD
 ========================================================= */
 
-async function loadBootstrap(force=false){
+async function loadBootstrap(force=false,options={}){
   if(state.bootstrapLoaded && !force){renderDashboardFromState_();return state.dashboardData;}
   // V2.13.5: startup hanya baca KUOTA/PEMENANG/count ringkas. Tiada full scan PEMOHON.
-  const d=await api({action:'bootstrapLite'},{maxAttempts:1,timeoutMs:15000});
+  const d=await api({action:'bootstrapLite'},{maxAttempts:1,timeoutMs:Number(options.timeoutMs || 30000)});
   const version=String(d.version || '0.0.0');
   if(compareVersions(version,MIN_API_VERSION)<0){
     throw new Error('Backend Google Apps Script masih versi '+version+'. Sistem perlukan sekurang-kurangnya versi '+MIN_API_VERSION+'.');
   }
+  state.apiHealthy=true;
+  state.backendVersion=version;
   setApiStatus(true,(d.app || 'STU-RMMJ')+' '+version+' · UI '+UI_VERSION);
   state.dashboardData=d.dashboard || {summary:{},projects:{},quotaTally:[]};
   state.drawOptions=d.drawOptions || [];
@@ -1528,6 +1683,7 @@ async function loadBootstrap(force=false){
   renderWinnerSummaryFromBootstrap_();
   renderDeleteProjectOptions();
   loadProjectFilters();
+  saveRuntimeSnapshot_();
   return state.dashboardData;
 }
 
@@ -1568,6 +1724,7 @@ async function hydrateApplicantSummary(showError=false){
     renderWinnerSummaryFromBootstrap_();
     renderDeleteProjectOptions();
     loadProjectFilters();
+    saveRuntimeSnapshot_();
     if(document.getElementById('pemohon')?.classList.contains('active')){
       renderApplicantSummaryFromDashboard(state.dashboardData.projects || {},state.dashboardData.summary || {});
     }
