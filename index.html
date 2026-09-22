@@ -1206,9 +1206,9 @@ const DEFAULT_API_URL =
 const DEFAULT_API_KEY =
 'b3572c41596e4d4c8df6380c0f9aca2483117d95b97644a8';
 
-const MIN_API_VERSION = '2.13.4';
+const MIN_API_VERSION = '2.13.5';
 
-const UI_VERSION = '2.13.4';
+const UI_VERSION = '2.13.5';
 
 const state = {
   apiUrl: DEFAULT_API_URL,
@@ -1240,6 +1240,8 @@ const state = {
   winnerEntry: null,
   winnerDrafts: {},
   bootstrapLoaded: false,
+  applicantSummaryReady: false,
+  applicantSummaryLoading: false,
   summaryDirty: false,
   lastArchivedProject: null
 };
@@ -1258,6 +1260,9 @@ window.addEventListener('DOMContentLoaded', async function(){
     try{
       await loadBootstrap(true);
       state.loadedPages.dashboard = true;
+      // Ringkasan projek/kaum dimuat SELEPAS UI sudah boleh digunakan.
+      // Ia tidak lagi menyekat pembukaan sistem.
+      setTimeout(function(){ hydrateApplicantSummary(false); },250);
     }catch(err){
       console.error(err);
       setApiStatus(false,'API / backend tidak dapat disambungkan');
@@ -1272,9 +1277,16 @@ async function loadPageData(page, force=false){
   if(done && !force) return;
   state.busy=true;
   try{
-    const needsFreshSummary = state.summaryDirty && (page==='dashboard' || page==='pemohon');
-    if(!state.bootstrapLoaded || needsFreshSummary) await loadBootstrap(true);
-    if(page==='dashboard') renderDashboardFromState_();
+    if(!state.bootstrapLoaded) await loadBootstrap(true);
+    if(state.summaryDirty && (page==='dashboard' || page==='pemohon')){
+      await loadBootstrap(true); // bootstrapLite sahaja
+      state.applicantSummaryReady=false;
+      state.summaryDirty=false;
+    }
+    if(page==='dashboard'){
+      renderDashboardFromState_();
+      if(!state.applicantSummaryReady) setTimeout(function(){hydrateApplicantSummary(false);},100);
+    }
     if(page==='pemohon') await ensureApplicantOverview();
     if(page==='watchlist'){ await loadProjectFilters(); syncSemakanToActiveProject(); }
     if(page==='pemenang'){ renderSuccessProjectChoices(); renderWinnerSummaryFromBootstrap_(); }
@@ -1438,7 +1450,7 @@ async function api(payload, options={}){
       return data;
     }catch(err){
       lastError=err;
-      if(err.name==='AbortError') lastError=new Error('API mengambil masa terlalu lama untuk '+actionName+'. Cuba semula sekali lagi.');
+      if(err.name==='AbortError') lastError=new Error('Sambungan '+actionName+' melebihi had masa. Sistem tidak akan mengulang request secara automatik.');
       const retryable=err.name==='AbortError' || err instanceof TypeError || String(err.message||'').includes('Respons sementara');
       if(retryable && attempt<maxAttempts){
         if(typeof options.onRetry==='function'){try{options.onRetry(attempt+1,maxAttempts,lastError)}catch(ignore){}}
@@ -1499,7 +1511,8 @@ function setApiStatus(ok,text){
 
 async function loadBootstrap(force=false){
   if(state.bootstrapLoaded && !force){renderDashboardFromState_();return state.dashboardData;}
-  const d=await api({action:'bootstrapFast'},{maxAttempts:1,timeoutMs:30000});
+  // V2.13.5: startup hanya baca KUOTA/PEMENANG/count ringkas. Tiada full scan PEMOHON.
+  const d=await api({action:'bootstrapLite'},{maxAttempts:1,timeoutMs:15000});
   const version=String(d.version || '0.0.0');
   if(compareVersions(version,MIN_API_VERSION)<0){
     throw new Error('Backend Google Apps Script masih versi '+version+'. Sistem perlukan sekurang-kurangnya versi '+MIN_API_VERSION+'.');
@@ -1508,14 +1521,62 @@ async function loadBootstrap(force=false){
   state.dashboardData=d.dashboard || {summary:{},projects:{},quotaTally:[]};
   state.drawOptions=d.drawOptions || [];
   state.bootstrapLoaded=true;
-  state.summaryDirty=false;
+  state.applicantSummaryReady=Boolean(d.applicantSummaryReady);
   renderDashboardFromState_();
   renderSuccessProjectChoices();
   renderArchiveProjectChoices();
   renderWinnerSummaryFromBootstrap_();
   renderDeleteProjectOptions();
-  await loadProjectFilters();
+  loadProjectFilters();
   return state.dashboardData;
+}
+
+function mergeApplicantSummaryIntoState_(d){
+  if(!d || !d.ok) return;
+  if(!state.dashboardData) state.dashboardData={summary:{},projects:{},quotaTally:[]};
+  state.dashboardData.projects=d.projects || {};
+  state.dashboardData.summary=state.dashboardData.summary || {};
+  state.dashboardData.summary.applicants=Number(d.applicants||0);
+  state.dashboardData.summary.races=d.races || {MELAYU:0,CINA:0,INDIA:0,'BELUM DIKELASKAN':0};
+
+  const projects=state.dashboardData.projects || {};
+  (state.dashboardData.quotaTally || []).forEach(function(row){
+    const x=projects[row.PROJEK] && projects[row.PROJEK][row.JENIS] && projects[row.PROJEK][row.JENIS][row.KAUM];
+    row.JUMLAH_PEMOHON=x ? Number(x.total||0) : 0;
+  });
+  (state.drawOptions || []).forEach(function(p){
+    (p.types || []).forEach(function(t){
+      (t.races || []).forEach(function(r){
+        const x=projects[p.project] && projects[p.project][t.type] && projects[p.project][t.type][r.race];
+        r.applicants=x ? Number(x.total||0) : 0;
+      });
+    });
+  });
+  state.applicantSummaryReady=true;
+  state.summaryDirty=false;
+}
+
+async function hydrateApplicantSummary(showError=false){
+  if(state.applicantSummaryLoading) return;
+  if(state.applicantSummaryReady && !state.summaryDirty) return;
+  state.applicantSummaryLoading=true;
+  try{
+    const d=await api({action:'getApplicantSummaryFast'},{maxAttempts:1,timeoutMs:20000});
+    mergeApplicantSummaryIntoState_(d);
+    renderDashboardFromState_();
+    renderSuccessProjectChoices();
+    renderWinnerSummaryFromBootstrap_();
+    renderDeleteProjectOptions();
+    loadProjectFilters();
+    if(document.getElementById('pemohon')?.classList.contains('active')){
+      renderApplicantSummaryFromDashboard(state.dashboardData.projects || {},state.dashboardData.summary || {});
+    }
+  }catch(err){
+    console.warn('Ringkasan pemohon belum dapat dimuat:',err);
+    if(showError) toast('Ringkasan pemohon lambat dimuat. Sistem lain masih boleh digunakan. Cuba Segarkan Tally.','bad');
+  }finally{
+    state.applicantSummaryLoading=false;
+  }
 }
 
 function renderDashboardFromState_(){
@@ -3513,9 +3574,9 @@ function syncWinnerCountLocal_(project,type,race,count){
 }
 
 function markWinnerMutationDirty_(){
-  // Data server sudah betul. Ringkasan berat akan dibaca semula hanya apabila
-  // pengguna kembali ke Dashboard / Rekod Pemohon, bukan selepas setiap klik Simpan/Padam.
+  // Data server sudah betul. Ringkasan pemohon dimuat berasingan supaya startup kekal ringan.
   state.summaryDirty=true;
+  state.applicantSummaryReady=false;
   state.loadedPages.dashboard=false;
   state.loadedPages.pemohon=false;
   state.loadedPages.arkib=false;
@@ -3914,17 +3975,18 @@ function renderApplicantSummaryFromDashboard(projects,summary){
 }
 
 async function ensureApplicantOverview(){
-  if(state.dashboardData){
-    renderApplicantSummaryFromDashboard(state.dashboardData.projects || {}, state.dashboardData.summary || {});
-    return;
-  }
-  await loadDashboard();
+  if(!state.dashboardData) await loadBootstrap(true);
+  if(!state.applicantSummaryReady || state.summaryDirty) await hydrateApplicantSummary(true);
+  renderApplicantSummaryFromDashboard(state.dashboardData?.projects || {}, state.dashboardData?.summary || {});
 }
 
 async function refreshApplicantOverview(){
   try{
     invalidateApplicantCache_();
+    state.applicantSummaryReady=false;
+    state.summaryDirty=true;
     await loadBootstrap(true);
+    await hydrateApplicantSummary(true);
     toast('Tally Rekod Pemohon telah disegarkan.','good');
   }catch(err){
     toast(err.message,'bad');
